@@ -1,0 +1,153 @@
+[
+  {
+    "name": "HDP",
+    "type": "Material Springbed",
+    "image": "assets/images/kategori.png",
+    "desc": "Pelapis rakitan per dengan busa",
+    "poin": 10
+  },
+  {
+    "name": "Quilting",
+    "type": "Material Springbed",
+    "image": "assets/images/kategori.png",
+    "desc": "Tekstur timbul dan tampilan yang elegan",
+    "poin": 10
+  },
+  {
+    "name": "Kain Polos Springbed",
+    "type": "Material Springbed",
+    "image": "assets/images/kategori.png",
+    "desc": "Lapisan luar pembungkus bagian atas kasur",
+    "poin": 10
+  },
+  {
+    "name": "Percoil",
+    "type": "Material Springbed",
+    "image": "assets/images/kategori.png",
+    "desc": "Memberikan daya topang pada tubuh saat tidur",
+    "poin": 10
+  },
+  {
+    "name": "Pita List",
+    "type": "Material Springbed",
+    "image": "assets/images/kategori.png",
+    "desc": "Penutup pinggiran kasur ",
+    "poin": 10
+  },
+
+  {
+    "name": "Kain Polos Sofa",
+    "type": "Material Sofa",
+    "image": "assets/images/kategori.png",
+    "desc": "Bahan pelapis sofa yang elegan",
+    "poin": 10
+  },
+  {
+    "name": "HDP",
+    "type": "Material Springbed",
+    "image": "assets/images/kategori.png",
+    "desc": "Pelapis rakitan per dengan busa",
+    "poin": 10
+  },
+
+  {
+    "name": "Aksesories",
+    "type": "Material Springbed & Sofa",
+    "image": "assets/images/kategori.png",
+    "desc": "Komponen pelengkap menambah nilai estetika",
+    "poin": 10
+  },
+  {
+    "name": "Bahan Kimia",
+    "type": "Material Springbed & Sofa",
+    "image": "assets/images/kategori.png",
+    "desc": "Menjaga agar tahan dalam jangka panjang",
+    "poin": 10
+  },
+  {
+    "name": "Busa",
+    "type": "Material Springbed & Sofa",
+    "image": "assets/images/kategori.png",
+    "desc": "Menjaga bentuk dan kenyamanan produk",
+    "poin": 10
+  },
+  {
+    "name": "Kawat",
+    "type": "Material Springbed & Sofa",
+    "image": "assets/images/kategori.png",
+    "desc": "Penyambung dan penguat struktur",
+    "poin": 10
+  },
+  {
+    "name": "Non Woven",
+    "type": "Material Springbed & Sofa",
+    "image": "assets/images/kategori.png",
+    "desc": "Lapisan pelindung antara busa dan kain",
+    "poin": 10
+  },
+  {
+    "name": "Plastik",
+    "type": "Material Springbed & Sofa",
+    "image": "assets/images/kategori.png",
+    "desc": "Lapisan pelindung antara busa dan kain",
+    "poin": 10
+  },
+  {
+    "name": "Stapless",
+    "type": "Material Springbed & Sofa",
+    "image": "assets/images/kategori.png",
+    "desc": "Lapisan pelindung antara busa dan kain",
+    "poin": 10
+  },
+
+  {
+    "name": "Other",
+    "type": "Mesin & Sparepart",
+    "image": "assets/images/kategori.png",
+    "desc": "Alat dan komponen pelengkap",
+    "poin": 10
+  },
+
+  {
+    "name": "Kasur",
+    "type": "Furniture",
+    "image": "assets/images/kategori.png",
+    "desc": "Alas tidur dengan material unggulan",
+    "poin": 10
+  },
+  {
+    "name": "Kitchen",
+    "type": "Furniture",
+    "image": "assets/images/kategori.png",
+    "desc": "Furniture dapur yang elegan dan estetik",
+    "poin": 10
+  },
+  {
+    "name": "Lemari",
+    "type": "Furniture",
+    "image": "assets/images/kategori.png",
+    "desc": "Kombinasi kekuatan struktur dan estetika",
+    "poin": 10
+  },
+  {
+    "name": "Kursi",
+    "type": "Furniture",
+    "image": "assets/images/kategori.png",
+    "desc": "Tempat duduk yang nyaman dan kokoh",
+    "poin": 10
+  },
+  {
+    "name": "Meja",
+    "type": "Furniture",
+    "image": "assets/images/kategori.png",
+    "desc": "Elemen penting dari interior",
+    "poin": 10
+  },
+  {
+    "name": "Rak",
+    "type": "Furniture",
+    "image": "assets/images/kategori.png",
+    "desc": "Tempat menyimpan barang",
+    "poin": 10
+  }
+]

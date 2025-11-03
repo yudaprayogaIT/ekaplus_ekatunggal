@@ -1,6 +1,8 @@
+// lib/main.dart
 import 'package:flutter/material.dart';
-import 'core/shared_widgets/bottom_nav.dart';
-import 'features/home/presentation/pages/home_page.dart';
+import 'package:go_router/go_router.dart';
+
+import 'core/routes/my_router.dart';
 import 'constant.dart';
 
 void main() {
@@ -12,44 +14,15 @@ class EkaplusApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'Ekaplus Ekatunggal',
       debugShowCheckedModeBanner: false,
+      routerConfig: MyRouter.router,
       theme: ThemeData(
         primaryColor: AppColors.primaryColor,
         scaffoldBackgroundColor: AppColors.background,
         fontFamily: AppFonts.primaryFont,
         colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primaryColor),
-      ),
-      home: const RootPage(),
-    );
-  }
-}
-
-class RootPage extends StatefulWidget {
-  const RootPage({super.key});
-
-  @override
-  State<RootPage> createState() => _RootPageState();
-}
-
-class _RootPageState extends State<RootPage> {
-  int _currentIndex = 0;
-
-  final List<Widget> _pages = const [
-    HomePage(),
-    Center(child: Text('Kategori (placeholder)')),
-    Center(child: Text('Favorit (placeholder)')),
-    Center(child: Text('Profile (placeholder)')),
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(child: _pages[_currentIndex]),
-      bottomNavigationBar: BottomNavBar(
-        currentIndex: _currentIndex,
-        onTap: (i) => setState(() => _currentIndex = i),
       ),
     );
   }
