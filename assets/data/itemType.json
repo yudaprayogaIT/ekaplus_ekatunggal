@@ -2,7 +2,7 @@
   {
     "id": 1,
     "name": "Material Springbed",
-    "image": "assets/images/type/materialSpringbed.svg",
+    "image": "assets/images/type/materialSpringbed.png",
     "description": null,
     "docstatus": 1,
     "status": "Enabled",
@@ -17,7 +17,7 @@
   {
     "id": 2,
     "name": "Material Sofa",
-    "image": "assets/images/type/materialSofa.svg",
+    "image": "assets/images/type/materialSofa.png",
     "description": null,
     "docstatus": 1,
     "status": "Enabled",
@@ -32,7 +32,7 @@
   {
     "id": 3,
     "name": "Material Springbed & Sofa",
-    "image": "assets/images/type/materialSpringbed_Sofa.svg",
+    "image": "assets/images/type/materialSpringbed_Sofa.png",
     "description": null,
     "docstatus": 1,
     "status": "Enabled",
@@ -47,7 +47,7 @@
   {
     "id": 4,
     "name": "Mesin & Sparepart",
-    "image": "assets/images/type/mesin_sparepart.svg",
+    "image": "assets/images/type/mesinSparepart.png",
     "description": null,
     "docstatus": 1,
     "status": "Enabled",
@@ -62,7 +62,7 @@
   {
     "id": 5,
     "name": "Furniture",
-    "image": "assets/images/type/furniture.svg",
+    "image": "assets/images/type/furniture.png",
     "description": null,
     "docstatus": 1,
     "status": "Enabled",

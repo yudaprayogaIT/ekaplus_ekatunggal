@@ -1,145 +1,157 @@
-import 'dart:convert';
+import 'package:ekaplus_ekatunggal/constant.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
-import 'package:ekaplus_ekatunggal/features/type/data/models/type_model.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ekaplus_ekatunggal/features/type/domain/entities/type.dart';
+import 'package:ekaplus_ekatunggal/features/type/presentation/bloc/type_bloc.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class TypeCategoryList extends StatelessWidget {
-  final int page; // kalau mau paging di masa depan
+  final int page;
+
   const TypeCategoryList({Key? key, this.page = 1}) : super(key: key);
-
-  Future<List<Type>> _loadTypesFromAsset() async {
-    final String body = await rootBundle.loadString('assets/data/itemType.json');
-    final dynamic decoded = jsonDecode(body);
-    final List<dynamic> data = decoded is List ? decoded : (decoded['data'] ?? []);
-    return TypeModel.fromJsonList(data);
-  }
-
-  // Palet warna pastel untuk background ikon (sesuaikan jika mau)
-  // static const List<Color> _bgColors = [
-  //   Color(0xFFE8F7F5), // mint
-  //   Color(0xFFFDEFF3), // pink
-  //   Color(0xFFFFF6E0), // light yellow
-  //   Color(0xFFEFF6FF), // light blue
-  //   Color(0xFFF2FFF0), // light green
-  // ];
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Type>>(
-      future: _loadTypesFromAsset(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
+    return BlocBuilder<TypeBloc, TypeState>(
+      bloc: BlocProvider.of<TypeBloc>(context)..add(TypeEventGetAllTypes(1)),
+      builder: (context, state) {
+        if (state is TypeStateLoading) {
           return const SizedBox(
             height: 160,
             child: Center(child: CircularProgressIndicator()),
           );
         }
-        if (snapshot.hasError) {
+
+        if (state is TypeStateError) {
           return SizedBox(
             height: 120,
-            child: Center(child: Text('Gagal memuat kategori', style: TextStyle(color: Colors.red.shade700))),
+            child: Center(
+              child: Text(
+                state.message,
+                style: TextStyle(color: AppColors.primaryColor),
+              ),
+            ),
           );
         }
 
-        final types = snapshot.data ?? [];
+        if (state is TypeStateLoadedAllType) {
+          final types = state.allType;
+          final visible = types.length > 5 ? types.sublist(0, 5) : types;
 
-        // tampilkan maksimal 5 item (sama seperti gambar)
-        final visible = types.length > 5 ? types.sublist(0, 5) : types;
-
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Column(
-            children: [
-              SizedBox(
-                height: 120,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: visible.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: 12),
-                  itemBuilder: (context, index) {
-                    final Type item = visible[index];
-                    // final bg = _bgColors[index % _bgColors.length];
-
-                    return GestureDetector(
-                      onTap: () {
-                        // TODO: navigasi ke halaman list produk untuk tipe ini
-                        // Navigator.of(context).pushNamed('/products', arguments: item.id);
-                      },
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            width: 80,
-                            height: 80,
-                            decoration: BoxDecoration(
-                              // color: bg,
-                              borderRadius: BorderRadius.circular(18),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.04),
-                                  blurRadius: 6,
-                                  offset: const Offset(0, 3),
-                                )
-                              ],
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: _buildTypeImage(item),
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          SizedBox(
-                            width: 88,
-                            child: Text(
-                              item.name,
-                              textAlign: TextAlign.center,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(fontSize: 12),
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
+          return Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              image: const DecorationImage(
+                image: AssetImage('assets/images/kategoribg.png'),
+                fit: BoxFit.cover,
               ),
+            ),
+            // padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Column(
+              children: [
+                // 🔹 Judul section
+                const Text(
+                  "Temukan Produk yang Anda Cari",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 10),
+                SizedBox(
+                  height: 140,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: visible.length,
+                    separatorBuilder: (_, __) => const SizedBox(width: 8),
+                    itemBuilder: (context, index) {
+                      final Type item = visible[index];
 
-              // "Lihat Semua" link di tengah bawah
-              const SizedBox(height: 8),
-              GestureDetector(
-                onTap: () {
-                  // TODO: navigasi ke layar semua kategori / products
-                  // Navigator.of(context).pushNamed('/all-types');
-                },
-                child: Text(
-                  'Lihat Semua',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.secondary,
-                    fontWeight: FontWeight.w600,
+                      return GestureDetector(
+                        onTap: () {},
+                        // Batasi lebar tiap item agar tidak melebihi ukuran gambar
+                        child: SizedBox(
+                          width: 72, // <-- buat fixed item width (kecilkan sesuai kebutuhan)
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                width: 60,
+                                height: 60,
+                                child: _buildTypeImage(item),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                item.name,
+                                textAlign: TextAlign.center,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(fontSize: 12),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ),
-              ),
-            ],
-          ),
-        );
+                // const SizedBox(height: 8),
+                GestureDetector(
+                  onTap: () {
+                    // TODO: navigasi ke layar semua kategori / products
+                  },
+                  child: Text(
+                    'Lihat Semua',
+                    style: TextStyle(
+                      color: AppColors.primaryColor,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        return const SizedBox.shrink();
       },
     );
   }
 
-  Widget _buildTypeImage(Type item) {
+   Widget _buildTypeImage(Type item) {
     final String? imgPath = item.image;
-    if (imgPath != null && imgPath.isNotEmpty) {
-      // jika asset path valid, tampilkan
-      return Image.asset(
-        imgPath,
+
+    if (imgPath == null || imgPath.isEmpty) {
+      return const Icon(Icons.category, size: 36);
+    }
+
+    // Network image -> gunakan CachedNetworkImage
+    if (imgPath.startsWith('http')) {
+      return CachedNetworkImage(
+        imageUrl: imgPath,
         fit: BoxFit.contain,
-        // jika gambar SVG, pastikan kamu punya flutter_svg dan gunakan SvgPicture.asset
+        placeholder: (context, url) => const SizedBox(
+          width: 24,
+          height: 24,
+          child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+        ),
+        errorWidget: (context, url, error) =>
+            const Icon(Icons.broken_image, size: 36),
       );
     }
 
-    // fallback icon jika tidak ada gambar
-    return const Icon(Icons.category, size: 36);
+    // Local asset (png/jpg/webp) -> Image.asset
+    if (!imgPath.toLowerCase().endsWith('.svg')) {
+      return Image.asset(imgPath, fit: BoxFit.contain);
+    }
+
+    // Jika file SVG lokal:
+    // - Jika menggunakan package flutter_svg, uncomment baris di bawah dan tambahkan dependency flutter_svg di pubspec.yaml:
+    //   import 'package:flutter_svg/flutter_svg.dart';
+    //   return SvgPicture.asset(imgPath, width: 36, height: 36, fit: BoxFit.contain);
+    //
+    // Jika tidak memakai flutter_svg, Image.asset tidak bisa men-render SVG; fallback ke Icon:
+    return const Icon(Icons.image, size: 36);
   }
 }

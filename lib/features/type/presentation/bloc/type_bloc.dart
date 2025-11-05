@@ -35,12 +35,13 @@ class TypeBloc extends Bloc<TypeEvent, TypeState> {
   Future<ResponseSub> getSubType(String id) async {
     List<SubType> subType = [SubType(id, true)];
     List<List<String>> filters = [
-      ["item_group", "=", id]
+      ["item_group", "=", id],
     ];
     try {
       String encodedId = Uri.encodeComponent(id);
-      Uri uri =
-          Uri.parse("${Constants.apiBaseUrl}/api/public/Item Group/$encodedId");
+      Uri uri = Uri.parse(
+        "${Constants.apiBaseUrl}/api/public/Item Group/$encodedId",
+      );
 
       var response = await http.Client().get(uri);
 
@@ -64,15 +65,14 @@ class TypeBloc extends Bloc<TypeEvent, TypeState> {
     return ResponseSub(filters, subType);
   }
 
-  TypeBloc({
-    required this.getAllType,
-    required this.getType,
-  }) : super(TypeStateEmpty()) {
+  TypeBloc({required this.getAllType, required this.getType})
+    : super(TypeStateEmpty()) {
     on<TypeEventGetAllTypes>((event, emit) async {
       emit(TypeStateLoading());
 
-      Either<Failure, List<Type>> resultGetAllType =
-          await getAllType.execute(event.page);
+      Either<Failure, List<Type>> resultGetAllType = await getAllType.execute(
+        event.page,
+      );
 
       resultGetAllType.fold(
         (l) => emit(TypeStateError('Cannot get all Types')),
@@ -83,8 +83,7 @@ class TypeBloc extends Bloc<TypeEvent, TypeState> {
     on<TypeEventGetDetailType>((event, emit) async {
       emit(TypeStateLoading());
 
-      Either<Failure, Type> typeResult =
-          await getType.execute(event.typeId);
+      Either<Failure, Type> typeResult = await getType.execute(event.typeId);
 
       typeResult.fold(
         (l) => emit(TypeStateError('Cannot get Type details')),

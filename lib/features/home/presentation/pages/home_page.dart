@@ -113,6 +113,7 @@ class HomePage extends StatelessWidget {
                     // -------------------------
                     // Sisa konten halaman
                     // -------------------------
+                    const SizedBox(height: 10),
                     TypeCategoryList(),
                     // CategoryList(),
                     const Padding(

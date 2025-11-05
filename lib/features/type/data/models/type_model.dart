@@ -1,63 +1,60 @@
 // lib/features/type/data/models/type_model.dart
 import 'package:ekaplus_ekatunggal/features/type/domain/entities/type.dart';
 
+class UserModel extends UserEntity {
+  const UserModel({required super.id, required super.name});
 
-class UserModel{
-  final int id;
-  final String name;
-
-  UserModel({
-    required this.id,
-    required this.name,
-  });
   factory UserModel.fromJson(Map<String, dynamic> json) {
-    return UserModel(
-      id: json['id'],
-      name: json['name'],
-    );
+    return UserModel(id: json['id'] ?? 0, name: json['name'] ?? '');
   }
+
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-    };
+    return {'id': id, 'name': name};
   }
 }
 
 class TypeModel extends Type {
   const TypeModel({
-   required super.id,
+    required super.id,
     required super.name,
     super.image,
     super.description,
     super.docstatus = 0,
     super.status,
     super.typeName,
-    super.disabled = false,
+    super.disabled = 0,
     required super.updatedAt,
     super.updatedBy,
     required super.createdAt,
     super.createdBy,
-    super.owner
+    super.owner,
   });
 
   factory TypeModel.fromJson(Map<String, dynamic> dataJson) {
     Map<String, dynamic> data = dataJson;
 
     return TypeModel(
-      id: data['id'],
-      name: data['name'],
+      id: data['id'] ?? 0,
+      name: data['name'] ?? '',
       image: data['image'],
       description: data['description'],
-      docstatus: data['docstatus'],
-      status: data['status'],
+      docstatus: data['docstatus'] ?? 0,
+      status: data['status'] ?? '',
       typeName: data['type_name'],
-      disabled: data['disabled'],
-      updatedAt: DateTime.parse(data['updated_at']),
-      updatedBy: data['updated_by'],
-      createdAt: DateTime.parse(data['created_at']),
-      createdBy: data['created_by'],
-      owner: data['owner']
+      disabled: data['disabled'] ?? 0,
+      updatedAt: data['updated_at'] != null
+          ? DateTime.parse(data['updated_at'])
+          : DateTime.now(),
+      updatedBy: data['updated_by'] != null
+          ? UserModel.fromJson(data['updated_by'])
+          : null,
+      createdAt: data['created_at'] != null
+          ? DateTime.parse(data['created_at'])
+          : DateTime.now(),
+      createdBy: data['created_by'] != null
+          ? UserModel.fromJson(data['created_by'])
+          : null,
+      owner: data['owner'] != null ? UserModel.fromJson(data['owner']) : null,
     );
   }
 
@@ -71,11 +68,15 @@ class TypeModel extends Type {
       "status": status,
       "type_name": typeName,
       "disabled": disabled,
-      "updated_at": updatedAt.toIso8601String(),
-      "updated_by": updatedBy,
+      "updated_at": updatedAt?.toIso8601String(),
+      "updated_by": updatedBy != null
+          ? (updatedBy as UserModel).toJson()
+          : null,
       "created_at": createdAt.toIso8601String(),
-      "created_by": createdBy,
-      "owner": owner,
+      "created_by": createdBy != null
+          ? (createdBy as UserModel).toJson()
+          : null,
+      "owner": owner != null ? (owner as UserModel).toJson() : null,
     };
   }
 
