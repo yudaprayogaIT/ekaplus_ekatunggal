@@ -7,6 +7,7 @@ import '../widgets/location_card.dart';
 import '../widgets/category_list.dart';
 import '../widgets/section_with_products.dart';
 import '../../../banner/domain/entities/bannerslider.dart';
+import 'package:ekaplus_ekatunggal/features/type/presentation/widgets/type_category_list.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -76,11 +77,15 @@ class HomePage extends StatelessWidget {
                     SizedBox(
                       height: 240, // sesuaikan tinggi banner jika diperlukan
                       child: Stack(
-                        clipBehavior: Clip.none, // biarkan child yang overflow terlihat
+                        clipBehavior:
+                            Clip.none, // biarkan child yang overflow terlihat
                         children: [
                           // Layer banner/slider (mengisi seluruh area)
                           Positioned.fill(
-                            child: HomeSliderWidget(banners: banners, enableTap: isMember),
+                            child: HomeSliderWidget(
+                              banners: banners,
+                              enableTap: isMember,
+                            ),
                           ),
 
                           // Layer overlay: searchbar dan location card
@@ -88,7 +93,8 @@ class HomePage extends StatelessWidget {
                           Positioned(
                             left: 16,
                             right: 16,
-                            bottom: -78, // atur nilai ini (negatif) untuk efek menonjol
+                            bottom:
+                                -78, // atur nilai ini (negatif) untuk efek menonjol
                             child: Column(
                               children: const [
                                 HomeSearchBar(),
@@ -107,12 +113,13 @@ class HomePage extends StatelessWidget {
                     // -------------------------
                     // Sisa konten halaman
                     // -------------------------
+                    TypeCategoryList(),
+                    // CategoryList(),
                     const Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          CategoryList(),
                           SizedBox(height: 14),
                           SectionWithProducts(
                             title: 'Yang Baru Dari Kami 🔥',
