@@ -1,10 +1,10 @@
 import 'package:ekaplus_ekatunggal/features/home/presentation/widgets/home_slider_widget.dart';
 import 'package:flutter/material.dart';
 import '../../../../core/shared_widgets/profile_header.dart';
-import '../../../../core/shared_widgets/bottom_nav.dart'; // tidak dipakai di sini, tapi tetap disertakan untuk struktur
+// import '../../../../core/shared_widgets/bottom_nav.dart'; // tidak dipakai di sini, tapi tetap disertakan untuk struktur
 import '../widgets/search_bar.dart';
 import '../widgets/location_card.dart';
-import '../widgets/category_list.dart';
+import '../widgets/typeCategory_list.dart';
 import '../widgets/section_with_products.dart';
 import '../../../banner/domain/entities/bannerslider.dart';
 // import 'package:ekaplus_ekatunggal/features/type/presentation/widgets/type_category_list.dart';
@@ -115,7 +115,6 @@ class HomePage extends StatelessWidget {
                     // -------------------------
                     // const SizedBox(height: 10),
                     TypeCategoryList(),
-                    // CategoryList(),
                     const Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16),
                       child: Column(
