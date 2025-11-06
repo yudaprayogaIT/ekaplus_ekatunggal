@@ -1,21 +1,21 @@
-// // lib/features/type/data/datasources/type_remote_datasource.dart
+// // lib/features/category/data/datasources/category_remote_datasource.dart
 
 import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
 // import 'package:ekaplus_ekatunggal/core/constants.dart';
-import 'package:ekaplus_ekatunggal/features/type/data/models/type_model.dart';
-import 'package:ekaplus_ekatunggal/features/type/domain/entities/type.dart';
+import 'package:ekaplus_ekatunggal/features/category/data/models/category_model.dart';
+import 'package:ekaplus_ekatunggal/features/category/domain/entities/category.dart';
 import 'package:http/http.dart' as http;
 
-abstract class TypeRemoteDatasource {
-  Future<List<Type>> getAllType(int page);
-  Future<Type> getType(String id);
+abstract class CategoryRemoteDatasource {
+  Future<List<Category>> getAllCategory(int page);
+  Future<Category> getCategory(String id);
 }
 
-class TypeRemoteDatasourceImplementation extends TypeRemoteDatasource {
+class CategoryRemoteDatasourceImplementation extends CategoryRemoteDatasource {
   final http.Client client;
 
-  TypeRemoteDatasourceImplementation({required this.client});
+  CategoryRemoteDatasourceImplementation({required this.client});
 
   // List<List<String>> isFilters = [
   //   ["parent_tree", "=", ""],
@@ -23,12 +23,12 @@ class TypeRemoteDatasourceImplementation extends TypeRemoteDatasource {
   // ];
 
   @override
-  Future<List<Type>> getAllType(int page) async {
+  Future<List<Category>> getAllCategory(int page) async {
 
     // API DEVELOPMENT ambil dari JSON nanti hapus saat deployment
     // load dari asset lokal
     final String body = await rootBundle.loadString(
-      'assets/data/itemType.json',
+      'assets/data/itemCategories.json',
     );
     final dynamic decoded = jsonDecode(body);
 
@@ -37,8 +37,9 @@ class TypeRemoteDatasourceImplementation extends TypeRemoteDatasource {
         ? decoded
         : (decoded['data'] ?? []);
 
-    List<TypeModel> result = TypeModel.fromJsonList(data);
+    List<CategoryModel> result = CategoryModel.fromJsonList(data);
 
+    print(result);
     return result;
 
     // // panggilan API REAL pakai ini saat deployment
@@ -47,18 +48,18 @@ class TypeRemoteDatasourceImplementation extends TypeRemoteDatasource {
     // if (response.statusCode == 200) {
     //   final Map<String, dynamic> dataBody = jsonDecode(response.body);
     //   final List<dynamic> data = dataBody['data'] ?? [];
-    //   return TypeModel.fromJsonList(data);
+    //   return CategoryModel.fromJsonList(data);
     // } else {
     //   throw Exception("Cannot get data (status ${response.statusCode})");
     // }
   }
 
   @override
-  Future<Type> getType(String id) async {
+  Future<Category> getCategory(String id) async {
     // API DEVELOPMENT ambil dari JSON nanti hapus saat deployment
     // load dari asset lokal
     final String body = await rootBundle.loadString(
-      'assets/data/itemType.json',
+      'assets/data/itemCategories.json',
     );
     final dynamic decoded = jsonDecode(body);
     final List<dynamic> list = decoded is List
@@ -78,7 +79,7 @@ class TypeRemoteDatasourceImplementation extends TypeRemoteDatasource {
     if (found == null) {
       throw Exception("data not found");
     }
-    return TypeModel.fromJson(found);
+    return CategoryModel.fromJson(found);
 
     // // panggilan API REAL pakai ini saat deployment
     // final String encodedId = Uri.encodeComponent(id);
@@ -87,7 +88,7 @@ class TypeRemoteDatasourceImplementation extends TypeRemoteDatasource {
     // if (response.statusCode == 200) {
     //   final Map<String, dynamic> dataBody = jsonDecode(response.body);
     //   final Map<String, dynamic> data = dataBody['data'];
-    //   return TypeModel.fromJson(data);
+    //   return CategoryModel.fromJson(data);
     // } else if (response.statusCode == 404) {
     //   throw Exception("data not found");
     // } else {

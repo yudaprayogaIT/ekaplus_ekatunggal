@@ -28,7 +28,7 @@ class TypeCategoryList extends StatelessWidget {
             child: Center(
               child: Text(
                 state.message,
-                style: TextStyle(color: AppColors.primaryColor),
+                style: TextStyle(color: AppColors.primaryColor, fontFamily: AppFonts.primaryFont, fontWeight: FontWeight.w500, fontSize: 14),
               ),
             ),
           );
@@ -54,13 +54,13 @@ class TypeCategoryList extends StatelessWidget {
               children: [
                 // 🔹 Judul section
                 const Text(
-                  "Temukan Produk yang Anda Cari",
+                  "Temukan Produk Yang Anda Cari",
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                  style: TextStyle(fontFamily: AppFonts.primaryFont, fontWeight: FontWeight.w500, fontSize: 15),
                 ),
                 const SizedBox(height: 10),
                 SizedBox(
-                  height: 140,
+                  height: 115,
                   child: ListView.separated(
                     scrollDirection: Axis.horizontal,
                     itemCount: visible.length,
@@ -87,7 +87,7 @@ class TypeCategoryList extends StatelessWidget {
                                 textAlign: TextAlign.center,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(fontSize: 12),
+                                style: const TextStyle(fontSize: 10),
                               ),
                             ],
                           ),
@@ -105,7 +105,7 @@ class TypeCategoryList extends StatelessWidget {
                     'Lihat Semua',
                     style: TextStyle(
                       color: AppColors.primaryColor,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w500, fontSize: 12,
                     ),
                   ),
                 ),

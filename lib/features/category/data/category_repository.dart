@@ -5,7 +5,7 @@ import 'models/category_item.dart';
 class CategoryRepository {
   final String assetPath;
 
-  CategoryRepository({this.assetPath = 'assets/data/categories.json'});
+  CategoryRepository({this.assetPath = 'assets/data/itemCategories.json'});
 
   Future<List<CategoryItem>> loadAll() async {
     final jsonStr = await rootBundle.loadString(assetPath);

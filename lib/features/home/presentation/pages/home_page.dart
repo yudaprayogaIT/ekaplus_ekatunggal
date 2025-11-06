@@ -59,7 +59,7 @@ class HomePage extends StatelessWidget {
           children: [
             // Header profil
             Container(
-              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              margin: const EdgeInsets.only(left: 16, right: 16, top: 12),
               child: ProfileHeader(name: isMember ? 'Development' : null),
             ),
 
@@ -108,12 +108,12 @@ class HomePage extends StatelessWidget {
                     ),
 
                     // Beri ruang kompensasi agar konten selanjutnya tidak tertutup oleh overlay
-                    const SizedBox(height: 90),
+                    const SizedBox(height: 85),
 
                     // -------------------------
                     // Sisa konten halaman
                     // -------------------------
-                    const SizedBox(height: 10),
+                    // const SizedBox(height: 10),
                     TypeCategoryList(),
                     // CategoryList(),
                     const Padding(

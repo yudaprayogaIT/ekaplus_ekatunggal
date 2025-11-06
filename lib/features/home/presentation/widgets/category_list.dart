@@ -139,7 +139,7 @@ class CategoryList extends StatelessWidget {
   }
 }
 
-/// Modal yang mem-fetch data dari assets/data/categories.json melalui CategoryRepository
+/// Modal yang mem-fetch data dari assets/data/ melalui CategoryRepository
 class AllCategoriesModal extends StatefulWidget {
   const AllCategoriesModal({super.key});
 

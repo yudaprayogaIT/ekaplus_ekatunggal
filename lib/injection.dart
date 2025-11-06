@@ -1,4 +1,10 @@
 
+import 'package:ekaplus_ekatunggal/features/category/data/datasources/category_remote_datasource.dart';
+import 'package:ekaplus_ekatunggal/features/category/data/repositories/category_repository_implementation.dart';
+import 'package:ekaplus_ekatunggal/features/category/domain/repositories/category_repository.dart';
+import 'package:ekaplus_ekatunggal/features/category/domain/usecases/get_all_category.dart';
+import 'package:ekaplus_ekatunggal/features/category/domain/usecases/get_category.dart';
+import 'package:ekaplus_ekatunggal/features/category/presentation/bloc/category_bloc.dart';
 import 'package:ekaplus_ekatunggal/features/type/data/datasources/type_remote_datasource.dart';
 import 'package:ekaplus_ekatunggal/features/type/data/repositories/type_repository_implementation.dart';
 import 'package:ekaplus_ekatunggal/features/type/domain/repositories/type_repository.dart';
@@ -30,6 +36,12 @@ Future<void> init() async {
       getType: myinjection(),
     ),
   );
+  myinjection.registerFactory(
+    () => CategoryBloc(
+      getAllCategory: myinjection(),
+      getCategory: myinjection(),
+    ),
+  );
   
 
   // USECASE
@@ -43,6 +55,16 @@ Future<void> init() async {
       myinjection(),
     ),
   );
+  myinjection.registerLazySingleton(
+    () => GetAllCategory(
+      myinjection(),
+    ),
+  );
+  myinjection.registerLazySingleton(
+    () => GetCategory(
+      myinjection(),
+    ),
+  );
 
 
   // REPOSITORY
@@ -51,11 +73,21 @@ Future<void> init() async {
       typeRemoteDatasource: myinjection(),
     ),
   );
+  myinjection.registerLazySingleton<CategoryRepository>(
+    () => CategoryRepositoryImplementation(
+      categoryRemoteDatasource: myinjection(),
+    ),
+  );
 
 
   // DATA SOURCE
   myinjection.registerLazySingleton<TypeRemoteDatasource>(
     () => TypeRemoteDatasourceImplementation(
+      client: myinjection(),
+    ),
+  );
+  myinjection.registerLazySingleton<CategoryRemoteDatasource>(
+    () => CategoryRemoteDatasourceImplementation(
       client: myinjection(),
     ),
   );

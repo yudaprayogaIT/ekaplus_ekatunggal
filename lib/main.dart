@@ -2,6 +2,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:ekaplus_ekatunggal/constant.dart';
 import 'package:ekaplus_ekatunggal/cubit/connection_status_cubit.dart';
+import 'package:ekaplus_ekatunggal/features/category/presentation/bloc/category_bloc.dart';
 import 'package:ekaplus_ekatunggal/features/type/presentation/bloc/type_bloc.dart';
 import 'package:ekaplus_ekatunggal/injection.dart';
 import 'package:ekaplus_ekatunggal/observer.dart';
@@ -44,6 +45,7 @@ class EkaplusApp extends StatelessWidget {
           create: (context) => ConnectionCubit()..startMonitoringConnection(),
         ),
         BlocProvider(create: (context) => myinjection<TypeBloc>()),
+        BlocProvider(create: (context) => myinjection<CategoryBloc>()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
