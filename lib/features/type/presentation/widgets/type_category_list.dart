@@ -1,4 +1,6 @@
+// lib/features/type/presentation/widgets/type_category_list.dart
 import 'package:ekaplus_ekatunggal/constant.dart';
+import 'package:ekaplus_ekatunggal/features/category/presentation/widgets/category_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ekaplus_ekatunggal/features/type/domain/entities/type.dart';
@@ -28,7 +30,12 @@ class TypeCategoryList extends StatelessWidget {
             child: Center(
               child: Text(
                 state.message,
-                style: TextStyle(color: AppColors.primaryColor, fontFamily: AppFonts.primaryFont, fontWeight: FontWeight.w500, fontSize: 14),
+                style: TextStyle(
+                  color: AppColors.primaryColor,
+                  fontFamily: AppFonts.primaryFont,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 14,
+                ),
               ),
             ),
           );
@@ -49,14 +56,17 @@ class TypeCategoryList extends StatelessWidget {
                 fit: BoxFit.cover,
               ),
             ),
-            // padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Column(
               children: [
                 // 🔹 Judul section
                 const Text(
                   "Temukan Produk Yang Anda Cari",
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontFamily: AppFonts.primaryFont, fontWeight: FontWeight.w500, fontSize: 15),
+                  style: TextStyle(
+                    fontFamily: AppFonts.primaryFont,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 15,
+                  ),
                 ),
                 const SizedBox(height: 10),
                 SizedBox(
@@ -69,16 +79,22 @@ class TypeCategoryList extends StatelessWidget {
                       final Type item = visible[index];
 
                       return GestureDetector(
-                        onTap: () {},
-                        // Batasi lebar tiap item agar tidak melebihi ukuran gambar
+                        onTap: () {
+                          // Buka modal category dengan filter type
+                          showCategoryModal(context);
+                        },
                         child: SizedBox(
-                          width: 72, // <-- buat fixed item width (kecilkan sesuai kebutuhan)
+                          width: 72,
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Container(
                                 width: 60,
                                 height: 60,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.shade100,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
                                 child: _buildTypeImage(item),
                               ),
                               const SizedBox(height: 8),
@@ -87,7 +103,11 @@ class TypeCategoryList extends StatelessWidget {
                                 textAlign: TextAlign.center,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(fontSize: 10),
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontFamily: AppFonts.primaryFont,
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
                             ],
                           ),
@@ -96,16 +116,26 @@ class TypeCategoryList extends StatelessWidget {
                     },
                   ),
                 ),
-                // const SizedBox(height: 8),
+                const SizedBox(height: 4),
+                // Button "Lihat Semua"
                 GestureDetector(
                   onTap: () {
-                    // TODO: navigasi ke layar semua kategori / products
+                    // 🎯 BUKA MODAL CATEGORY
+                    showCategoryModalWithCustomAnimation(context);
                   },
-                  child: Text(
-                    'Lihat Semua',
-                    style: TextStyle(
-                      color: AppColors.primaryColor,
-                      fontWeight: FontWeight.w500, fontSize: 12,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 6,
+                    ),
+                    child: Text(
+                      'Lihat Semua',
+                      style: TextStyle(
+                        color: AppColors.primaryColor,
+                        fontFamily: AppFonts.primaryFont,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 12,
+                      ),
                     ),
                   ),
                 ),
@@ -119,7 +149,7 @@ class TypeCategoryList extends StatelessWidget {
     );
   }
 
-   Widget _buildTypeImage(Type item) {
+  Widget _buildTypeImage(Type item) {
     final String? imgPath = item.image;
 
     if (imgPath == null || imgPath.isEmpty) {
@@ -143,7 +173,14 @@ class TypeCategoryList extends StatelessWidget {
 
     // Local asset (png/jpg/webp) -> Image.asset
     if (!imgPath.toLowerCase().endsWith('.svg')) {
-      return Image.asset(imgPath, fit: BoxFit.contain);
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Image.asset(
+          imgPath,
+          fit: BoxFit.contain,
+          errorBuilder: (_, __, ___) => const Icon(Icons.category, size: 36),
+        ),
+      );
     }
 
     // Jika file SVG lokal:

@@ -2,7 +2,7 @@
   {
     "id": 1,
     "name": "HDP",
-    "image": "assets/images/kategori.png",
+    "image": "assets/images/kategori/hdp.png",
     "description": "Pelapis rakitan per dengan busa",
     "type": {"id": 1, "name": "Material Springbed"},
     "docstatus": 1,
@@ -17,7 +17,7 @@
   {
     "id": 2,
     "name": "Quilting",
-    "image": "assets/images/kategori.png",
+    "image": "assets/images/kategori/quilting.png",
     "description": "Tekstur timbul dan tampilan yang elegan",
     "type": {"id": 1, "name": "Material Springbed"},
     "docstatus": 1,
@@ -32,7 +32,7 @@
   {
     "id": 3,
     "name": "Kain Polos Springbed",
-    "image": "assets/images/kategori.png",
+    "image": "assets/images/kategori/kp_springbed.png",
     "description": "Lapisan luar pembungkus bagian atas kasur",
     "type": {"id": 1, "name": "Material Springbed"},
     "docstatus": 1,
@@ -47,7 +47,7 @@
   {
     "id": 4,
     "name": "Percoil",
-    "image": "assets/images/kategori.png",
+    "image": "assets/images/kategori/percoil.png",
     "description": "Memberikan daya topang pada tubuh saat tidur",
     "type": {"id": 1, "name": "Material Springbed"},
     "docstatus": 1,
@@ -62,7 +62,7 @@
   {
     "id": 5,
     "name": "Pita List",
-    "image": "assets/images/kategori.png",
+    "image": "assets/images/kategori/pita_list.png",
     "description": "Penutup pinggiran kasur ",
     "type": {"id": 1, "name": "Material Springbed"},
     "docstatus": 1,
@@ -78,7 +78,7 @@
   {
     "id": 6,
     "name": "Kain Polos Sofa",
-    "image": "assets/images/kategori.png",
+    "image": "assets/images/kategori/kp_sofa.png",
     "description": "Bahan pelapis sofa yang elegan",
     "type": {"id": 2, "name": "Material Sofa"},
     "docstatus": 1,
@@ -90,26 +90,11 @@
     "created_by": { "id": 1,"name": "Admin"},
     "owner": { "id": 1,"name": "Admin"}
   },
-  {
-    "id": 7,
-    "name": "HDP",
-    "image": "assets/images/kategori.png",
-    "description": "Pelapis rakitan per dengan busa",
-    "type": {"id": 1, "name": "Material Springbed"},
-    "docstatus": 1,
-    "status": "Enabled",
-    "disabled": 0,
-    "updated_at": "2025-11-04T15:01:32+07:00",
-    "updated_by": { "id": 1,"name": "Admin"},
-    "created_at": "2025-11-04T15:01:32+07:00",
-    "created_by": { "id": 1,"name": "Admin"},
-    "owner": { "id": 1,"name": "Admin"}
-  },
 
   {
-    "id": 8,
+    "id": 7,
     "name": "Aksesories",
-    "image": "assets/images/kategori.png",
+    "image": "assets/images/kategori/acc.png",
     "description": "Komponen pelengkap menambah nilai estetika",
     "type": {"id": 3, "name": "Material Springbed & Sofa"},
     "docstatus": 1,
@@ -122,9 +107,9 @@
     "owner": { "id": 1,"name": "Admin"}
   },
   {
-    "id": 9,
+    "id": 8,
     "name": "Bahan Kimia",
-    "image": "assets/images/kategori.png",
+    "image": "assets/images/kategori/bk.png",
     "description": "Menjaga agar tahan dalam jangka panjang",
     "type": {"id": 3, "name": "Material Springbed & Sofa"},
     "docstatus": 1,
@@ -137,9 +122,9 @@
     "owner": { "id": 1,"name": "Admin"}
   },
   {
-    "id": 10,
+    "id": 9,
     "name": "Busa",
-    "image": "assets/images/kategori.png",
+    "image": "assets/images/kategori/busa.png",
     "description": "Menjaga bentuk dan kenyamanan produk",
     "type": {"id": 3, "name": "Material Springbed & Sofa"},
     "docstatus": 1,
@@ -152,9 +137,9 @@
     "owner": { "id": 1,"name": "Admin"}
   },
   {
-    "id": 11,
+    "id": 10,
     "name": "Kawat",
-    "image": "assets/images/kategori.png",
+    "image": "assets/images/kategori/kawat.png",
     "description": "Penyambung dan penguat struktur",
     "type": {"id": 3, "name": "Material Springbed & Sofa"},
     "docstatus": 1,
@@ -167,9 +152,24 @@
     "owner": { "id": 1,"name": "Admin"}
   },
   {
-    "id": 12,
+    "id": 11,
     "name": "Non Woven",
-    "image": "assets/images/kategori.png",
+    "image": "assets/images/kategori/non_woven.png",
+    "description": "Lapisan pelindung antara busa dan kain",
+    "type": {"id": 3, "name": "Material Springbed & Sofa"},
+    "docstatus": 1,
+    "status": "Enabled",
+    "disabled": 0,
+    "updated_at": "2025-11-04T15:01:32+07:00",
+    "updated_by": { "id": 1,"name": "Admin"},
+    "created_at": "2025-11-04T15:01:32+07:00",
+    "created_by": { "id": 1,"name": "Admin"},
+    "owner": { "id": 1,"name": "Admin"}
+  },
+  {
+    "id": 12,
+    "name": "Plastik",
+    "image": "assets/images/kategori/plastik.png",
     "description": "Lapisan pelindung antara busa dan kain",
     "type": {"id": 3, "name": "Material Springbed & Sofa"},
     "docstatus": 1,
@@ -183,23 +183,8 @@
   },
   {
     "id": 13,
-    "name": "Plastik",
-    "image": "assets/images/kategori.png",
-    "description": "Lapisan pelindung antara busa dan kain",
-    "type": {"id": 3, "name": "Material Springbed & Sofa"},
-    "docstatus": 1,
-    "status": "Enabled",
-    "disabled": 0,
-    "updated_at": "2025-11-04T15:01:32+07:00",
-    "updated_by": { "id": 1,"name": "Admin"},
-    "created_at": "2025-11-04T15:01:32+07:00",
-    "created_by": { "id": 1,"name": "Admin"},
-    "owner": { "id": 1,"name": "Admin"}
-  },
-  {
-    "id": 14,
     "name": "Stapless",
-    "image": "assets/images/kategori.png",
+    "image": "assets/images/kategori/stapless.png",
     "description": "Lapisan pelindung antara busa dan kain",
     "type": {"id": 3, "name": "Material Springbed & Sofa"},
     "docstatus": 1,
@@ -213,9 +198,9 @@
   },
 
   {
-    "id": 15,
+    "id": 14,
     "name": "Other",
-    "image": "assets/images/kategori.png",
+    "image": "assets/images/kategori/oth.png",
     "description": "Alat dan komponen pelengkap",
     "type": {"id": 4, "name": "Mesin & Sparepart"},
     "docstatus": 1,
@@ -229,9 +214,9 @@
   },
 
   {
-    "id": 16,
+    "id": 15,
     "name": "Kasur",
-    "image": "assets/images/kategori.png",
+    "image": "assets/images/kategori/kasur.png",
     "description": "Alas tidur dengan material unggulan",
     "type": {"id": 5, "name": "Furniture"},
     "docstatus": 1,
@@ -244,9 +229,9 @@
     "owner": { "id": 1,"name": "Admin"}
   },
   {
-    "id": 17,
+    "id": 16,
     "name": "Kitchen",
-    "image": "assets/images/kategori.png",
+    "image": "assets/images/kategori/kitchen.png",
     "description": "Furniture dapur yang elegan dan estetik",
     "type": {"id": 5, "name": "Furniture"},
     "docstatus": 1,
@@ -259,9 +244,9 @@
     "owner": { "id": 1,"name": "Admin"}
   },
   {
-    "id": 18,
+    "id": 17,
     "name": "Lemari",
-    "image": "assets/images/kategori.png",
+    "image": "assets/images/kategori/lemari.png",
     "description": "Kombinasi kekuatan struktur dan estetika",
     "type": {"id": 5, "name": "Furniture"},
     "docstatus": 1,
@@ -274,9 +259,9 @@
     "owner": { "id": 1,"name": "Admin"}
   },
   {
-    "id": 19,
+    "id": 18,
     "name": "Kursi",
-    "image": "assets/images/kategori.png",
+    "image": "assets/images/kategori/kursi.png",
     "description": "Tempat duduk yang nyaman dan kokoh",
     "type": {"id": 5, "name": "Furniture"},
     "docstatus": 1,
@@ -289,9 +274,9 @@
     "owner": { "id": 1,"name": "Admin"}
   },
   {
-    "id": 20,
+    "id": 19,
     "name": "Meja",
-    "image": "assets/images/kategori.png",
+    "image": "assets/images/kategori/meja.png",
     "description": "Elemen penting dari interior",
     "type": {"id": 5, "name": "Furniture"},
     "docstatus": 1,
@@ -304,9 +289,9 @@
     "owner": { "id": 1,"name": "Admin"}
   },
   {
-    "id": 21,
+    "id": 20,
     "name": "Rak",
-    "image": "assets/images/kategori.png",
+    "image": "assets/images/kategori/rak.png",
     "description": "Tempat menyimpan barang",
     "type": {"id": 5, "name": "Furniture"},
     "docstatus": 1,

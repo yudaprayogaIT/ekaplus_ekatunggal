@@ -39,6 +39,7 @@ class TypeRemoteDatasourceImplementation extends TypeRemoteDatasource {
 
     List<TypeModel> result = TypeModel.fromJsonList(data);
 
+    // print(result);
     return result;
 
     // // panggilan API REAL pakai ini saat deployment

@@ -39,7 +39,7 @@ class CategoryRemoteDatasourceImplementation extends CategoryRemoteDatasource {
 
     List<CategoryModel> result = CategoryModel.fromJsonList(data);
 
-    print(result);
+    // print(result);
     return result;
 
     // // panggilan API REAL pakai ini saat deployment

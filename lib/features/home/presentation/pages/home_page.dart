@@ -7,7 +7,7 @@ import '../widgets/location_card.dart';
 import '../widgets/category_list.dart';
 import '../widgets/section_with_products.dart';
 import '../../../banner/domain/entities/bannerslider.dart';
-import 'package:ekaplus_ekatunggal/features/type/presentation/widgets/type_category_list.dart';
+// import 'package:ekaplus_ekatunggal/features/type/presentation/widgets/type_category_list.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
