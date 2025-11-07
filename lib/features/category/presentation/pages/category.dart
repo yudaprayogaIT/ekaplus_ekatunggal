@@ -290,7 +290,7 @@ class _CategoryTile extends StatelessWidget {
           ],
         ),
         child: Stack(
-          fit: StackFit.expand,
+          fit: StackFit.loose,
           children: [
             // Image background (full cover)
             _buildCategoryImage(category),

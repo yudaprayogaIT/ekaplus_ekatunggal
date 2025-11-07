@@ -5,6 +5,12 @@ import 'package:ekaplus_ekatunggal/features/category/domain/repositories/categor
 import 'package:ekaplus_ekatunggal/features/category/domain/usecases/get_all_category.dart';
 import 'package:ekaplus_ekatunggal/features/category/domain/usecases/get_category.dart';
 import 'package:ekaplus_ekatunggal/features/category/presentation/bloc/category_bloc.dart';
+import 'package:ekaplus_ekatunggal/features/product/data/datasources/product_remote_datasource.dart';
+import 'package:ekaplus_ekatunggal/features/product/data/repositories/product_repository_implementation.dart';
+import 'package:ekaplus_ekatunggal/features/product/domain/repositories/product_repository.dart';
+import 'package:ekaplus_ekatunggal/features/product/domain/usecases/get_all_product.dart';
+import 'package:ekaplus_ekatunggal/features/product/domain/usecases/get_product.dart';
+import 'package:ekaplus_ekatunggal/features/product/presentation/bloc/product_bloc.dart';
 import 'package:ekaplus_ekatunggal/features/type/data/datasources/type_remote_datasource.dart';
 import 'package:ekaplus_ekatunggal/features/type/data/repositories/type_repository_implementation.dart';
 import 'package:ekaplus_ekatunggal/features/type/domain/repositories/type_repository.dart';
@@ -42,6 +48,12 @@ Future<void> init() async {
       getCategory: myinjection(),
     ),
   );
+  myinjection.registerFactory(
+    () => ProductBloc(
+      getAllProduct: myinjection(),
+      getProduct: myinjection(),
+    ),
+  );
   
 
   // USECASE
@@ -65,6 +77,16 @@ Future<void> init() async {
       myinjection(),
     ),
   );
+  myinjection.registerLazySingleton(
+    () => GetAllProduct(
+      myinjection(),
+    ),
+  );
+  myinjection.registerLazySingleton(
+    () => GetProduct(
+      myinjection(),
+    ),
+  );
 
 
   // REPOSITORY
@@ -78,6 +100,11 @@ Future<void> init() async {
       categoryRemoteDatasource: myinjection(),
     ),
   );
+  myinjection.registerLazySingleton<ProductRepository>(
+    () => ProductRepositoryImplementation(
+      productRemoteDatasource: myinjection(),
+    ),
+  );
 
 
   // DATA SOURCE
@@ -88,6 +115,11 @@ Future<void> init() async {
   );
   myinjection.registerLazySingleton<CategoryRemoteDatasource>(
     () => CategoryRemoteDatasourceImplementation(
+      client: myinjection(),
+    ),
+  );
+  myinjection.registerLazySingleton<ProductRemoteDatasource>(
+    () => ProductRemoteDatasourceImplementation(
       client: myinjection(),
     ),
   );
