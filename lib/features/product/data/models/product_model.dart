@@ -5,7 +5,10 @@ class CategoryModel extends CategoryEntity {
   const CategoryModel({required super.id, required super.name});
 
   factory CategoryModel.fromJson(Map<String, dynamic> json) {
-    return CategoryModel(id: json['id'] ?? 0, name: json['name'] ?? '');
+    return CategoryModel(
+      id: json['id'] ?? 0, 
+      name: json['name'] ?? ''
+    );
   }
 
   Map<String, dynamic> toJson() {
@@ -31,7 +34,12 @@ class VariantModel extends VariantEntity {
   }
 
   Map<String, dynamic> toJson() {
-    return {'id': id, 'name': name, code: 'code', image: 'image'};
+    return {
+      'id': id, 
+      'name': name, 
+      'code': code, // ⚠️ Perbaiki: tadinya 'code': 'code' (hardcoded string)
+      'image': image // ⚠️ Perbaiki: tadinya 'image': 'image'
+    };
   }
 }
 
@@ -40,23 +48,27 @@ class ProductModel extends Product {
     required super.id,
     required super.name,
     super.category,
-    super.variant,
+    super.variants = const [], // ⚠️ Ubah jadi List
     super.disabled = 0,
   });
 
-  factory ProductModel.fromJson(Map<String, dynamic> dataJson) {
-    Map<String, dynamic> data = dataJson;
+  factory ProductModel.fromJson(Map<String, dynamic> json) {
+    // ⚠️ Parse array variants
+    List<VariantModel> variantsList = [];
+    if (json['variants'] != null && json['variants'] is List) {
+      variantsList = (json['variants'] as List)
+          .map((v) => VariantModel.fromJson(v))
+          .toList();
+    }
 
     return ProductModel(
-      id: data['id'] ?? 0,
-      name: data['name'] ?? '',
-      category: data['category'] != null
-          ? CategoryModel.fromJson(data['category'])
+      id: json['id'] ?? 0,
+      name: json['name'] ?? '',
+      category: json['category'] != null
+          ? CategoryModel.fromJson(json['category'])
           : null,
-      variant: data['variant'] != null
-          ? VariantModel.fromJson(data['variant'])
-          : null,
-      disabled: data['disabled'] ?? 0,
+      variants: variantsList, // ⚠️ Assign list
+      disabled: json['disabled'] ?? 0,
     );
   }
 
@@ -67,7 +79,9 @@ class ProductModel extends Product {
       "category": category != null
           ? (category as CategoryModel).toJson()
           : null,
-      "variant": variant != null ? (variant as VariantModel).toJson() : null,
+      "variants": variants // ⚠️ Ubah jadi variants (plural)
+          .map((v) => (v as VariantModel).toJson())
+          .toList(),
       "disabled": disabled,
     };
   }
@@ -75,7 +89,7 @@ class ProductModel extends Product {
   static List<ProductModel> fromJsonList(List data) {
     if (data.isEmpty) return [];
     return data
-        .map((singleDataItem) => ProductModel.fromJson(singleDataItem))
+        .map((item) => ProductModel.fromJson(item))
         .toList();
   }
 }

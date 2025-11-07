@@ -10,6 +10,7 @@ import 'package:ekaplus_ekatunggal/features/product/data/repositories/product_re
 import 'package:ekaplus_ekatunggal/features/product/domain/repositories/product_repository.dart';
 import 'package:ekaplus_ekatunggal/features/product/domain/usecases/get_all_product.dart';
 import 'package:ekaplus_ekatunggal/features/product/domain/usecases/get_product.dart';
+import 'package:ekaplus_ekatunggal/features/product/domain/usecases/get_variant.dart';
 import 'package:ekaplus_ekatunggal/features/product/presentation/bloc/product_bloc.dart';
 import 'package:ekaplus_ekatunggal/features/type/data/datasources/type_remote_datasource.dart';
 import 'package:ekaplus_ekatunggal/features/type/data/repositories/type_repository_implementation.dart';
@@ -52,6 +53,7 @@ Future<void> init() async {
     () => ProductBloc(
       getAllProduct: myinjection(),
       getProduct: myinjection(),
+      getVariant: myinjection()
     ),
   );
   
@@ -84,6 +86,11 @@ Future<void> init() async {
   );
   myinjection.registerLazySingleton(
     () => GetProduct(
+      myinjection(),
+    ),
+  );
+  myinjection.registerLazySingleton(
+    () => GetVariant(
       myinjection(),
     ),
   );

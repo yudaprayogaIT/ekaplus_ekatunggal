@@ -45,6 +45,7 @@ flutter:
     - assets/data/
     - assets/fonts/
     - assets/images/
+    - assets/images/items/
     - assets/images/type/
     - assets/images/banner/
     - assets/images/kategori/

@@ -6,4 +6,5 @@ import 'package:ekaplus_ekatunggal/features/product/domain/entities/product.dart
 abstract class ProductRepository {
   Future<Either<Failure, List<Product>>> getAllProduct(int page);
   Future<Either<Failure, Product>> getProduct(String id);
+  Future<Either<Failure, VariantEntity?>> getVariant(String variantId); // ⚠️ TAMBAH
 }

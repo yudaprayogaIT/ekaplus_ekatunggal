@@ -1,11 +1,11 @@
 import 'package:ekaplus_ekatunggal/features/home/presentation/widgets/home_slider_widget.dart';
+import 'package:ekaplus_ekatunggal/features/product/presentation/widgets/section_with_product.dart';
 import 'package:flutter/material.dart';
 import '../../../../core/shared_widgets/profile_header.dart';
 // import '../../../../core/shared_widgets/bottom_nav.dart'; // tidak dipakai di sini, tapi tetap disertakan untuk struktur
 import '../widgets/search_bar.dart';
 import '../widgets/location_card.dart';
 import '../widgets/typeCategory_list.dart';
-import '../widgets/section_with_products.dart';
 import '../../../banner/domain/entities/bannerslider.dart';
 // import 'package:ekaplus_ekatunggal/features/type/presentation/widgets/type_category_list.dart';
 
@@ -115,33 +115,9 @@ class HomePage extends StatelessWidget {
                     // -------------------------
                     // const SizedBox(height: 10),
                     TypeCategoryList(),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(height: 14),
-                          SectionWithProducts(
-                            title: 'Yang Baru Dari Kami 🔥',
-                            chips: [
-                              'Kain Polos Sofa',
-                              'Aksesoris Kaki',
-                              'Pita List',
-                            ],
-                          ),
-                          SizedBox(height: 14),
-                          SectionWithProducts(
-                            title: 'Jangan Kehabisan Produk Terlaris 😋',
-                            chips: [
-                              'Kain Polos Sofa',
-                              'Aksesoris Kaki',
-                              'Pita List',
-                            ],
-                          ),
-                          SizedBox(height: 60),
-                        ],
-                      ),
-                    ),
+                    SectionWithProducts(title: 'Yang Baru Dari Kami 🔥'),
+                    SectionWithProducts(title: 'Jangan Kehabisan Produk Terlaris 🤩'),
+                    
                   ],
                 ),
               ),

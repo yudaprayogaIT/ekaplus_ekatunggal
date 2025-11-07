@@ -17,7 +17,12 @@ class VariantEntity extends Equatable {
   final String code;
   final String image;
 
-  const VariantEntity({required this.id, required this.name, required this.code, this.image = ""});
+  const VariantEntity({
+    required this.id, 
+    required this.name, 
+    required this.code, 
+    this.image = ""
+  });
 
   @override
   List<Object?> get props => [id, name, code, image];
@@ -27,24 +32,17 @@ class Product extends Equatable {
   final int id;
   final String name;
   final CategoryEntity? category;
-  final VariantEntity? variant;
-  final int? disabled;
-  
+  final List<VariantEntity> variants; // ⚠️ Ubah jadi List
+  final int disabled;
 
   const Product({
     required this.id,
     required this.name,
-    required this.category,
-    required this.variant,
-    this.disabled
+    this.category,
+    this.variants = const [], // ⚠️ Default empty list
+    this.disabled = 0,
   });
 
   @override
-  List<Object?> get props => [
-    id,
-    name,
-    category,
-    variant,
-    disabled,
-  ];
+  List<Object?> get props => [id, name, category, variants, disabled];
 }
