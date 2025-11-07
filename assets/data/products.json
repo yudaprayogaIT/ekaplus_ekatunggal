@@ -1,0 +1,152 @@
+[
+  {
+    "id": 1,
+    "name": "ACC Bed Baut Sakura",
+    "category": { "id": 7, "name": "Aksesories" },
+    "variants": [
+      {
+        "id": 1,
+        "name": "ACC BED BAUT SAKURA BESAR 5 CM",
+        "code": "0010010000107",
+        "image": "/images/items/ACC BED BAUT SAKURA BESAR 5 CM.png"
+      },
+      {
+        "id": 2,
+        "name": "ACC BED BAUT SAKURA BESAR 7 CM",
+        "code": "0010010000044",
+        "image": "/images/items/ACC BED BAUT SAKURA BESAR 7 CM.jpg"
+      },
+      {
+        "id": 3,
+        "name": "ACC BED BAUT SAKURA KECIL",
+        "code": "0010010000054",
+        "image": "/images/items/ACC BED BAUT SAKURA KECIL.jpg"
+      }
+    ],
+    "disabled": 0
+  },
+  {
+    "id": 2,
+    "name": "ACC Bed Lobang Angin",
+    "category": { "id": 7, "name": "Aksesories" },
+    "variants": [
+      {
+        "id": 4,
+        "code": "0010030110000",
+        "name": "ACC BED LOBANG ANGIN PUTIH CREAM",
+        "image": "/images/items/ACC BED LOBANG ANGIN PUTIH CREAM.jpg"
+      },
+      {
+        "id": 5,
+        "code": "0010036009047",
+        "name": "ACC BED LOBANG ANGIN EMAS HITAM COMFORT SLEEP",
+        "image": "/images/items/ACC BED LOBANG ANGIN EMAS HITAM.jpeg"
+      },
+      {
+        "id": 6,
+        "code": "0010030157000",
+        "name": "ACC BED LOBANG ANGIN PUTIH BIRU",
+        "image": "/images/items/ACC BED LOBANG ANGIN PUTIH BIRU.jpg"
+      }
+    ],
+    "disabled": 0
+  },
+  {
+    "id": 3,
+    "name": "ACC Sofa Engsel",
+    "category": { "id": 7, "name": "Aksesories" },
+    "variants": [
+      {
+        "id": 7,
+        "code": "0010240000042",
+        "name": "ACC SOFA ENGSEL BESAR",
+        "image": "/images/items/ACC SOFA ENGSEL BESAR.jpg"
+      },
+      {
+        "id": 8,
+        "code": "0010240000054",
+        "name": "ACC SOFA ENGSEL KECIL",
+        "image": "/images/items/ACC SOFA ENGSEL KECIL.jpg"
+      },
+      {
+        "id": 9,
+        "code": "0010240000051",
+        "name": "ACC SOFA ENGSEL HEADREST",
+        "image": "/images/items/ACC SOFA ENGSEL HEADREST.jpeg"
+      }
+    ],
+    "disabled": 0
+  },
+  {
+    "id": 4,
+    "name": "ACK Stabil Kayu Guci",
+    "category": { "id": 7, "name": "Aksesories" },
+    "variants": [
+      {
+        "id": 10,
+        "code": "0020060900000",
+        "name": "ACK STABIL KAYU GUCI HITAM",
+        "image": "/images/items/ACK STABIL KAYU GUCI HITAM.png"
+      },
+      {
+        "id": 11,
+        "code": "0020062000000",
+        "name": "ACK STABIL KAYU GUCI MAROON",
+        "image": "/images/items/ACK STABIL KAYU GUCI MAROON.jpeg"
+      }
+    ],
+    "disabled": 0
+  },
+  {
+    "id": 5,
+    "name": "KP SOFA BELUDRU CITRUS",
+    "category": { "id": 6, "name": "Kain Polos Sofa" },
+    "variants": [
+      {
+        "id": 12,
+        "code": "0081350600000",
+        "name": "KP SOFA BELUDRU CITRUS ABU MUDA G12",
+        "image": "/images/items/KP SOFA BELUDRU CITRUS ABU MUDA.jpg"
+      },
+      {
+        "id": 13,
+        "code": "0081355800000-G13",
+        "name": "KP SOFA BELUDRU CITRUS BIRU TUA G13",
+        "image": "/images/items/KP SOFA BELUDRU CITRUS BIRU TUA.jpeg"
+      },
+      {
+        "id": 14,
+        "code": "0081351900000",
+        "name": "KP SOFA BELUDRU CITRUS COKLAT COFFEE G2",
+        "image": "/images/items/KP SOFA BELUDRU CITRUS COKLAT COFFEE.png"
+      },
+      {
+        "id": 15,
+        "code": "0081354400000-G11",
+        "name": "KP SOFA BELUDRU CITRUS HIJAU STABILO G11",
+        "image": "/images/items/KP SOFA BELUDRU CITRUS HIJAU STABILO.png"
+      }
+    ],
+    "disabled": 0
+  },
+  {
+    "id": 6,
+    "name": "FNT KASUR",
+    "category": { "id": 15, "name": "Kasur" },
+    "variants": [
+      {
+        "id": 16,
+        "code": "0050060000008-KNT#061",
+        "name": "FNT KASUR 200X140X30CM KNT INOAC",
+        "image": "/images/items/FNT KASUR 200X140X30CM.jpg"
+      },
+      {
+        "id": 17,
+        "code": "0050060000008#030",
+        "name": "FNT KASUR 200X140X30CM CENTRAL",
+        "image": "/images/items/FNT KASUR 200X140X30CM.jpg"
+      }
+    ],
+    "disabled": 0
+  }
+]

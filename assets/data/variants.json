@@ -1,0 +1,345 @@
+[
+  {
+    "id": 1,
+    "item": {
+      "id": 1,
+      "code": "0010010000107",
+      "name": "ACC BED BAUT SAKURA BESAR 5 CM",
+      "uom": "PCS",
+      "image": "/images/items/ACC BED BAUT SAKURA BESAR 5 CM.png",
+      "branches": [
+        { "id": 1, "name": "Ekatunggal Tunas Medan" },
+        { "id": 4, "name": "Ekatunggal Tunas Mandiri" },
+        { "id": 7, "name": "Ekatunggal" },
+        { "id": 10, "name": "Ekatunggal Timur Manado" },
+        { "id": 13, "name": "Ekatunggal Timur Maroso" }
+      ]
+    },
+    "detail": "Acc bed lobang angin warna emas hitam.",
+    "productid": 1
+  },
+  {
+    "id": 2,
+    "item": {
+      "id": 2,
+      "code": "0010010000044",
+      "name": "ACC BED BAUT SAKURA BESAR 7 CM",
+      "uom": "PCS",
+      "image": "/images/items/ACC BED BAUT SAKURA BESAR 7 CM.jpg",
+      "branches": [
+        { "id": 1, "name": "Ekatunggal Tunas Medan" },
+        { "id": 3, "name": "Ekatunggal Tunas Musi" },
+        { "id": 4, "name": "Ekatunggal Tunas Mandiri" },
+        { "id": 5, "name": "Ekatunggal Tri Mandiri" },
+        { "id": 7, "name": "Ekatunggal" },
+        { "id": 10, "name": "Ekatunggal Timur Manado" },
+        { "id": 13, "name": "Ekatunggal Timur Maroso" }
+      ]
+    },
+    "detail": "Accesories baut bed model Sakura dengan ukuran besar 7 CM.",
+    "productid": 1
+  },
+  {
+    "id": 3,
+    "item": {
+      "id": 3,
+      "code": "0010010000054",
+      "name": "ACC BED BAUT SAKURA KECIL",
+      "uom": "PCS",
+      "image": "/images/items/ACC BED BAUT SAKURA KECIL.jpg",
+      "branches": [
+        { "id": 1, "name": "Ekatunggal Tunas Medan" },
+        { "id": 2, "name": "Ekatunggal Tunas Melaju" },
+        { "id": 4, "name": "Ekatunggal Tunas Mandiri" },
+        { "id": 5, "name": "Ekatunggal Tri Mandiri" },
+        { "id": 7, "name": "Ekatunggal" },
+        { "id": 10, "name": "Ekatunggal Timur Manado" },
+        { "id": 13, "name": "Ekatunggal Timur Maroso" }
+      ]
+    },
+    "detail": "Accesories baut bed model Sakura ukuran kecil.",
+    "productid": 1
+  },
+  {
+    "id": 4,
+    "item": {
+      "id": 4,
+      "code": "0010030110000",
+      "name": "ACC BED LOBANG ANGIN PUTIH CREAM",
+      "uom": "PCS",
+      "image": "/images/items/ACC BED LOBANG ANGIN PUTIH CREAM.jpg",
+      "branches": [
+        { "id": 1, "name": "Ekatunggal Tunas Medan" },
+        { "id": 4, "name": "Ekatunggal Tunas Mandiri" },
+        { "id": 5, "name": "Ekatunggal Tri Mandiri" },
+        { "id": 7, "name": "Ekatunggal" },
+        { "id": 10, "name": "Ekatunggal Timur Manado" },
+        { "id": 11, "name": "Ekatunggal Timur Makassar" },
+        { "id": 13, "name": "Ekatunggal Timur Maroso" }
+      ]
+    },
+    "detail": "Accesories bed lobang angin warna putih cream.",
+    "productid": 2
+  },
+  {
+    "id": 5,
+    "item": {
+      "id": 5,
+      "code": "0010036009047",
+      "name": "ACC BED LOBANG ANGIN EMAS HITAM COMFORT SLEEP",
+      "uom": "PCS",
+      "image": "/images/items/ACC BED LOBANG ANGIN EMAS HITAM.jpeg",
+      "branches": [
+        { "id": 1, "name": "Ekatunggal Tunas Medan" },
+        { "id": 4, "name": "Ekatunggal Tunas Mandiri" },
+        { "id": 5, "name": "Ekatunggal Tri Mandiri" },
+        { "id": 7, "name": "Ekatunggal" },
+        { "id": 10, "name": "Ekatunggal Timur Manado" },
+        { "id": 11, "name": "Ekatunggal Timur Makassar" },
+        { "id": 13, "name": "Ekatunggal Timur Maroso" }
+      ]
+    },
+    "detail": "Accesories bed lobang angin warna emas hitam, model Comfort Sleep.",
+    "productid": 2
+  },
+  {
+    "id": 6,
+    "item": {
+      "id": 6,
+      "code": "0010030157000",
+      "name": "ACC BED LOBANG ANGIN PUTIH BIRU",
+      "uom": "PCS",
+      "image": "/images/items/ACC BED LOBANG ANGIN PUTIH BIRU.jpg",
+      "branches": [
+        { "id": 1, "name": "Ekatunggal Tunas Medan" },
+        { "id": 4, "name": "Ekatunggal Tunas Mandiri" },
+        { "id": 7, "name": "Ekatunggal" },
+        { "id": 10, "name": "Ekatunggal Timur Manado" },
+        { "id": 11, "name": "Ekatunggal Timur Makassar" },
+        { "id": 13, "name": "Ekatunggal Timur Maroso" }
+      ]
+    },
+    "detail": "Accesories bed lobang angin warna putih biru.",
+    "productid": 2
+  },
+  {
+    "id": 7,
+    "item": {
+      "id": 7,
+      "code": "0010240000042",
+      "name": "ACC SOFA ENGSEL BESAR",
+      "uom": "SET",
+      "image": "/images/items/ACC SOFA ENGSEL BESAR.jpg",
+      "branches": [
+        { "id": 1, "name": "Ekatunggal Tunas Medan" },
+        { "id": 4, "name": "Ekatunggal Tunas Mandiri" },
+        { "id": 5, "name": "Ekatunggal Tri Mandiri" },
+        { "id": 7, "name": "Ekatunggal" },
+        { "id": 10, "name": "Ekatunggal Timur Manado" },
+        { "id": 12, "name": "Ekatunggal Timur Manisa" },
+        { "id": 11, "name": "Ekatunggal Timur Makassar" },
+        { "id": 13, "name": "Ekatunggal Timur Maroso" }
+      ]
+    },
+    "detail": "Accesories engsel sofa ukuran besar (set).",
+    "productid": 3
+  },
+  {
+    "id": 8,
+    "item": {
+      "id": 8,
+      "code": "0010240000054",
+      "name": "ACC SOFA ENGSEL KECIL",
+      "uom": "SET",
+      "image": "/images/items/ACC SOFA ENGSEL KECIL.jpg",
+      "branches": [
+        { "id": 1, "name": "Ekatunggal Tunas Medan" },
+        { "id": 4, "name": "Ekatunggal Tunas Mandiri" },
+        { "id": 7, "name": "Ekatunggal" },
+        { "id": 10, "name": "Ekatunggal Timur Manado" },
+        { "id": 11, "name": "Ekatunggal Timur Makassar" },
+        { "id": 13, "name": "Ekatunggal Timur Maroso" }
+      ]
+    },
+    "detail": "Accesories engsel sofa ukuran kecil (set).",
+    "productid": 3
+  },
+  {
+    "id": 9,
+    "item": {
+      "id": 9,
+      "code": "0010240000051",
+      "name": "ACC SOFA ENGSEL HEADREST",
+      "uom": "PSG",
+      "image": "/images/items/ACC SOFA ENGSEL HEADREST.jpeg",
+      "branches": [
+        { "id": 1, "name": "Ekatunggal Tunas Medan" },
+        { "id": 4, "name": "Ekatunggal Tunas Mandiri" },
+        { "id": 5, "name": "Ekatunggal Tri Mandiri" },
+        { "id": 7, "name": "Ekatunggal" },
+        { "id": 10, "name": "Ekatunggal Timur Manado" },
+        { "id": 13, "name": "Ekatunggal Timur Maroso" }
+      ]
+    },
+    "detail": "Accesories engsel untuk headrest sofa.",
+    "productid": 3
+  },
+  {
+    "id": 10,
+    "item": {
+      "id": 10,
+      "code": "0020060900000",
+      "name": "ACK STABIL KAYU GUCI HITAM",
+      "uom": "PCS",
+      "image": "/images/items/ACK STABIL KAYU GUCI HITAM.png",
+      "branches": [
+        { "id": 1, "name": "Ekatunggal Tunas Medan" },
+        { "id": 4, "name": "Ekatunggal Tunas Mandiri" },
+        { "id": 7, "name": "Ekatunggal" },
+        { "id": 10, "name": "Ekatunggal Timur Manado" },
+        { "id": 11, "name": "Ekatunggal Timur Makassar" },
+        { "id": 13, "name": "Ekatunggal Timur Maroso" }
+      ]
+    },
+    "detail": "Accessories stabil kayu model guci warna hitam.",
+    "productid": 4
+  },
+  {
+    "id": 11,
+    "item": {
+      "id": 11,
+      "code": "0020062000000",
+      "name": "ACK STABIL KAYU GUCI MAROON",
+      "uom": "PCS",
+      "image": "/images/items/ACK STABIL KAYU GUCI MAROON.jpeg",
+      "branches": [
+        { "id": 1, "name": "Ekatunggal Tunas Medan" },
+        { "id": 4, "name": "Ekatunggal Tunas Mandiri" },
+        { "id": 5, "name": "Ekatunggal Tri Mandiri" },
+        { "id": 7, "name": "Ekatunggal" },
+        { "id": 10, "name": "Ekatunggal Timur Manado" },
+        { "id": 13, "name": "Ekatunggal Timur Maroso" }
+      ]
+    },
+    "detail": "Accessories stabil kayu model guci warna maroon.",
+    "productid": 4
+  },
+  {
+    "id": 12,
+    "item": {
+      "id": 12,
+      "code": "0081350600000",
+      "name": "KP SOFA BELUDRU CITRUS ABU MUDA G12",
+      "uom": "MTR",
+      "image": "/images/items/KP SOFA BELUDRU CITRUS ABU MUDA.jpg",
+      "branches": [
+        { "id": 1, "name": "Ekatunggal Tunas Medan" },
+        { "id": 4, "name": "Ekatunggal Tunas Mandiri" },
+        { "id": 7, "name": "Ekatunggal" },
+        { "id": 10, "name": "Ekatunggal Timur Manado" },
+        { "id": 13, "name": "Ekatunggal Timur Maroso" }
+      ]
+    },
+    "detail": "Kain polos sofa Beludru Citrus abu muda, per meter.",
+    "productid": 5
+  },
+  {
+    "id": 13,
+    "item": {
+      "id": 13,
+      "code": "0081355800000-G13",
+      "name": "KP SOFA BELUDRU CITRUS BIRU TUA G13",
+      "uom": "MTR",
+      "image": "/images/items/KP SOFA BELUDRU CITRUS BIRU TUA.jpeg",
+      "branches": [
+        { "id": 1, "name": "Ekatunggal Tunas Medan" },
+        { "id": 4, "name": "Ekatunggal Tunas Mandiri" },
+        { "id": 5, "name": "Ekatunggal Tri Mandiri" },
+        { "id": 7, "name": "Ekatunggal" },
+        { "id": 10, "name": "Ekatunggal Timur Manado" },
+        { "id": 11, "name": "Ekatunggal Timur Makassar" },
+        { "id": 13, "name": "Ekatunggal Timur Maroso" }
+      ]
+    },
+    "detail": "Kain polos sofa Beludru Citrus biru tua, per meter.",
+    "productid": 5
+  },
+  {
+    "id": 14,
+    "item": {
+      "id": 14,
+      "code": "0081351900000",
+      "name": "KP SOFA BELUDRU CITRUS COKLAT COFFEE G2",
+      "uom": "MTR",
+      "image": "/images/items/KP SOFA BELUDRU CITRUS COKLAT COFFEE.png",
+      "branches": [
+        { "id": 1, "name": "Ekatunggal Tunas Medan" },
+        { "id": 4, "name": "Ekatunggal Tunas Mandiri" },
+        { "id": 7, "name": "Ekatunggal" },
+        { "id": 10, "name": "Ekatunggal Timur Manado" },
+        { "id": 13, "name": "Ekatunggal Timur Maroso" }
+      ]
+    },
+    "detail": "Kain polos sofa Beludru Citrus coklat coffee, per meter.",
+    "productid": 5
+  },
+  {
+    "id": 15,
+    "item": {
+      "id": 15,
+      "code": "0081354400000-G11",
+      "name": "KP SOFA BELUDRU CITRUS HIJAU STABILO G11",
+      "uom": "MTR",
+      "image": "/images/items/KP SOFA BELUDRU CITRUS HIJAU STABILO.png",
+      "branches": [
+        { "id": 1, "name": "Ekatunggal Tunas Medan" },
+        { "id": 4, "name": "Ekatunggal Tunas Mandiri" },
+        { "id": 7, "name": "Ekatunggal" },
+        { "id": 10, "name": "Ekatunggal Timur Manado" },
+        { "id": 11, "name": "Ekatunggal Timur Makassar" },
+        { "id": 13, "name": "Ekatunggal Timur Maroso" }
+      ]
+    },
+    "detail": "Kain polos sofa Beludru Citrus hijau stabilo, per meter.",
+    "productid": 5
+  },
+  {
+    "id": 16,
+    "item": {
+      "id": 16,
+      "code": "0050060000008-KNT#061",
+      "name": "FNT KASUR 200X140X30CM KNT INOAC",
+      "uom": "LBR",
+      "image": "/images/items/FNT KASUR 200X140X30CM.jpg",
+      "branches": [
+        { "id": 1, "name": "Ekatunggal Tunas Medan" },
+        { "id": 4, "name": "Ekatunggal Tunas Mandiri" },
+        { "id": 7, "name": "Ekatunggal" },
+        { "id": 10, "name": "Ekatunggal Timur Manado" },
+        { "id": 13, "name": "Ekatunggal Timur Maroso" }
+      ]
+    },
+    "detail": "FNT kasur 200x140x30cm KNT INOAC, per lembar.",
+    "productid": 6
+  },
+  {
+    "id": 17,
+    "item": {
+      "id": 17,
+      "code": "0050060000008#030",
+      "name": "FNT KASUR 200X140X30CM CENTRAL",
+      "uom": "LBR",
+      "image": "/images/items/FNT KASUR 200X140X30CM.jpg",
+      "branches": [
+        { "id": 1, "name": "Ekatunggal Tunas Medan" },
+        { "id": 4, "name": "Ekatunggal Tunas Mandiri" },
+        { "id": 7, "name": "Ekatunggal" },
+        { "id": 10, "name": "Ekatunggal Timur Manado" },
+        { "id": 11, "name": "Ekatunggal Timur Makassar" },
+        { "id": 13, "name": "Ekatunggal Timur Maroso" }
+      ]
+    },
+    "detail": "FNT kasur 200x140x30cm Central, per lembar.",
+    "productid": 6
+  }
+]
