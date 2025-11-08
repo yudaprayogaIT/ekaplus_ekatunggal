@@ -122,7 +122,7 @@ class HomePage extends StatelessWidget {
                     SectionWithProducts(
                       title: 'Yang Baru Dari Kami 🔥',
                       subtitle: 'Yang baru - baru, dijamin menarik !!!',
-                      sortMode: ProductSortMode.newest,
+                      hotDealsOnly: false, showCount: 6
                     ),
                     Container(
                       height: 10,
@@ -131,8 +131,7 @@ class HomePage extends StatelessWidget {
                     SectionWithProducts(
                       title: 'Jangan Kehabisan Produk Terlaris 🤩',
                       subtitle: 'Siapa cepat, dia dapat, sikaaat ...',
-                      sortMode: ProductSortMode.hottest,
-                    ),
+                      hotDealsOnly: true, showCount: 6),
                   ],
                 ),
               ),
