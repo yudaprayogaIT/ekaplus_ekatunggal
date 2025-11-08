@@ -6,16 +6,23 @@ import 'package:ekaplus_ekatunggal/features/product/data/models/product_model.da
 import 'package:ekaplus_ekatunggal/features/product/presentation/widgets/product_card.dart';
 import 'package:ekaplus_ekatunggal/features/product/domain/entities/product.dart';
 
+enum ProductSortMode {
+  newest,
+  hottest,
+}
+
 class SectionWithProducts extends StatefulWidget {
   final String title;
   final String? subtitle;
   final int showCount;
+  final ProductSortMode sortMode;
 
   const SectionWithProducts({
     Key? key,
     this.title = 'Yang Baru Dari Kami',
     this.subtitle,
     this.showCount = 6,
+    this.sortMode = ProductSortMode.newest,
   }) : super(key: key);
 
   @override
@@ -60,15 +67,38 @@ class _SectionWithProductsState extends State<SectionWithProducts> {
           );
         }
 
-        final List<ProductModel> products = snapshot.data ?? [];
-        if (products.isEmpty) {
-          return const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: Text('Belum ada produk.'),
-          );
-        }
+        List<ProductModel> products = snapshot.data ?? [];
+        // Filter & Sort sesuai mode
+switch (widget.sortMode) {
+  case ProductSortMode.newest:
+    products = products
+      .where((p) => p.disabled == 0)
+      .toList()
+      ..sort((a, b) => b.id.compareTo(a.id)); // terbaru dulu (id terbesar)
 
-        final displayList = products.take(widget.showCount).toList();
+    break;
+
+  case ProductSortMode.hottest:
+    products = products
+      .where((p) => p.isHotDeals == true)
+      .toList()
+      ..sort((a, b) => a.id.compareTo(b.id)); // paling lama dulu (id terkecil)
+    break;
+}
+
+if (products.isEmpty) {
+  return const Padding(
+    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    child: Text('Belum ada produk.'),
+  );
+}
+
+print("TOTAL PRODUK TERBACA: ${products.length}");
+for (var p in products) {
+  print("${p.id} | disabled=${p.disabled} | isHotDeals=${p.isHotDeals}");
+}
+
+final displayList = products.take(widget.showCount).toList();
 
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),

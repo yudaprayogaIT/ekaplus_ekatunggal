@@ -34,6 +34,7 @@ class Product extends Equatable {
   final CategoryEntity? category;
   final List<VariantEntity> variants; // ⚠️ Ubah jadi List
   final int disabled;
+  final bool isHotDeals;
 
   const Product({
     required this.id,
@@ -41,8 +42,9 @@ class Product extends Equatable {
     this.category,
     this.variants = const [], // ⚠️ Default empty list
     this.disabled = 0,
+    this.isHotDeals = false
   });
 
   @override
-  List<Object?> get props => [id, name, category, variants, disabled];
+  List<Object?> get props => [id, name, category, variants, disabled, isHotDeals];
 }

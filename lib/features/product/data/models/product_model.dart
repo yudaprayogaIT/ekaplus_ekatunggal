@@ -50,6 +50,7 @@ class ProductModel extends Product {
     super.category,
     super.variants = const [], // ⚠️ Ubah jadi List
     super.disabled = 0,
+    super.isHotDeals = false
   });
 
   factory ProductModel.fromJson(Map<String, dynamic> json) {
@@ -69,6 +70,7 @@ class ProductModel extends Product {
           : null,
       variants: variantsList, // ⚠️ Assign list
       disabled: json['disabled'] ?? 0,
+      isHotDeals: json['isHotDeals'] ?? false
     );
   }
 
@@ -83,6 +85,7 @@ class ProductModel extends Product {
           .map((v) => (v as VariantModel).toJson())
           .toList(),
       "disabled": disabled,
+      "isHotDeals": isHotDeals
     };
   }
 

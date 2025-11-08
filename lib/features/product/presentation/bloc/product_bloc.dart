@@ -4,6 +4,7 @@ import 'package:dartz/dartz.dart';
 import 'package:ekaplus_ekatunggal/core/error/failure.dart';
 import 'package:ekaplus_ekatunggal/features/product/domain/entities/product.dart';
 import 'package:ekaplus_ekatunggal/features/product/domain/usecases/get_all_product.dart';
+import 'package:ekaplus_ekatunggal/features/product/domain/usecases/get_hot_deals.dart';
 import 'package:ekaplus_ekatunggal/features/product/domain/usecases/get_product.dart';
 import 'package:ekaplus_ekatunggal/features/product/domain/usecases/get_variant.dart';
 import 'package:equatable/equatable.dart';
@@ -15,13 +16,14 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
   final GetAllProduct getAllProduct;
   final GetProduct getProduct;
   final GetVariant getVariant; // ⚠️ TAMBAH
+   final GetHotDeals getHotDeals;
 
   ProductBloc({
     required this.getAllProduct,
     required this.getProduct,
     required this.getVariant, // ⚠️ TAMBAH
+    required this.getHotDeals,
   }) : super(ProductStateEmpty()) {
-    
     on<ProductEventGetAllProducts>((event, emit) async {
       emit(ProductStateLoading());
 
@@ -62,6 +64,15 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
             emit(ProductStateError('Variant not found'));
           }
         },
+      );
+    });
+
+    on<ProductEventGetHotDeals>((event, emit) async {
+      emit(ProductStateLoading());
+      final result = await getHotDeals.execute();
+      result.fold(
+        (failure) => emit(ProductStateError(failure.message ?? 'Cannot get Hot Deals details')),
+        (hotDeals) => emit(ProductStateLoadedHotDeals(hotDeals)),
       );
     });
   }

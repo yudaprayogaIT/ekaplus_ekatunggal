@@ -35,3 +35,5 @@ class ProductEventGetVariant extends ProductEvent {
   @override
   List<Object> get props => [variantId];
 }
+
+class ProductEventGetHotDeals extends ProductEvent {}

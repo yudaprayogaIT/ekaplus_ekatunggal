@@ -1,29 +1,24 @@
 [
   {
     "id": 1,
-    "name": "ACC Bed Baut Sakura",
-    "category": { "id": 7, "name": "Aksesories" },
+    "name": "FNT KASUR",
+    "category": { "id": 15, "name": "Kasur" },
     "variants": [
       {
-        "id": 1,
-        "name": "ACC BED BAUT SAKURA BESAR 5 CM",
-        "code": "0010010000107",
-        "image": "/images/items/ACC BED BAUT SAKURA BESAR 5 CM.png"
+        "id": 16,
+        "code": "0050060000008-KNT#061",
+        "name": "FNT KASUR 200X140X30CM KNT INOAC",
+        "image": "/images/items/FNT KASUR 200X140X30CM.jpg"
       },
       {
-        "id": 2,
-        "name": "ACC BED BAUT SAKURA BESAR 7 CM",
-        "code": "0010010000044",
-        "image": "/images/items/ACC BED BAUT SAKURA BESAR 7 CM.jpg"
-      },
-      {
-        "id": 3,
-        "name": "ACC BED BAUT SAKURA KECIL",
-        "code": "0010010000054",
-        "image": "/images/items/ACC BED BAUT SAKURA KECIL.jpg"
+        "id": 17,
+        "code": "0050060000008#030",
+        "name": "FNT KASUR 200X140X30CM CENTRAL",
+        "image": "/images/items/FNT KASUR 200X140X30CM.jpg"
       }
     ],
-    "disabled": 0
+    "disabled": 0,
+    "isHotDeals": false
   },
   {
     "id": 2,
@@ -49,7 +44,8 @@
         "image": "/images/items/ACC BED LOBANG ANGIN PUTIH BIRU.jpg"
       }
     ],
-    "disabled": 0
+    "disabled": 0,
+    "isHotDeals": false
   },
   {
     "id": 3,
@@ -75,7 +71,8 @@
         "image": "/images/items/ACC SOFA ENGSEL HEADREST.jpeg"
       }
     ],
-    "disabled": 0
+    "disabled": 0,
+    "isHotDeals": true
   },
   {
     "id": 4,
@@ -95,10 +92,38 @@
         "image": "/images/items/ACK STABIL KAYU GUCI MAROON.jpeg"
       }
     ],
-    "disabled": 0
+    "disabled": 0,
+    "isHotDeals": true
   },
   {
     "id": 5,
+    "name": "ACC Bed Baut Sakura",
+    "category": { "id": 7, "name": "Aksesories" },
+    "variants": [
+      {
+        "id": 1,
+        "name": "ACC BED BAUT SAKURA BESAR 5 CM",
+        "code": "0010010000107",
+        "image": "/images/items/ACC BED BAUT SAKURA BESAR 5 CM.png"
+      },
+      {
+        "id": 2,
+        "name": "ACC BED BAUT SAKURA BESAR 7 CM",
+        "code": "0010010000044",
+        "image": "/images/items/ACC BED BAUT SAKURA BESAR 7 CM.jpg"
+      },
+      {
+        "id": 3,
+        "name": "ACC BED BAUT SAKURA KECIL",
+        "code": "0010010000054",
+        "image": "/images/items/ACC BED BAUT SAKURA KECIL.jpg"
+      }
+    ],
+    "disabled": 0,
+    "isHotDeals": false
+  },
+  {
+    "id": 6,
     "name": "KP SOFA BELUDRU CITRUS",
     "category": { "id": 6, "name": "Kain Polos Sofa" },
     "variants": [
@@ -127,26 +152,7 @@
         "image": "/images/items/KP SOFA BELUDRU CITRUS HIJAU STABILO.png"
       }
     ],
-    "disabled": 0
-  },
-  {
-    "id": 6,
-    "name": "FNT KASUR",
-    "category": { "id": 15, "name": "Kasur" },
-    "variants": [
-      {
-        "id": 16,
-        "code": "0050060000008-KNT#061",
-        "name": "FNT KASUR 200X140X30CM KNT INOAC",
-        "image": "/images/items/FNT KASUR 200X140X30CM.jpg"
-      },
-      {
-        "id": 17,
-        "code": "0050060000008#030",
-        "name": "FNT KASUR 200X140X30CM CENTRAL",
-        "image": "/images/items/FNT KASUR 200X140X30CM.jpg"
-      }
-    ],
-    "disabled": 0
+    "disabled": 0,
+    "isHotDeals": true
   }
 ]

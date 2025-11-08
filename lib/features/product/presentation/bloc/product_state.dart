@@ -49,3 +49,12 @@ class ProductStateLoadedVariant extends ProductState {
   @override
   List<Object?> get props => [variant];
 }
+
+class ProductStateLoadedHotDeals extends ProductState {
+  final List<Product> hotDeals;
+
+  ProductStateLoadedHotDeals(this.hotDeals);
+
+  @override
+  List<Object?> get props => [hotDeals];
+}
