@@ -1,5 +1,5 @@
 import 'package:ekaplus_ekatunggal/features/home/presentation/widgets/home_slider_widget.dart';
-import 'package:ekaplus_ekatunggal/features/product/presentation/widgets/section_with_product.dart';
+import 'package:ekaplus_ekatunggal/features/product/presentation/widgets/products_section.dart';
 import 'package:flutter/material.dart';
 import '../../../../core/shared_widgets/profile_header.dart';
 // import '../../../../core/shared_widgets/bottom_nav.dart'; // tidak dipakai di sini, tapi tetap disertakan untuk struktur
@@ -119,7 +119,7 @@ class HomePage extends StatelessWidget {
                       height: 10,
                       color: const Color.fromARGB(255, 233, 233, 233),
                     ),
-                    SectionWithProducts(
+                    ProductsSection(
                       title: 'Yang Baru Dari Kami 🔥',
                       subtitle: 'Yang baru - baru, dijamin menarik !!!',
                       hotDealsOnly: false, showCount: 6
@@ -128,7 +128,7 @@ class HomePage extends StatelessWidget {
                       height: 10,
                       color: const Color.fromARGB(255, 233, 233, 233),
                     ),
-                    SectionWithProducts(
+                    ProductsSection(
                       title: 'Jangan Kehabisan Produk Terlaris 🤩',
                       subtitle: 'Siapa cepat, dia dapat, sikaaat ...',
                       hotDealsOnly: true, showCount: 6),

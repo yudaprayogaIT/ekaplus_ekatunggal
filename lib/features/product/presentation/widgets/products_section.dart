@@ -1,4 +1,4 @@
-// lib/features/product/presentation/widgets/section_with_products.dart
+// lib/features/product/presentation/widgets/product_section.dart
 import 'dart:convert';
 import 'package:ekaplus_ekatunggal/constant.dart';
 import 'package:flutter/services.dart' show rootBundle;
@@ -7,7 +7,7 @@ import 'package:ekaplus_ekatunggal/features/product/data/models/product_model.da
 import 'package:ekaplus_ekatunggal/features/product/presentation/widgets/product_card.dart';
 import 'package:ekaplus_ekatunggal/features/product/domain/entities/product.dart';
 
-class SectionWithProducts extends StatefulWidget {
+class ProductsSection extends StatefulWidget {
   final String title;
   final String? subtitle;
   final int showCount;
@@ -15,7 +15,7 @@ class SectionWithProducts extends StatefulWidget {
 
   /// hotDealsOnly: jika true -> tampilkan hanya yang isHotDeals == true (urut id asc/oldest)
   /// jika false -> tampilkan semua produk (urut id desc/newest)
-  const SectionWithProducts({
+  const ProductsSection({
     Key? key,
     this.title = 'Yang Baru Dari Kami',
     this.subtitle,
@@ -24,10 +24,10 @@ class SectionWithProducts extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<SectionWithProducts> createState() => _SectionWithProductsState();
+  State<ProductsSection> createState() => _ProductsSectionState();
 }
 
-class _SectionWithProductsState extends State<SectionWithProducts> {
+class _ProductsSectionState extends State<ProductsSection> {
   late Future<List<ProductModel>> _futureProducts;
   List<ProductModel> _allProducts = [];
   List<ProductModel> _filteredProducts = [];
