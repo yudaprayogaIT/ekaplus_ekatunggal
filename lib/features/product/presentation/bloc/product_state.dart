@@ -1,5 +1,6 @@
-// lib/features/product/presentation/bloc/product_state.dart
 part of 'product_bloc.dart';
+
+// PASTIKAN TIDAK ADA DEFINISI VariantEntity di file ini!
 
 abstract class ProductState extends Equatable {}
 
@@ -40,7 +41,7 @@ class ProductStateLoadedProduct extends ProductState {
   List<Object?> get props => [detailProduct];
 }
 
-// ⚠️ TAMBAH: State baru untuk loaded variant
+// State untuk loaded variant (VariantEntity sudah diimpor di product_bloc.dart)
 class ProductStateLoadedVariant extends ProductState {
   final VariantEntity variant;
 

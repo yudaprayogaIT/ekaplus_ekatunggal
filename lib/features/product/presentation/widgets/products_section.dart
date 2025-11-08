@@ -182,6 +182,12 @@ class _ProductsSectionState extends State<ProductsSection> {
                               title: widget.hotDealsOnly
                                   ? 'Produk Terlaris'
                                   : 'Produk Terbaru',
+                              headerTitle: widget.hotDealsOnly
+                                  ? 'Jangan Kehabisan Produk Terlaris 🤩'
+                                  : 'Yang Baru Dari Kami 🔥',
+                              headerSubTitle: widget.hotDealsOnly
+                                  ? 'Siapa cepat, dia dapat, sikaaat ...'
+                                  : 'Yang baru - baru, dijamin menarik !!!',
                             ),
                           ),
                         );
@@ -258,6 +264,12 @@ class _ProductsSectionState extends State<ProductsSection> {
                             title: widget.hotDealsOnly
                                 ? 'Produk Terlaris'
                                 : 'Produk Terbaru',
+                            headerTitle: widget.hotDealsOnly
+                                ? 'Jangan Kehabisan Produk Terlaris 🤩'
+                                : 'Yang Baru Dari Kami 🔥',
+                            headerSubTitle: widget.hotDealsOnly
+                                ? 'Siapa cepat, dia dapat, sikaaat ...'
+                                : 'Yang baru - baru, dijamin menarik !!!',
                           ),
                         ),
                       );
