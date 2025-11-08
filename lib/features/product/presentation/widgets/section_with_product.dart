@@ -43,7 +43,9 @@ class _SectionWithProductsState extends State<SectionWithProducts> {
   Future<List<ProductModel>> _loadProductsFromAssets() async {
     final body = await rootBundle.loadString('assets/data/products.json');
     final dynamic decoded = jsonDecode(body);
-    final List<dynamic> list = decoded is List ? decoded : (decoded['data'] ?? []);
+    final List<dynamic> list = decoded is List
+        ? decoded
+        : (decoded['data'] ?? []);
     final products = ProductModel.fromJsonList(list);
     // simpan ke state-ready lists (tidak langsung setState di init)
     _allProducts = products;
@@ -81,7 +83,9 @@ class _SectionWithProductsState extends State<SectionWithProducts> {
 
     // apply category filter if selected
     if (_selectedCategoryId != null) {
-      results = results.where((p) => p.category?.id == _selectedCategoryId).toList();
+      results = results
+          .where((p) => p.category?.id == _selectedCategoryId)
+          .toList();
     }
 
     _filteredProducts = results;
@@ -158,15 +162,52 @@ class _SectionWithProductsState extends State<SectionWithProducts> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(widget.title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
-                    InkWell(onTap: () {}, child: const Text('Lihat Semua', style: TextStyle(fontSize: 13, color: Colors.grey))),
+                    Text(
+                      widget.title,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: AppFonts.primaryFont,
+                      ),
+                    ),
+                    InkWell(
+                      onTap: () {},
+                      child: const Text(
+                        'Lihat Semua',
+                        style: TextStyle(
+                        fontSize: 11,
+                        color: Colors.grey,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      ),
+                    ),
                   ],
                 ),
+
+                if (widget.subtitle != null) ...[
+                const SizedBox(height: 4),
+                Text(
+                  widget.subtitle!,
+                  style: const TextStyle(
+                    color: AppColors.grayColor,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
                 const SizedBox(height: 8),
                 // categories (still show)
                 _buildCategoryChips(),
                 const SizedBox(height: 16),
-                const Text('Belum ada produk untuk kriteria ini.'),
+                SizedBox(
+                height: 260,
+                child: ListView.custom(
+                scrollDirection: Axis.horizontal,
+                  childrenDelegate: SliverChildListDelegate([
+                    const Text('Belum ada produk untuk kriteria ini.'),
+                  ]),
+                )
+                )
               ],
             ),
           );
@@ -186,7 +227,11 @@ class _SectionWithProductsState extends State<SectionWithProducts> {
                 children: [
                   Text(
                     widget.title,
-                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, fontFamily: AppFonts.primaryFont),
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: AppFonts.primaryFont,
+                    ),
                   ),
                   InkWell(
                     onTap: () {
@@ -194,7 +239,11 @@ class _SectionWithProductsState extends State<SectionWithProducts> {
                     },
                     child: const Text(
                       'Lihat Semua',
-                      style: TextStyle(fontSize: 11, color: Colors.grey, fontWeight: FontWeight.w500),
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: Colors.grey,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                 ],
@@ -202,7 +251,14 @@ class _SectionWithProductsState extends State<SectionWithProducts> {
 
               if (widget.subtitle != null) ...[
                 const SizedBox(height: 4),
-                Text(widget.subtitle!, style: const TextStyle(color: AppColors.grayColor, fontSize: 11, fontWeight: FontWeight.w500)),
+                Text(
+                  widget.subtitle!,
+                  style: const TextStyle(
+                    color: AppColors.grayColor,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
               ],
 
               const SizedBox(height: 10),
@@ -217,7 +273,10 @@ class _SectionWithProductsState extends State<SectionWithProducts> {
                 height: 260,
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 12,
+                    horizontal: 4,
+                  ),
                   itemCount: displayList.length,
                   separatorBuilder: (_, __) => const SizedBox(width: 20),
                   itemBuilder: (context, index) {
@@ -244,7 +303,7 @@ class _SectionWithProductsState extends State<SectionWithProducts> {
     if (_categories.isEmpty) return const SizedBox.shrink();
 
     return SizedBox(
-      height: 40,
+      height: 30,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: _categories.length + 1, // +1 for 'All' chip
@@ -299,18 +358,20 @@ class _CategoryChip extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: BoxDecoration(
           color: selected ? Theme.of(context).primaryColor : Colors.white,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: selected ? Colors.transparent : Colors.grey.shade300),
+          border: Border.all(
+            color: selected ? Colors.transparent : Colors.grey.shade300,
+          ),
           boxShadow: [
             if (selected)
               BoxShadow(
                 color: Theme.of(context).primaryColor.withOpacity(0.14),
                 blurRadius: 8,
                 offset: const Offset(0, 4),
-              )
+              ),
           ],
         ),
         child: Text(
