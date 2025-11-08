@@ -115,9 +115,22 @@ class HomePage extends StatelessWidget {
                     // -------------------------
                     // const SizedBox(height: 10),
                     TypeCategoryList(),
-                    SectionWithProducts(title: 'Yang Baru Dari Kami 🔥', subtitle: 'Yang baru - baru, dijamin menarik !!!'),
-                    SectionWithProducts(title: 'Jangan Kehabisan Produk Terlaris 🤩', subtitle: 'Siapa cepat, dia dapat, sikaaat ...'),
-                    
+                    Container(
+                      height: 10,
+                      color: const Color.fromARGB(255, 233, 233, 233),
+                    ),
+                    SectionWithProducts(
+                      title: 'Yang Baru Dari Kami 🔥',
+                      subtitle: 'Yang baru - baru, dijamin menarik !!!',
+                    ),
+                    Container(
+                      height: 10,
+                      color: const Color.fromARGB(255, 233, 233, 233),
+                    ),
+                    SectionWithProducts(
+                      title: 'Jangan Kehabisan Produk Terlaris 🤩',
+                      subtitle: 'Siapa cepat, dia dapat, sikaaat ...',
+                    ),
                   ],
                 ),
               ),
