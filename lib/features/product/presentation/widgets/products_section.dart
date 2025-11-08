@@ -1,6 +1,7 @@
 // lib/features/product/presentation/widgets/product_section.dart
 import 'dart:convert';
 import 'package:ekaplus_ekatunggal/constant.dart';
+import 'package:ekaplus_ekatunggal/features/product/presentation/pages/products_page.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/material.dart';
 import 'package:ekaplus_ekatunggal/features/product/data/models/product_model.dart';
@@ -171,43 +172,56 @@ class _ProductsSectionState extends State<ProductsSection> {
                       ),
                     ),
                     InkWell(
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => ProductsPage(
+                              // ✅ PERBAIKI: Menggunakan nilai widget.hotDealsOnly yang sesuai dengan section ini.
+                              hotDealsOnly: widget.hotDealsOnly,
+                              title: widget.hotDealsOnly
+                                  ? 'Produk Terlaris'
+                                  : 'Produk Terbaru',
+                            ),
+                          ),
+                        );
+                      },
                       child: const Text(
                         'Lihat Semua',
                         style: TextStyle(
-                        fontSize: 11,
-                        color: Colors.grey,
-                        fontWeight: FontWeight.w500,
-                      ),
+                          fontSize: 11,
+                          color: Colors.grey,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                   ],
                 ),
 
                 if (widget.subtitle != null) ...[
-                const SizedBox(height: 4),
-                Text(
-                  widget.subtitle!,
-                  style: const TextStyle(
-                    color: AppColors.grayColor,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w500,
+                  const SizedBox(height: 4),
+                  Text(
+                    widget.subtitle!,
+                    style: const TextStyle(
+                      color: AppColors.grayColor,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
-                ),
-              ],
+                ],
                 const SizedBox(height: 8),
                 // categories (still show)
                 _buildCategoryChips(),
                 const SizedBox(height: 16),
                 SizedBox(
-                height: 260,
-                child: ListView.custom(
-                scrollDirection: Axis.horizontal,
-                  childrenDelegate: SliverChildListDelegate([
-                    const Text('Belum ada produk untuk kriteria ini.'),
-                  ]),
-                )
-                )
+                  height: 260,
+                  child: ListView.custom(
+                    scrollDirection: Axis.horizontal,
+                    childrenDelegate: SliverChildListDelegate([
+                      const Text('Belum ada produk untuk kriteria ini.'),
+                    ]),
+                  ),
+                ),
               ],
             ),
           );
@@ -235,7 +249,18 @@ class _ProductsSectionState extends State<ProductsSection> {
                   ),
                   InkWell(
                     onTap: () {
-                      // TODO: navigate to all products page
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => ProductsPage(
+                            // ✅ PERBAIKI: Menggunakan nilai widget.hotDealsOnly yang sesuai dengan section ini.
+                            hotDealsOnly: widget.hotDealsOnly,
+                            title: widget.hotDealsOnly
+                                ? 'Produk Terlaris'
+                                : 'Produk Terbaru',
+                          ),
+                        ),
+                      );
                     },
                     child: const Text(
                       'Lihat Semua',

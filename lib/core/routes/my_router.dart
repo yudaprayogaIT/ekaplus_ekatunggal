@@ -42,6 +42,13 @@ class MyRouter {
                   body: Center(child: Text('Profile (placeholder)')),
                 ),
               ),
+              // GoRoute(
+              //   name: 'product',
+              //   path: '/product',
+              //   builder: (context, state) => const Scaffold(
+              //     body: Center(child: Text('Products (placeholder)')),
+              //   ),
+              // ),
             ],
           ),
           // Route tanpa bottom nav (jika diperlukan)
