@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:ekaplus_ekatunggal/constant.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/material.dart';
 import 'package:ekaplus_ekatunggal/features/product/data/models/product_model.dart';
@@ -34,7 +35,6 @@ class _SectionWithProductsState extends State<SectionWithProducts> {
     final body = await rootBundle.loadString('assets/data/products.json');
     final dynamic decoded = jsonDecode(body);
     final List<dynamic> list = decoded is List ? decoded : (decoded['data'] ?? []);
-    // Use ProductModel.fromJsonList (returns List<ProductModel>)
     return ProductModel.fromJsonList(list);
   }
 
@@ -68,7 +68,6 @@ class _SectionWithProductsState extends State<SectionWithProducts> {
           );
         }
 
-        // Limit jumlah yang ditampilkan
         final displayList = products.take(widget.showCount).toList();
 
         return Padding(
@@ -82,7 +81,7 @@ class _SectionWithProductsState extends State<SectionWithProducts> {
                 children: [
                   Text(
                     widget.title,
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, fontFamily: AppFonts.primaryFont),
                   ),
                   InkWell(
                     onTap: () {
@@ -90,30 +89,32 @@ class _SectionWithProductsState extends State<SectionWithProducts> {
                     },
                     child: const Text(
                       'Lihat Semua',
-                      style: TextStyle(fontSize: 13, color: Colors.grey),
+                      style: TextStyle(fontSize: 11, color: Colors.grey, fontWeight: FontWeight.w500),
                     ),
                   ),
                 ],
               ),
 
               if (widget.subtitle != null) ...[
-                const SizedBox(height: 6),
-                Text(widget.subtitle!, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                const SizedBox(height: 4),
+                Text(widget.subtitle!, style: const TextStyle(color: AppColors.grayColor, fontSize: 11, fontWeight: FontWeight.w500)),
               ],
 
               const SizedBox(height: 12),
 
+              // Beri padding vertikal supaya shadow kartu tidak kepotong
               SizedBox(
-                height: 220,
+                height: 260, // sedikit lebih besar untuk mengakomodasi shadow
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
                   itemCount: displayList.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: 12),
+                  separatorBuilder: (_, __) => const SizedBox(width: 20),
                   itemBuilder: (context, index) {
                     final p = displayList[index];
                     return ProductCard(
                       product: p,
-                      width: 150,
+                      width: 176,
                       onTap: () {
                         // TODO: buka detail product
                         // Navigator.pushNamed(context, '/productDetail', arguments: p.id.toString());
