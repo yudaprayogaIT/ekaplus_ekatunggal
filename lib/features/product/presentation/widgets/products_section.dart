@@ -404,7 +404,7 @@ class _CategoryChip extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: BoxDecoration(
-          color: selected ? Theme.of(context).primaryColor : Colors.white,
+          color: selected ? AppColors.secondaryColor : Colors.white,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: selected ? Colors.transparent : Colors.grey.shade300,
@@ -421,7 +421,7 @@ class _CategoryChip extends StatelessWidget {
         child: Text(
           label,
           style: TextStyle(
-            color: selected ? Colors.white : Colors.black87,
+            color: selected ? Colors.black : Colors.black87,
             fontWeight: FontWeight.w400,
             fontSize: 12,
           ),
