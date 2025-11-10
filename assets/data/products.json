@@ -10,7 +10,8 @@
         "name": "FNT KASUR 200X140X30CM KNT INOAC",
         "color": "",
         "type": "200X140X30CM INOAC",
-        "image": "/images/items/FNT KASUR 200X140X30CM.jpg"
+        "image": "/images/items/FNT KASUR 200X140X30CM.jpg",
+        "description": "FNT kasur 200x140x30cm KNT INOAC, per lembar."
       },
       {
         "id": 17,
@@ -18,7 +19,8 @@
         "name": "FNT KASUR 200X140X30CM CENTRAL",
         "color": "",
         "type": "200X140X30CM CENTRAL",
-        "image": "/images/items/FNT KASUR 200X140X30CM.jpg"
+        "image": "/images/items/FNT KASUR 200X140X30CM.jpg",
+        "description": "FNT kasur 200x140x30cm Central, per lembar."
       }
     ],
     "disabled": 0,
@@ -35,7 +37,8 @@
         "name": "ACC BED LOBANG ANGIN PUTIH CREAM",
         "color": "PUTIH",
         "type": "",
-        "image": "/images/items/ACC BED LOBANG ANGIN PUTIH CREAM.jpg"
+        "image": "/images/items/ACC BED LOBANG ANGIN PUTIH CREAM.jpg",
+        "description": "Accesories bed lobang angin warna putih cream."
       },
       {
         "id": 5,
@@ -43,7 +46,8 @@
         "name": "ACC BED LOBANG ANGIN EMAS HITAM COMFORT SLEEP",
         "color": "EMAS",
         "type": "",
-        "image": "/images/items/ACC BED LOBANG ANGIN EMAS HITAM.jpeg"
+        "image": "/images/items/ACC BED LOBANG ANGIN EMAS HITAM.jpeg",
+        "description": "Accesories bed lobang angin warna emas hitam, model Comfort Sleep."
       },
       {
         "id": 6,
@@ -51,7 +55,8 @@
         "name": "ACC BED LOBANG ANGIN PUTIH BIRU",
         "color": "PUTIH",
         "type": "",
-        "image": "/images/items/ACC BED LOBANG ANGIN PUTIH BIRU.jpg"
+        "image": "/images/items/ACC BED LOBANG ANGIN PUTIH BIRU.jpg",
+        "description": "Accesories bed lobang angin warna putih biru."
       }
     ],
     "disabled": 0,
@@ -68,7 +73,8 @@
         "name": "ACC SOFA ENGSEL BESAR",
         "color": "",
         "type": "BESAR",
-        "image": "/images/items/ACC SOFA ENGSEL BESAR.jpg"
+        "image": "/images/items/ACC SOFA ENGSEL BESAR.jpg",
+        "description": "Accesories engsel sofa ukuran besar (set)."
       },
       {
         "id": 8,
@@ -76,7 +82,8 @@
         "name": "ACC SOFA ENGSEL KECIL",
         "color": "",
         "type": "KECIL",
-        "image": "/images/items/ACC SOFA ENGSEL KECIL.jpg"
+        "image": "/images/items/ACC SOFA ENGSEL KECIL.jpg",
+        "description": "Accesories engsel sofa ukuran kecil (set)."
       },
       {
         "id": 9,
@@ -84,7 +91,8 @@
         "name": "ACC SOFA ENGSEL HEADREST",
         "color": "",
         "type": "HEADREST",
-        "image": "/images/items/ACC SOFA ENGSEL HEADREST.jpeg"
+        "image": "/images/items/ACC SOFA ENGSEL HEADREST.jpeg",
+        "description": "Accesories engsel untuk headrest sofa."
       }
     ],
     "disabled": 0,
@@ -101,7 +109,8 @@
         "name": "ACK STABIL KAYU GUCI HITAM",
         "color": "HITAM",
         "type": "",
-        "image": "/images/items/ACK STABIL KAYU HITAM GUCI.png"
+        "image": "/images/items/ACK STABIL KAYU HITAM GUCI.png",
+        "description": "Accessories stabil kayu model guci warna hitam."
       },
       {
         "id": 11,
@@ -109,7 +118,8 @@
         "name": "ACK STABIL KAYU GUCI MAROON",
         "color": "MAROON",
         "type": "",
-        "image": "/images/items/ACK STABIL KAYU GUCI MAROON.jpg"
+        "image": "/images/items/ACK STABIL KAYU GUCI MAROON.jpg",
+        "description": "Accessories stabil kayu model guci warna maroon."
       }
     ],
     "disabled": 0,
@@ -126,7 +136,8 @@
         "name": "ACC BED BAUT SAKURA BESAR 5 CM",
         "color": "",
         "type": "BESAR 5 CM",
-        "image": "/images/items/ACC BED BAUT SAKURA BESAR 5 CM.png"
+        "image": "/images/items/ACC BED BAUT SAKURA BESAR 5 CM.png",
+        "description": "Acc bed baut sakura dengan besar 5 CM"
       },
       {
         "id": 2,
@@ -134,7 +145,8 @@
         "name": "ACC BED BAUT SAKURA BESAR 7 CM",
         "color": "",
         "type": "BESAR 7 CM",
-        "image": "/images/items/ACC BED BAUT SAKURA BESAR 7 CM.jpg"
+        "image": "/images/items/ACC BED BAUT SAKURA BESAR 7 CM.jpg",
+        "description": "Accesories baut bed model Sakura dengan ukuran besar 7 CM."
       },
       {
         "id": 3,
@@ -142,7 +154,8 @@
         "name": "ACC BED BAUT SAKURA KECIL",
         "color": "",
         "type": "KECIL",
-        "image": "/images/items/ACC BED BAUT SAKURA KECIL.jpg"
+        "image": "/images/items/ACC BED BAUT SAKURA KECIL.jpg",
+        "description": "Accesories baut bed model Sakura ukuran kecil."
       }
     ],
     "disabled": 0,
@@ -159,7 +172,8 @@
         "name": "KP SOFA BELUDRU CITRUS ABU MUDA G12",
         "color": "ABU MUDA",
         "type": "",
-        "image": "/images/items/KP SOFA BELUDRU CITRUS ABU MUDA.jpeg"
+        "image": "/images/items/KP SOFA BELUDRU CITRUS ABU MUDA.jpeg",
+        "description": "Kain polos sofa Beludru Citrus abu muda, per meter."
       },
       {
         "id": 13,
@@ -167,7 +181,8 @@
         "name": "KP SOFA BELUDRU CITRUS BIRU TUA G13",
         "color": "BIRU TUA",
         "type": "",
-        "image": "/images/items/KP SOFA BELUDRU CITRUS BIRU TUA.jpeg"
+        "image": "/images/items/KP SOFA BELUDRU CITRUS BIRU TUA.jpeg",
+        "description": "Kain polos sofa Beludru Citrus biru tua, per meter."
       },
       {
         "id": 14,
@@ -175,7 +190,8 @@
         "name": "KP SOFA BELUDRU CITRUS COKLAT COFFEE G2",
         "color": "COKLAT COFFEE",
         "type": "",
-        "image": "/images/items/KP SOFA BELUDRU CITRUS COKLAT COFFEE.png"
+        "image": "/images/items/KP SOFA BELUDRU CITRUS COKLAT COFFEE.png",
+        "description": "Kain polos sofa Beludru Citrus coklat coffee, per meter."
       },
       {
         "id": 15,
@@ -183,7 +199,8 @@
         "name": "KP SOFA BELUDRU CITRUS HIJAU STABILO G11",
         "color": "HIJAU STABILO",
         "type": "",
-        "image": "/images/items/KP SOFA BELUDRU CITRUS HIJAU STABILO.png"
+        "image": "/images/items/KP SOFA BELUDRU CITRUS HIJAU STABILO.png",
+        "description": "Kain polos sofa Beludru Citrus hijau stabilo, per meter."
       }
     ],
     "disabled": 0,
@@ -200,7 +217,8 @@
         "name": "FNT KASUR 200X140X30CM KNT INOAC",
         "color": "",
         "type": "200X140X30CM INOAC",
-        "image": "/images/items/FNT KASUR 200X140X30CM.jpg"
+        "image": "/images/items/FNT KASUR 200X140X30CM.jpg",
+        "description": "FNT kasur 200x140x30cm KNT INOAC, per lembar."
       },
       {
         "id": 17,
@@ -208,7 +226,8 @@
         "name": "FNT KASUR 200X140X30CM CENTRAL",
         "color": "",
         "type": "200X140X30CM CENTRAL",
-        "image": "/images/items/FNT KASUR 200X140X30CM.jpg"
+        "image": "/images/items/FNT KASUR 200X140X30CM.jpg",
+        "description": "FNT kasur 200x140x30cm Central, per lembar."
       }
     ],
     "disabled": 0,
@@ -225,7 +244,8 @@
         "name": "ACC BED LOBANG ANGIN PUTIH CREAM",
         "color": "PUTIH",
         "type": "",
-        "image": "/images/items/ACC BED LOBANG ANGIN PUTIH CREAM.jpg"
+        "image": "/images/items/ACC BED LOBANG ANGIN PUTIH CREAM.jpg",
+        "description": "Accesories bed lobang angin warna putih cream."
       },
       {
         "id": 5,
@@ -233,7 +253,8 @@
         "name": "ACC BED LOBANG ANGIN EMAS HITAM COMFORT SLEEP",
         "color": "EMAS",
         "type": "",
-        "image": "/images/items/ACC BED LOBANG ANGIN EMAS HITAM.jpeg"
+        "image": "/images/items/ACC BED LOBANG ANGIN EMAS HITAM.jpeg",
+        "description": "Accesories bed lobang angin warna emas hitam, model Comfort Sleep."
       },
       {
         "id": 6,
@@ -241,7 +262,8 @@
         "name": "ACC BED LOBANG ANGIN PUTIH BIRU",
         "color": "PUTIH",
         "type": "",
-        "image": "/images/items/ACC BED LOBANG ANGIN PUTIH BIRU.jpg"
+        "image": "/images/items/ACC BED LOBANG ANGIN PUTIH BIRU.jpg",
+        "description": "Accesories bed lobang angin warna putih biru."
       }
     ],
     "disabled": 0,
@@ -258,7 +280,8 @@
         "name": "ACC SOFA ENGSEL BESAR",
         "color": "",
         "type": "BESAR",
-        "image": "/images/items/ACC SOFA ENGSEL BESAR.jpg"
+        "image": "/images/items/ACC SOFA ENGSEL BESAR.jpg",
+        "description": "Accesories engsel sofa ukuran besar (set)."
       },
       {
         "id": 8,
@@ -266,7 +289,8 @@
         "name": "ACC SOFA ENGSEL KECIL",
         "color": "",
         "type": "KECIL",
-        "image": "/images/items/ACC SOFA ENGSEL KECIL.jpg"
+        "image": "/images/items/ACC SOFA ENGSEL KECIL.jpg",
+        "description": "Accesories engsel sofa ukuran kecil (set)."
       },
       {
         "id": 9,
@@ -274,7 +298,8 @@
         "name": "ACC SOFA ENGSEL HEADREST",
         "color": "",
         "type": "HEADREST",
-        "image": "/images/items/ACC SOFA ENGSEL HEADREST.jpeg"
+        "image": "/images/items/ACC SOFA ENGSEL HEADREST.jpeg",
+        "description": "Accesories engsel untuk headrest sofa."
       }
     ],
     "disabled": 0,
@@ -291,7 +316,8 @@
         "name": "ACK STABIL KAYU GUCI HITAM",
         "color": "HITAM",
         "type": "",
-        "image": "/images/items/ACK STABIL KAYU HITAM GUCI.png"
+        "image": "/images/items/ACK STABIL KAYU HITAM GUCI.png",
+        "description": "Accessories stabil kayu model guci warna hitam."
       },
       {
         "id": 11,
@@ -299,7 +325,8 @@
         "name": "ACK STABIL KAYU GUCI MAROON",
         "color": "MAROON",
         "type": "",
-        "image": "/images/items/ACK STABIL KAYU GUCI MAROON.jpg"
+        "image": "/images/items/ACK STABIL KAYU GUCI MAROON.jpg",
+        "description": "Accessories stabil kayu model guci warna maroon."
       }
     ],
     "disabled": 0,
@@ -316,7 +343,8 @@
         "name": "ACC BED BAUT SAKURA BESAR 5 CM",
         "color": "",
         "type": "BESAR 5 CM",
-        "image": "/images/items/ACC BED BAUT SAKURA BESAR 5 CM.png"
+        "image": "/images/items/ACC BED BAUT SAKURA BESAR 5 CM.png",
+        "description": "Acc bed baut sakura dengan besar 5 CM"
       },
       {
         "id": 2,
@@ -324,7 +352,8 @@
         "name": "ACC BED BAUT SAKURA BESAR 7 CM",
         "color": "",
         "type": "BESAR 7 CM",
-        "image": "/images/items/ACC BED BAUT SAKURA BESAR 7 CM.jpg"
+        "image": "/images/items/ACC BED BAUT SAKURA BESAR 7 CM.jpg",
+        "description": "Accesories baut bed model Sakura dengan ukuran besar 7 CM."
       },
       {
         "id": 3,
@@ -332,7 +361,8 @@
         "name": "ACC BED BAUT SAKURA KECIL",
         "color": "",
         "type": "KECIL",
-        "image": "/images/items/ACC BED BAUT SAKURA KECIL.jpg"
+        "image": "/images/items/ACC BED BAUT SAKURA KECIL.jpg",
+        "description": "Accesories baut bed model Sakura ukuran kecil."
       }
     ],
     "disabled": 0,
@@ -349,7 +379,8 @@
         "name": "KP SOFA BELUDRU CITRUS ABU MUDA G12",
         "color": "ABU MUDA",
         "type": "",
-        "image": "/images/items/KP SOFA BELUDRU CITRUS ABU MUDA.jpeg"
+        "image": "/images/items/KP SOFA BELUDRU CITRUS ABU MUDA.jpeg",
+        "description": "Kain polos sofa Beludru Citrus abu muda, per meter."
       },
       {
         "id": 13,
@@ -357,7 +388,8 @@
         "name": "KP SOFA BELUDRU CITRUS BIRU TUA G13",
         "color": "BIRU TUA",
         "type": "",
-        "image": "/images/items/KP SOFA BELUDRU CITRUS BIRU TUA.jpeg"
+        "image": "/images/items/KP SOFA BELUDRU CITRUS BIRU TUA.jpeg",
+        "description": "Kain polos sofa Beludru Citrus biru tua, per meter."
       },
       {
         "id": 14,
@@ -365,7 +397,8 @@
         "name": "KP SOFA BELUDRU CITRUS COKLAT COFFEE G2",
         "color": "COKLAT COFFEE",
         "type": "",
-        "image": "/images/items/KP SOFA BELUDRU CITRUS COKLAT COFFEE.png"
+        "image": "/images/items/KP SOFA BELUDRU CITRUS COKLAT COFFEE.png",
+        "description": "Kain polos sofa Beludru Citrus coklat coffee, per meter."
       },
       {
         "id": 15,
@@ -373,7 +406,8 @@
         "name": "KP SOFA BELUDRU CITRUS HIJAU STABILO G11",
         "color": "HIJAU STABILO",
         "type": "",
-        "image": "/images/items/KP SOFA BELUDRU CITRUS HIJAU STABILO.png"
+        "image": "/images/items/KP SOFA BELUDRU CITRUS HIJAU STABILO.png",
+        "description": "Kain polos sofa Beludru Citrus hijau stabilo, per meter."
       }
     ],
     "disabled": 0,
@@ -390,7 +424,8 @@
         "name": "FNT KASUR 200X140X30CM KNT INOAC",
         "color": "",
         "type": "200X140X30CM INOAC",
-        "image": "/images/items/FNT KASUR 200X140X30CM.jpg"
+        "image": "/images/items/FNT KASUR 200X140X30CM.jpg",
+        "description": "FNT kasur 200x140x30cm KNT INOAC, per lembar."
       },
       {
         "id": 17,
@@ -398,7 +433,8 @@
         "name": "FNT KASUR 200X140X30CM CENTRAL",
         "color": "",
         "type": "200X140X30CM CENTRAL",
-        "image": "/images/items/FNT KASUR 200X140X30CM.jpg"
+        "image": "/images/items/FNT KASUR 200X140X30CM.jpg",
+        "description": "FNT kasur 200x140x30cm Central, per lembar."
       }
     ],
     "disabled": 0,
@@ -415,7 +451,8 @@
         "name": "ACC BED LOBANG ANGIN PUTIH CREAM",
         "color": "PUTIH",
         "type": "",
-        "image": "/images/items/ACC BED LOBANG ANGIN PUTIH CREAM.jpg"
+        "image": "/images/items/ACC BED LOBANG ANGIN PUTIH CREAM.jpg",
+        "description": "Accesories bed lobang angin warna putih cream."
       },
       {
         "id": 5,
@@ -423,7 +460,8 @@
         "name": "ACC BED LOBANG ANGIN EMAS HITAM COMFORT SLEEP",
         "color": "EMAS",
         "type": "COMFORT SLEEP",
-        "image": "/images/items/ACC BED LOBANG ANGIN EMAS HITAM.jpeg"
+        "image": "/images/items/ACC BED LOBANG ANGIN EMAS HITAM.jpeg",
+        "description": "Accesories bed lobang angin warna emas hitam, model Comfort Sleep."
       },
       {
         "id": 6,
@@ -431,7 +469,8 @@
         "name": "ACC BED LOBANG ANGIN PUTIH BIRU",
         "color": "PUTIH",
         "type": "",
-        "image": "/images/items/ACC BED LOBANG ANGIN PUTIH BIRU.jpg"
+        "image": "/images/items/ACC BED LOBANG ANGIN PUTIH BIRU.jpg",
+        "description": "Accesories bed lobang angin warna putih biru."
       }
     ],
     "disabled": 0,
@@ -448,7 +487,8 @@
         "name": "ACC SOFA ENGSEL BESAR",
         "color": "",
         "type": "BESAR",
-        "image": "/images/items/ACC SOFA ENGSEL BESAR.jpg"
+        "image": "/images/items/ACC SOFA ENGSEL BESAR.jpg",
+        "description": "Accesories engsel sofa ukuran besar (set)."
       },
       {
         "id": 8,
@@ -456,7 +496,8 @@
         "name": "ACC SOFA ENGSEL KECIL",
         "color": "",
         "type": "KECIL",
-        "image": "/images/items/ACC SOFA ENGSEL KECIL.jpg"
+        "image": "/images/items/ACC SOFA ENGSEL KECIL.jpg",
+        "description": "Accesories engsel sofa ukuran kecil (set)."
       },
       {
         "id": 9,
@@ -464,7 +505,8 @@
         "name": "ACC SOFA ENGSEL HEADREST",
         "color": "",
         "type": "HEADREST",
-        "image": "/images/items/ACC SOFA ENGSEL HEADREST.jpeg"
+        "image": "/images/items/ACC SOFA ENGSEL HEADREST.jpeg",
+        "description": "Accesories engsel untuk headrest sofa."
       }
     ],
     "disabled": 0,
@@ -481,7 +523,8 @@
         "name": "ACK STABIL KAYU GUCI HITAM",
         "color": "HITAM",
         "type": "",
-        "image": "/images/items/ACK STABIL KAYU HITAM GUCI.png"
+        "image": "/images/items/ACK STABIL KAYU HITAM GUCI.png",
+        "description": "Accessories stabil kayu model guci warna hitam."
       },
       {
         "id": 11,
@@ -489,7 +532,8 @@
         "name": "ACK STABIL KAYU GUCI MAROON",
         "color": "MAROON",
         "type": "",
-        "image": "/images/items/ACK STABIL KAYU GUCI MAROON.jpg"
+        "image": "/images/items/ACK STABIL KAYU GUCI MAROON.jpg",
+        "description": "Accessories stabil kayu model guci warna maroon."
       }
     ],
     "disabled": 0,
@@ -506,7 +550,8 @@
         "name": "ACC BED BAUT SAKURA BESAR 5 CM",
         "color": "",
         "type": "BESAR 5 CM",
-        "image": "/images/items/ACC BED BAUT SAKURA BESAR 5 CM.png"
+        "image": "/images/items/ACC BED BAUT SAKURA BESAR 5 CM.png",
+        "description": "Acc bed baut sakura dengan besar 5 CM"
       },
       {
         "id": 2,
@@ -514,7 +559,8 @@
         "name": "ACC BED BAUT SAKURA BESAR 7 CM",
         "color": "",
         "type": "BESAR 7 CM",
-        "image": "/images/items/ACC BED BAUT SAKURA BESAR 7 CM.jpg"
+        "image": "/images/items/ACC BED BAUT SAKURA BESAR 7 CM.jpg",
+        "description": "Accesories baut bed model Sakura dengan ukuran besar 7 CM."
       },
       {
         "id": 3,
@@ -522,7 +568,8 @@
         "name": "ACC BED BAUT SAKURA KECIL",
         "color": "",
         "type": "KECIL",
-        "image": "/images/items/ACC BED BAUT SAKURA KECIL.jpg"
+        "image": "/images/items/ACC BED BAUT SAKURA KECIL.jpg",
+        "description": "Accesories baut bed model Sakura ukuran kecil."
       }
     ],
     "disabled": 0,
@@ -539,7 +586,8 @@
         "name": "KP SOFA BELUDRU CITRUS ABU MUDA G12",
         "color": "ABU MUDA",
         "type": "",
-        "image": "/images/items/KP SOFA BELUDRU CITRUS ABU MUDA.jpeg"
+        "image": "/images/items/KP SOFA BELUDRU CITRUS ABU MUDA.jpeg",
+        "description": "Kain polos sofa Beludru Citrus abu muda, per meter."
       },
       {
         "id": 13,
@@ -547,7 +595,8 @@
         "name": "KP SOFA BELUDRU CITRUS BIRU TUA G13",
         "color": "BIRU TUA",
         "type": "",
-        "image": "/images/items/KP SOFA BELUDRU CITRUS BIRU TUA.jpeg"
+        "image": "/images/items/KP SOFA BELUDRU CITRUS BIRU TUA.jpeg",
+        "description": "Kain polos sofa Beludru Citrus biru tua, per meter."
       },
       {
         "id": 14,
@@ -555,7 +604,8 @@
         "name": "KP SOFA BELUDRU CITRUS COKLAT COFFEE G2",
         "color": "COKLAT COFFEE",
         "type": "",
-        "image": "/images/items/KP SOFA BELUDRU CITRUS COKLAT COFFEE.png"
+        "image": "/images/items/KP SOFA BELUDRU CITRUS COKLAT COFFEE.png",
+        "description": "Kain polos sofa Beludru Citrus coklat coffee, per meter."
       },
       {
         "id": 15,
@@ -563,7 +613,8 @@
         "name": "KP SOFA BELUDRU CITRUS HIJAU STABILO G11",
         "color": "HIJAU STABILO",
         "type": "",
-        "image": "/images/items/KP SOFA BELUDRU CITRUS HIJAU STABILO.png"
+        "image": "/images/items/KP SOFA BELUDRU CITRUS HIJAU STABILO.png",
+        "description": "Kain polos sofa Beludru Citrus hijau stabilo, per meter."
       }
     ],
     "disabled": 0,
@@ -580,7 +631,8 @@
         "name": "FNT KASUR 200X140X30CM KNT INOAC",
         "color": "",
         "type": "200X140X30CM INOAC",
-        "image": "/images/items/FNT KASUR 200X140X30CM.jpg"
+        "image": "/images/items/FNT KASUR 200X140X30CM.jpg",
+        "description": "FNT kasur 200x140x30cm KNT INOAC, per lembar."
       },
       {
         "id": 17,
@@ -588,7 +640,8 @@
         "name": "FNT KASUR 200X140X30CM CENTRAL",
         "color": "",
         "type": "200X140X30CM CENTRAL",
-        "image": "/images/items/FNT KASUR 200X140X30CM.jpg"
+        "image": "/images/items/FNT KASUR 200X140X30CM.jpg",
+        "description": "FNT kasur 200x140x30cm Central, per lembar."
       }
     ],
     "disabled": 0,
@@ -605,7 +658,8 @@
         "name": "ACC BED LOBANG ANGIN PUTIH CREAM",
         "color": "PUTIH",
         "type": "",
-        "image": "/images/items/ACC BED LOBANG ANGIN PUTIH CREAM.jpg"
+        "image": "/images/items/ACC BED LOBANG ANGIN PUTIH CREAM.jpg",
+        "description": "Accesories bed lobang angin warna putih cream."
       },
       {
         "id": 5,
@@ -613,7 +667,8 @@
         "name": "ACC BED LOBANG ANGIN EMAS HITAM COMFORT SLEEP",
         "color": "EMAS",
         "type": "",
-        "image": "/images/items/ACC BED LOBANG ANGIN EMAS HITAM.jpeg"
+        "image": "/images/items/ACC BED LOBANG ANGIN EMAS HITAM.jpeg",
+        "description": "Accesories bed lobang angin warna emas hitam, model Comfort Sleep."
       },
       {
         "id": 6,
@@ -621,7 +676,8 @@
         "name": "ACC BED LOBANG ANGIN PUTIH BIRU",
         "color": "PUTIH",
         "type": "",
-        "image": "/images/items/ACC BED LOBANG ANGIN PUTIH BIRU.jpg"
+        "image": "/images/items/ACC BED LOBANG ANGIN PUTIH BIRU.jpg",
+        "description": "Accesories bed lobang angin warna putih biru."
       }
     ],
     "disabled": 0,
@@ -638,7 +694,8 @@
         "name": "ACC SOFA ENGSEL BESAR",
         "color": "",
         "type": "BESAR",
-        "image": "/images/items/ACC SOFA ENGSEL BESAR.jpg"
+        "image": "/images/items/ACC SOFA ENGSEL BESAR.jpg",
+        "description": "Accesories engsel sofa ukuran besar (set)."
       },
       {
         "id": 8,
@@ -646,7 +703,8 @@
         "name": "ACC SOFA ENGSEL KECIL",
         "color": "",
         "type": "KECIL",
-        "image": "/images/items/ACC SOFA ENGSEL KECIL.jpg"
+        "image": "/images/items/ACC SOFA ENGSEL KECIL.jpg",
+        "description": "Accesories engsel sofa ukuran kecil (set)."
       },
       {
         "id": 9,
@@ -654,7 +712,8 @@
         "name": "ACC SOFA ENGSEL HEADREST",
         "color": "",
         "type": "HEADREST",
-        "image": "/images/items/ACC SOFA ENGSEL HEADREST.jpeg"
+        "image": "/images/items/ACC SOFA ENGSEL HEADREST.jpeg",
+        "description": "Accesories engsel untuk headrest sofa."
       }
     ],
     "disabled": 0,
@@ -671,7 +730,8 @@
         "name": "ACK STABIL KAYU GUCI HITAM",
         "color": "HITAM",
         "type": "",
-        "image": "/images/items/ACK STABIL KAYU HITAM GUCI.png"
+        "image": "/images/items/ACK STABIL KAYU HITAM GUCI.png",
+        "description": "Accessories stabil kayu model guci warna hitam."
       },
       {
         "id": 11,
@@ -679,7 +739,8 @@
         "name": "ACK STABIL KAYU GUCI MAROON",
         "color": "MAROON",
         "type": "",
-        "image": "/images/items/ACK STABIL KAYU GUCI MAROON.jpg"
+        "image": "/images/items/ACK STABIL KAYU GUCI MAROON.jpg",
+        "description": "Accessories stabil kayu model guci warna maroon."
       }
     ],
     "disabled": 0,
@@ -696,7 +757,8 @@
         "name": "ACC BED BAUT SAKURA BESAR 5 CM",
         "color": "",
         "type": "BESAR 5 CM",
-        "image": "/images/items/ACC BED BAUT SAKURA BESAR 5 CM.png"
+        "image": "/images/items/ACC BED BAUT SAKURA BESAR 5 CM.png",
+        "description": "Acc bed baut sakura dengan besar 5 CM"
       },
       {
         "id": 2,
@@ -704,7 +766,8 @@
         "name": "ACC BED BAUT SAKURA BESAR 7 CM",
         "color": "",
         "type": "BESAR 7 CM",
-        "image": "/images/items/ACC BED BAUT SAKURA BESAR 7 CM.jpg"
+        "image": "/images/items/ACC BED BAUT SAKURA BESAR 7 CM.jpg",
+        "description": "Accesories baut bed model Sakura dengan ukuran besar 7 CM."
       },
       {
         "id": 3,
@@ -712,7 +775,8 @@
         "name": "ACC BED BAUT SAKURA KECIL",
         "color": "",
         "type": "KECIL",
-        "image": "/images/items/ACC BED BAUT SAKURA KECIL.jpg"
+        "image": "/images/items/ACC BED BAUT SAKURA KECIL.jpg",
+        "description": "Accesories baut bed model Sakura ukuran kecil."
       }
     ],
     "disabled": 0,
@@ -729,7 +793,8 @@
         "name": "KP SOFA BELUDRU CITRUS ABU MUDA G12",
         "color": "ABU MUDA",
         "type": "",
-        "image": "/images/items/KP SOFA BELUDRU CITRUS ABU MUDA.jpeg"
+        "image": "/images/items/KP SOFA BELUDRU CITRUS ABU MUDA.jpeg",
+        "description": "Kain polos sofa Beludru Citrus abu muda, per meter."
       },
       {
         "id": 13,
@@ -737,7 +802,8 @@
         "name": "KP SOFA BELUDRU CITRUS BIRU TUA G13",
         "color": "BIRU TUA",
         "type": "",
-        "image": "/images/items/KP SOFA BELUDRU CITRUS BIRU TUA.jpeg"
+        "image": "/images/items/KP SOFA BELUDRU CITRUS BIRU TUA.jpeg",
+        "description": "Kain polos sofa Beludru Citrus biru tua, per meter."
       },
       {
         "id": 14,
@@ -745,7 +811,8 @@
         "name": "KP SOFA BELUDRU CITRUS COKLAT COFFEE G2",
         "color": "COKLAT COFFEE",
         "type": "",
-        "image": "/images/items/KP SOFA BELUDRU CITRUS COKLAT COFFEE.png"
+        "image": "/images/items/KP SOFA BELUDRU CITRUS COKLAT COFFEE.png",
+        "description": "Kain polos sofa Beludru Citrus coklat coffee, per meter."
       },
       {
         "id": 15,
@@ -753,7 +820,8 @@
         "name": "KP SOFA BELUDRU CITRUS HIJAU STABILO G11",
         "color": "HIJAU STABILO",
         "type": "",
-        "image": "/images/items/KP SOFA BELUDRU CITRUS HIJAU STABILO.png"
+        "image": "/images/items/KP SOFA BELUDRU CITRUS HIJAU STABILO.png",
+        "description": "Kain polos sofa Beludru Citrus hijau stabilo, per meter."
       }
     ],
     "disabled": 0,
@@ -770,7 +838,8 @@
         "name": "FNT KASUR 200X140X30CM KNT INOAC",
         "color": "",
         "type": "200X140X30CM INOAC",
-        "image": "/images/items/FNT KASUR 200X140X30CM.jpg"
+        "image": "/images/items/FNT KASUR 200X140X30CM.jpg",
+        "description": "FNT kasur 200x140x30cm KNT INOAC, per lembar."
       },
       {
         "id": 17,
@@ -778,7 +847,8 @@
         "name": "FNT KASUR 200X140X30CM CENTRAL",
         "color": "",
         "type": "200X140X30CM CENTRAL",
-        "image": "/images/items/FNT KASUR 200X140X30CM.jpg"
+        "image": "/images/items/FNT KASUR 200X140X30CM.jpg",
+        "description": "FNT kasur 200x140x30cm Central, per lembar."
       }
     ],
     "disabled": 0,
@@ -795,7 +865,8 @@
         "name": "ACC BED LOBANG ANGIN PUTIH CREAM",
         "color": "PUTIH",
         "type": "",
-        "image": "/images/items/ACC BED LOBANG ANGIN PUTIH CREAM.jpg"
+        "image": "/images/items/ACC BED LOBANG ANGIN PUTIH CREAM.jpg",
+        "description": "Accesories bed lobang angin warna putih cream."
       },
       {
         "id": 5,
@@ -803,7 +874,8 @@
         "name": "ACC BED LOBANG ANGIN EMAS HITAM COMFORT SLEEP",
         "color": "EMAS",
         "type": "",
-        "image": "/images/items/ACC BED LOBANG ANGIN EMAS HITAM.jpeg"
+        "image": "/images/items/ACC BED LOBANG ANGIN EMAS HITAM.jpeg",
+        "description": "Accesories bed lobang angin warna emas hitam, model Comfort Sleep."
       },
       {
         "id": 6,
@@ -811,7 +883,8 @@
         "name": "ACC BED LOBANG ANGIN PUTIH BIRU",
         "color": "PUTIH",
         "type": "",
-        "image": "/images/items/ACC BED LOBANG ANGIN PUTIH BIRU.jpg"
+        "image": "/images/items/ACC BED LOBANG ANGIN PUTIH BIRU.jpg",
+        "description": "Accesories bed lobang angin warna putih biru."
       }
     ],
     "disabled": 0,
@@ -828,7 +901,8 @@
         "name": "ACC SOFA ENGSEL BESAR",
         "color": "",
         "type": "BESAR",
-        "image": "/images/items/ACC SOFA ENGSEL BESAR.jpg"
+        "image": "/images/items/ACC SOFA ENGSEL BESAR.jpg",
+        "description": "Accesories engsel sofa ukuran besar (set)."
       },
       {
         "id": 8,
@@ -836,7 +910,8 @@
         "name": "ACC SOFA ENGSEL KECIL",
         "color": "",
         "type": "KECIL",
-        "image": "/images/items/ACC SOFA ENGSEL KECIL.jpg"
+        "image": "/images/items/ACC SOFA ENGSEL KECIL.jpg",
+        "description": "Accesories engsel sofa ukuran kecil (set)."
       },
       {
         "id": 9,
@@ -844,7 +919,8 @@
         "name": "ACC SOFA ENGSEL HEADREST",
         "color": "",
         "type": "HEADREST",
-        "image": "/images/items/ACC SOFA ENGSEL HEADREST.jpeg"
+        "image": "/images/items/ACC SOFA ENGSEL HEADREST.jpeg",
+        "description": "Accesories engsel untuk headrest sofa."
       }
     ],
     "disabled": 0,
@@ -861,7 +937,8 @@
         "name": "ACK STABIL KAYU GUCI HITAM",
         "color": "HITAM",
         "type": "",
-        "image": "/images/items/ACK STABIL KAYU HITAM GUCI.png"
+        "image": "/images/items/ACK STABIL KAYU HITAM GUCI.png",
+        "description": "Accessories stabil kayu model guci warna hitam."
       },
       {
         "id": 11,
@@ -869,7 +946,8 @@
         "name": "ACK STABIL KAYU GUCI MAROON",
         "color": "MAROON",
         "type": "",
-        "image": "/images/items/ACK STABIL KAYU GUCI MAROON.jpg"
+        "image": "/images/items/ACK STABIL KAYU GUCI MAROON.jpg",
+        "description": "Accessories stabil kayu model guci warna maroon."
       }
     ],
     "disabled": 0,
@@ -886,7 +964,8 @@
         "name": "ACC BED BAUT SAKURA BESAR 5 CM",
         "color": "",
         "type": "BESAR 5 CM",
-        "image": "/images/items/ACC BED BAUT SAKURA BESAR 5 CM.png"
+        "image": "/images/items/ACC BED BAUT SAKURA BESAR 5 CM.png",
+        "description": "Acc bed baut sakura dengan besar 5 CM"
       },
       {
         "id": 2,
@@ -894,7 +973,8 @@
         "name": "ACC BED BAUT SAKURA BESAR 7 CM",
         "color": "",
         "type": "BESAR 7 CM",
-        "image": "/images/items/ACC BED BAUT SAKURA BESAR 7 CM.jpg"
+        "image": "/images/items/ACC BED BAUT SAKURA BESAR 7 CM.jpg",
+        "description": "Accesories baut bed model Sakura dengan ukuran besar 7 CM."
       },
       {
         "id": 3,
@@ -902,7 +982,8 @@
         "name": "ACC BED BAUT SAKURA KECIL",
         "color": "",
         "type": "KECIL",
-        "image": "/images/items/ACC BED BAUT SAKURA KECIL.jpg"
+        "image": "/images/items/ACC BED BAUT SAKURA KECIL.jpg",
+        "description": "Accesories baut bed model Sakura ukuran kecil."
       }
     ],
     "disabled": 0,
@@ -919,7 +1000,8 @@
         "name": "KP SOFA BELUDRU CITRUS ABU MUDA G12",
         "color": "ABU MUDA",
         "type": "",
-        "image": "/images/items/KP SOFA BELUDRU CITRUS ABU MUDA.jpeg"
+        "image": "/images/items/KP SOFA BELUDRU CITRUS ABU MUDA.jpeg",
+        "description": "Kain polos sofa Beludru Citrus abu muda, per meter."
       },
       {
         "id": 13,
@@ -927,7 +1009,8 @@
         "name": "KP SOFA BELUDRU CITRUS BIRU TUA G13",
         "color": "BIRU TUA",
         "type": "",
-        "image": "/images/items/KP SOFA BELUDRU CITRUS BIRU TUA.jpeg"
+        "image": "/images/items/KP SOFA BELUDRU CITRUS BIRU TUA.jpeg",
+        "description": "Kain polos sofa Beludru Citrus biru tua, per meter."
       },
       {
         "id": 14,
@@ -935,7 +1018,8 @@
         "name": "KP SOFA BELUDRU CITRUS COKLAT COFFEE G2",
         "color": "COKLAT COFFEE",
         "type": "",
-        "image": "/images/items/KP SOFA BELUDRU CITRUS COKLAT COFFEE.png"
+        "image": "/images/items/KP SOFA BELUDRU CITRUS COKLAT COFFEE.png",
+        "description": "Kain polos sofa Beludru Citrus coklat coffee, per meter."
       },
       {
         "id": 15,
@@ -943,7 +1027,8 @@
         "name": "KP SOFA BELUDRU CITRUS HIJAU STABILO G11",
         "color": "HIJAU STABILO",
         "type": "",
-        "image": "/images/items/KP SOFA BELUDRU CITRUS HIJAU STABILO.png"
+        "image": "/images/items/KP SOFA BELUDRU CITRUS HIJAU STABILO.png",
+        "description": "Kain polos sofa Beludru Citrus hijau stabilo, per meter."
       },
       {
         "id": 12,
@@ -951,7 +1036,8 @@
         "name": "KP SOFA BELUDRU CITRUS ABU MUDA G12",
         "color": "ABU MUDA",
         "type": "",
-        "image": "/images/items/KP SOFA BELUDRU CITRUS ABU MUDA.jpeg"
+        "image": "/images/items/KP SOFA BELUDRU CITRUS ABU MUDA.jpeg",
+        "description": "Kain polos sofa Beludru Citrus abu muda, per meter."
       },
       {
         "id": 13,
@@ -959,7 +1045,8 @@
         "name": "KP SOFA BELUDRU CITRUS BIRU TUA G13",
         "color": "BIRU TUA",
         "type": "",
-        "image": "/images/items/KP SOFA BELUDRU CITRUS BIRU TUA.jpeg"
+        "image": "/images/items/KP SOFA BELUDRU CITRUS BIRU TUA.jpeg",
+        "description": "Kain polos sofa Beludru Citrus biru tua, per meter."
       },
       {
         "id": 14,
@@ -967,7 +1054,8 @@
         "name": "KP SOFA BELUDRU CITRUS COKLAT COFFEE G2",
         "color": "COKLAT COFFEE",
         "type": "",
-        "image": "/images/items/KP SOFA BELUDRU CITRUS COKLAT COFFEE.png"
+        "image": "/images/items/KP SOFA BELUDRU CITRUS COKLAT COFFEE.png",
+        "description": "Kain polos sofa Beludru Citrus coklat coffee, per meter."
       },
       {
         "id": 15,
@@ -975,7 +1063,8 @@
         "name": "KP SOFA BELUDRU CITRUS HIJAU STABILO G11",
         "color": "HIJAU STABILO",
         "type": "",
-        "image": "/images/items/KP SOFA BELUDRU CITRUS HIJAU STABILO.png"
+        "image": "/images/items/KP SOFA BELUDRU CITRUS HIJAU STABILO.png",
+        "description": "Kain polos sofa Beludru Citrus hijau stabilo, per meter."
       }
     ],
     "disabled": 0,

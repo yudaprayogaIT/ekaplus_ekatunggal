@@ -296,52 +296,83 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         final variant = product.variants[index];
                         final isSelected = index == _selectedVariantIndex;
 
+                        final double size = isSelected ? 70.0 : 50.0;
+
+                        final double verticalPadding = isSelected ? 5.0 : 10.0;
+
+                        // Ukuran margin horizontal (margin right 12px)
+                        const double horizontalMargin = 12.0;
+
                         return GestureDetector(
                           onTap: () {
                             _selectVariant(index, product.variants.length);
                           },
-                          child: Container(
-                            width: 70,
-                            height: 70,
-                            margin: const EdgeInsets.only(right: 12),
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: isSelected
-                                    ? AppColors.secondaryColor
-                                    : Colors.grey[300]!,
-                                width: isSelected ? 3 : 1,
-                              ),
-                              borderRadius: BorderRadius.circular(8),
-                              color: Colors.white,
+                          child: Padding(
+                            // Padding horizontal untuk margin antar item (right: 12)
+                            // Padding vertikal untuk menengahkan item 70px (5) atau 60px (10) di wadah 80px
+                            padding: EdgeInsets.only(
+                              right: horizontalMargin,
+                              top: verticalPadding,
+                              bottom: verticalPadding,
                             ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(6),
-                              child: variant.image.isNotEmpty
-                                  ? CachedNetworkImage(
-                                      imageUrl: _buildImageUrl(variant.image),
-                                      fit: BoxFit.cover,
-                                      placeholder: (context, url) =>
-                                          _buildShimmer(
-                                            width: 70,
-                                            height: 70,
-                                            radius: BorderRadius.circular(6),
-                                          ),
-                                      errorWidget: (context, url, error) {
-                                        final assetPath =
-                                            'assets${variant.image}';
-                                        return Image.asset(
-                                          assetPath,
-                                          fit: BoxFit.cover,
-                                          errorBuilder: (ctx, err, stack) {
-                                            return const Icon(
-                                              Icons.image,
-                                              color: Colors.grey,
-                                            );
-                                          },
-                                        );
-                                      },
-                                    )
-                                  : const Icon(Icons.image, color: Colors.grey),
+                            child: Container(
+                              width: size, // 70 atau 60
+                              height:
+                                  size, // 70 atau 60 (Ini adalah kunci, harus diatur)
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: isSelected
+                                      ? AppColors.secondaryColor
+                                      : Colors.grey[300]!,
+                                  width: isSelected ? 3 : 1,
+                                ),
+                                borderRadius: BorderRadius.circular(8),
+                                color: Colors.white,
+                                boxShadow: isSelected
+                                    ? [
+                                        BoxShadow(
+                                          color: AppColors.secondaryColor
+                                              .withOpacity(0.4),
+                                          blurRadius: 4,
+                                          spreadRadius: 1,
+                                        ),
+                                      ]
+                                    : [],
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(6),
+                                child: variant.image.isNotEmpty
+                                    ? CachedNetworkImage(
+                                        imageUrl: _buildImageUrl(variant.image),
+                                        fit: BoxFit.cover,
+                                        // Pastikan placeholder juga menggunakan 'size' yang dinamis
+                                        placeholder: (context, url) =>
+                                            _buildShimmer(
+                                              width: size,
+                                              height: size,
+                                              radius: BorderRadius.circular(6),
+                                            ),
+                                        errorWidget: (context, url, error) {
+                                          // ... (kode errorWidget tetap sama)
+                                          final assetPath =
+                                              'assets${variant.image}';
+                                          return Image.asset(
+                                            assetPath,
+                                            fit: BoxFit.cover,
+                                            errorBuilder: (ctx, err, stack) {
+                                              return const Icon(
+                                                Icons.image,
+                                                color: Colors.grey,
+                                              );
+                                            },
+                                          );
+                                        },
+                                      )
+                                    : const Icon(
+                                        Icons.image,
+                                        color: Colors.grey,
+                                      ),
+                              ),
                             ),
                           ),
                         );
@@ -459,41 +490,57 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'Item name',
+                         Text(
+                          selectedVariant.name,
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: 14,
                             fontWeight: FontWeight.w600,
                             color: Colors.black87,
                           ),
                         ),
-                        const SizedBox(height: 8),
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Colors.grey[100],
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.grey[300]!),
-                          ),
-                          child: Text(
-                            selectedVariant.name,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.black87,
-                            ),
-                          ),
-                        ),
+                        // const SizedBox(height: 8),
+                        // Container(
+                        //   width: double.infinity,
+                        //   padding: const EdgeInsets.all(12),
+                        //   // decoration: BoxDecoration(
+                        //   //   color: Colors.grey[100],
+                        //   //   borderRadius: BorderRadius.circular(8),
+                        //   //   border: Border.all(color: Colors.grey[300]!),
+                        //   // ),
+                        //   child: Text(
+                        //     selectedVariant.name,
+                        //     style: const TextStyle(
+                        //       fontSize: 14,
+                        //       fontWeight: FontWeight.w600,
+                        //       color: Colors.black87,
+                        //     ),
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 8),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        const Text(
+                          'Detail Produk',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.grayColor,
+                          ),
+                        ),
+
+                        const Divider(
+                          height: 1,
+                          thickness: 1,
+                          color: AppColors.grayColor,
+                        ),
+                        const SizedBox(height: 12),
+
                         _buildInfoRow('Kode', selectedVariant.code),
                         if ((selectedVariant as dynamic).type != null &&
                             (selectedVariant as dynamic).type
@@ -505,6 +552,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                           ),
                         if (product.category != null)
                           _buildInfoRow('Kategori', product.category!.name),
+                        _buildInfoRow('Deskripsi', selectedVariant.description),
                       ],
                     ),
                   ),
@@ -528,10 +576,10 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            width: 100,
+            width: 90,
             child: Text(
               label,
-              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+              style: TextStyle(fontSize: 14, color: Colors.black87),
             ),
           ),
           const Text(': ', style: TextStyle(fontSize: 14)),
@@ -540,7 +588,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               value,
               style: const TextStyle(
                 fontSize: 14,
-                fontWeight: FontWeight.w400,
+                fontWeight: FontWeight.w500,
                 color: Colors.black87,
               ),
             ),

@@ -18,18 +18,20 @@ class VariantEntity extends Equatable {
   final String color;
   final String type;
   final String image;
+  final String description;
 
   const VariantEntity({
-    required this.id, 
-    required this.code, 
-    required this.name, 
-    required this.color, 
-    required this.type, 
-    this.image = ""
+    required this.id,
+    required this.code,
+    required this.name,
+    required this.color,
+    required this.type,
+    required this.description,
+    this.image = "",
   });
 
   @override
-  List<Object?> get props => [id, code, name, color, type, image];
+  List<Object?> get props => [id, code, name, color, type, image, description];
 }
 
 class Product extends Equatable {
@@ -46,9 +48,16 @@ class Product extends Equatable {
     this.category,
     this.variants = const [], // ⚠️ Default empty list
     this.disabled = 0,
-    this.isHotDeals = false
+    this.isHotDeals = false,
   });
 
   @override
-  List<Object?> get props => [id, name, category, variants, disabled, isHotDeals];
+  List<Object?> get props => [
+    id,
+    name,
+    category,
+    variants,
+    disabled,
+    isHotDeals,
+  ];
 }

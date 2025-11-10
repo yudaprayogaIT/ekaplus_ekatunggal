@@ -15,9 +15,9 @@
         { "id": 7, "name": "Ekatunggal" },
         { "id": 10, "name": "Ekatunggal Timur Manado" },
         { "id": 13, "name": "Ekatunggal Timur Maroso" }
-      ]
+      ],
+      "description": "Acc bed baut sakura dengan besar 5 CM"
     },
-    "detail": "Acc bed lobang angin warna emas hitam.",
     "productid": 1
   },
   {
@@ -38,9 +38,9 @@
         { "id": 7, "name": "Ekatunggal" },
         { "id": 10, "name": "Ekatunggal Timur Manado" },
         { "id": 13, "name": "Ekatunggal Timur Maroso" }
-      ]
+      ],
+      "description": "Accesories baut bed model Sakura dengan ukuran besar 7 CM."
     },
-    "detail": "Accesories baut bed model Sakura dengan ukuran besar 7 CM.",
     "productid": 1
   },
   {
@@ -61,9 +61,9 @@
         { "id": 7, "name": "Ekatunggal" },
         { "id": 10, "name": "Ekatunggal Timur Manado" },
         { "id": 13, "name": "Ekatunggal Timur Maroso" }
-      ]
+      ],
+      "description": "Accesories baut bed model Sakura ukuran kecil."
     },
-    "detail": "Accesories baut bed model Sakura ukuran kecil.",
     "productid": 1
   },
   {
@@ -84,9 +84,9 @@
         { "id": 10, "name": "Ekatunggal Timur Manado" },
         { "id": 11, "name": "Ekatunggal Timur Makassar" },
         { "id": 13, "name": "Ekatunggal Timur Maroso" }
-      ]
+      ],
+      "description": "Accesories bed lobang angin warna putih cream."
     },
-    "detail": "Accesories bed lobang angin warna putih cream.",
     "productid": 2
   },
   {
@@ -107,9 +107,9 @@
         { "id": 10, "name": "Ekatunggal Timur Manado" },
         { "id": 11, "name": "Ekatunggal Timur Makassar" },
         { "id": 13, "name": "Ekatunggal Timur Maroso" }
-      ]
+      ],
+      "description": "Accesories bed lobang angin warna emas hitam, model Comfort Sleep."
     },
-    "detail": "Accesories bed lobang angin warna emas hitam, model Comfort Sleep.",
     "productid": 2
   },
   {
@@ -129,9 +129,9 @@
         { "id": 10, "name": "Ekatunggal Timur Manado" },
         { "id": 11, "name": "Ekatunggal Timur Makassar" },
         { "id": 13, "name": "Ekatunggal Timur Maroso" }
-      ]
+      ],
+      "description": "Accesories bed lobang angin warna putih biru."
     },
-    "detail": "Accesories bed lobang angin warna putih biru.",
     "productid": 2
   },
   {
@@ -153,9 +153,9 @@
         { "id": 12, "name": "Ekatunggal Timur Manisa" },
         { "id": 11, "name": "Ekatunggal Timur Makassar" },
         { "id": 13, "name": "Ekatunggal Timur Maroso" }
-      ]
+      ],
+      "description": "Accesories engsel sofa ukuran besar (set)."
     },
-    "detail": "Accesories engsel sofa ukuran besar (set).",
     "productid": 3
   },
   {
@@ -175,9 +175,9 @@
         { "id": 10, "name": "Ekatunggal Timur Manado" },
         { "id": 11, "name": "Ekatunggal Timur Makassar" },
         { "id": 13, "name": "Ekatunggal Timur Maroso" }
-      ]
+      ],
+      "description": "Accesories engsel sofa ukuran kecil (set)."
     },
-    "detail": "Accesories engsel sofa ukuran kecil (set).",
     "productid": 3
   },
   {
@@ -197,9 +197,9 @@
         { "id": 7, "name": "Ekatunggal" },
         { "id": 10, "name": "Ekatunggal Timur Manado" },
         { "id": 13, "name": "Ekatunggal Timur Maroso" }
-      ]
+      ],
+      "description": "Accesories engsel untuk headrest sofa."
     },
-    "detail": "Accesories engsel untuk headrest sofa.",
     "productid": 3
   },
   {
@@ -219,9 +219,9 @@
         { "id": 10, "name": "Ekatunggal Timur Manado" },
         { "id": 11, "name": "Ekatunggal Timur Makassar" },
         { "id": 13, "name": "Ekatunggal Timur Maroso" }
-      ]
+      ],
+      "description": "Accessories stabil kayu model guci warna hitam."
     },
-    "detail": "Accessories stabil kayu model guci warna hitam.",
     "productid": 4
   },
   {
@@ -241,9 +241,9 @@
         { "id": 7, "name": "Ekatunggal" },
         { "id": 10, "name": "Ekatunggal Timur Manado" },
         { "id": 13, "name": "Ekatunggal Timur Maroso" }
-      ]
+      ],
+      "description": "Accessories stabil kayu model guci warna maroon."
     },
-    "detail": "Accessories stabil kayu model guci warna maroon.",
     "productid": 4
   },
   {
@@ -262,9 +262,9 @@
         { "id": 7, "name": "Ekatunggal" },
         { "id": 10, "name": "Ekatunggal Timur Manado" },
         { "id": 13, "name": "Ekatunggal Timur Maroso" }
-      ]
+      ],
+      "description": "Kain polos sofa Beludru Citrus abu muda, per meter."
     },
-    "detail": "Kain polos sofa Beludru Citrus abu muda, per meter.",
     "productid": 5
   },
   {
@@ -285,9 +285,9 @@
         { "id": 10, "name": "Ekatunggal Timur Manado" },
         { "id": 11, "name": "Ekatunggal Timur Makassar" },
         { "id": 13, "name": "Ekatunggal Timur Maroso" }
-      ]
+      ],
+      "description": "Kain polos sofa Beludru Citrus biru tua, per meter."
     },
-    "detail": "Kain polos sofa Beludru Citrus biru tua, per meter.",
     "productid": 5
   },
   {
@@ -306,9 +306,9 @@
         { "id": 7, "name": "Ekatunggal" },
         { "id": 10, "name": "Ekatunggal Timur Manado" },
         { "id": 13, "name": "Ekatunggal Timur Maroso" }
-      ]
+      ],
+      "description": "Kain polos sofa Beludru Citrus coklat coffee, per meter."
     },
-    "detail": "Kain polos sofa Beludru Citrus coklat coffee, per meter.",
     "productid": 5
   },
   {
@@ -328,9 +328,9 @@
         { "id": 10, "name": "Ekatunggal Timur Manado" },
         { "id": 11, "name": "Ekatunggal Timur Makassar" },
         { "id": 13, "name": "Ekatunggal Timur Maroso" }
-      ]
+      ],
+      "description": "Kain polos sofa Beludru Citrus hijau stabilo, per meter."
     },
-    "detail": "Kain polos sofa Beludru Citrus hijau stabilo, per meter.",
     "productid": 5
   },
   {
@@ -349,9 +349,9 @@
         { "id": 7, "name": "Ekatunggal" },
         { "id": 10, "name": "Ekatunggal Timur Manado" },
         { "id": 13, "name": "Ekatunggal Timur Maroso" }
-      ]
+      ],
+      "description": "FNT kasur 200x140x30cm KNT INOAC, per lembar."
     },
-    "detail": "FNT kasur 200x140x30cm KNT INOAC, per lembar.",
     "productid": 6
   },
   {
@@ -371,9 +371,9 @@
         { "id": 10, "name": "Ekatunggal Timur Manado" },
         { "id": 11, "name": "Ekatunggal Timur Makassar" },
         { "id": 13, "name": "Ekatunggal Timur Maroso" }
-      ]
+      ],
+      "description": "FNT kasur 200x140x30cm Central, per lembar."
     },
-    "detail": "FNT kasur 200x140x30cm Central, per lembar.",
     "productid": 6
   }
 ]

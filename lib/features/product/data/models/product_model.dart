@@ -23,6 +23,7 @@ class VariantModel extends VariantEntity {
     required super.name,
     super.color = "",
     super.type = "",
+    super.description = "",
     super.image = "",
   });
 
@@ -33,6 +34,7 @@ class VariantModel extends VariantEntity {
       name: json['name'] ?? '',
       color: json['color'] ?? '',
       type: json['type'] ?? '',
+      description: json['description'] ?? '',
       image: json['image'] ?? '',
     );
   }
@@ -44,6 +46,7 @@ class VariantModel extends VariantEntity {
       'name': name, 
       'color': color, 
       'type': type, 
+      'description': description, 
       'image': image // ⚠️ Perbaiki: tadinya 'image': 'image'
     };
   }
