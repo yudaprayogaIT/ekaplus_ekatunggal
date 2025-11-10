@@ -3,8 +3,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:cached_network_image/cached_network_image.dart'; // 💡 Import library CachedNetworkImage
-// Asumsi import entitas dan bloc Anda:
 import 'package:ekaplus_ekatunggal/features/product/domain/entities/product.dart';
 import 'package:ekaplus_ekatunggal/features/product/presentation/bloc/product_bloc.dart';
 
@@ -24,29 +22,29 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   
   // ⚙️ CONFIG: Durasi auto-slide dalam detik (ubah sesuai kebutuhan)
   final int _autoSlideDuration = 3; 
-  // ⚠️ Ganti dengan domain Anda yang sebenarnya
-  final String _imageBaseUrl = 'https://your-domain.com';
 
   @override
   void initState() {
     super.initState();
+    // Fetch product detail saat halaman dibuka
     context.read<ProductBloc>().add(ProductEventGetDetailProduct(widget.productId));
   }
 
   @override
   void dispose() {
-    _autoSlideTimer?.cancel(); 
-    _thumbnailScrollController.dispose(); 
+    _autoSlideTimer?.cancel(); // Batalkan timer saat widget dispose
+    _thumbnailScrollController.dispose(); // Dispose scroll controller
     super.dispose();
   }
 
   void _startAutoSlide(int variantsLength) {
-    _autoSlideTimer?.cancel(); 
+    _autoSlideTimer?.cancel(); // Cancel timer sebelumnya jika ada
     
     _autoSlideTimer = Timer.periodic(Duration(seconds: _autoSlideDuration), (timer) {
       if (mounted) {
         setState(() {
           _selectedVariantIndex = (_selectedVariantIndex + 1) % variantsLength;
+          // Panggil fungsi scroll di sini agar auto-slide juga menggeser thumbnail
           _scrollToSelectedThumbnail(_selectedVariantIndex);
         });
       }
@@ -61,84 +59,53 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     setState(() {
       _selectedVariantIndex = index;
     });
+    // Scroll thumbnail ke posisi yang dipilih
     _scrollToSelectedThumbnail(index);
+    // Restart timer setelah user manual select
     _startAutoSlide(variantsLength);
   }
 
+  // 🎯 FUNGSI UTAMA YANG DIPERBAIKI
   void _scrollToSelectedThumbnail(int index) {
     if (!_thumbnailScrollController.hasClients) return;
 
-    const double itemWidth = 70.0 + 12.0; 
+    // Ukuran item thumbnail (lebar + margin)
+    const double itemWidth = 70.0 + 12.0; // width 70 + margin right 12
     const double padding = 16.0;
     
+    // Hitung offset yang diperlukan untuk item index berada di awal viewport
     final double offsetToStart = (index * itemWidth) + padding;
     
+    // Hitung posisi tengah viewport
     final double screenWidth = MediaQuery.of(context).size.width;
     final double centerOffset = (screenWidth / 2) - (itemWidth / 2);
     
+    // Target scroll untuk menengahkan item
     double targetScroll = offsetToStart - centerOffset;
     
+    // Dapatkan batas scroll
     final double maxScroll = _thumbnailScrollController.position.maxScrollExtent;
     final double minScroll = _thumbnailScrollController.position.minScrollExtent;
     
-    // Logika Pengecualian (Item 0 dan 1)
+    // LOGIKA PENGECUALIAN UNTUK DUA ITEM PERTAMA
     if (index <= 1) {
+        // Jika item 0 atau 1, biarkan di posisi awal (tidak perlu digeser ke tengah)
+        // Item 0: scroll 0
+        // Item 1: scroll 0 (karena itemWidth mungkin lebih kecil dari centerOffset)
         targetScroll = minScroll;
     }
     
+    // Clamp nilai scroll agar tidak melebihi batas
     final double finalScroll = targetScroll.clamp(minScroll, maxScroll);
     
+    // Animate scroll
     _thumbnailScrollController.animateTo(
       finalScroll,
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
     );
   }
-
-  // 🆕 Widget yang menggunakan CachedNetworkImage
-  Widget _buildMainImage(int variantId, String imagePath) {
-    final String fullUrl = '$_imageBaseUrl$imagePath';
-    final bool isPlaceholder = imagePath.isEmpty;
-
-    if (isPlaceholder) {
-      return Container(
-          key: ValueKey<int>(variantId),
-          child: const Center(
-            child: Icon(
-              Icons.image_not_supported,
-              size: 80,
-              color: Colors.grey,
-            ),
-          ),
-      );
-    }
-    
-    return CachedNetworkImage(
-        key: ValueKey<int>(variantId), // PENTING: Key unik untuk AnimatedSwitcher
-        imageUrl: fullUrl,
-        fit: BoxFit.contain,
-        // 🚀 Placeholder saat loading
-        placeholder: (context, url) => Center(
-            child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.grey[300]!),
-            ),
-        ),
-        // ❌ Error Widget (fallback ke asset jika ada)
-        errorWidget: (context, url, error) => Image.asset(
-            'assets$imagePath', // Ganti dengan path asset yang sesuai jika ada
-            fit: BoxFit.contain,
-            errorBuilder: (ctx, err, stack) {
-                return const Center(
-                    child: Icon(
-                        Icons.image_not_supported,
-                        size: 80,
-                        color: Colors.grey,
-                    ),
-                );
-            },
-        ),
-    );
-  }
+  // ------------------------------------
 
   @override
   Widget build(BuildContext context) {
@@ -163,8 +130,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           }
 
           if (state is ProductStateError) {
-            // ... (Kode Error Anda)
-             return Center(
+            return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -192,9 +158,10 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               return const Center(child: Text('Tidak ada varian tersedia'));
             }
 
+            // Panggil _startAutoSlide DAN _scrollToSelectedThumbnail (0) setelah frame pertama dibuat
             WidgetsBinding.instance.addPostFrameCallback((_) {
               _startAutoSlide(product.variants.length);
-              _scrollToSelectedThumbnail(_selectedVariantIndex); 
+              _scrollToSelectedThumbnail(_selectedVariantIndex); // Scroll ke item 0/pertama
             });
 
             final selectedVariant = product.variants[_selectedVariantIndex];
@@ -203,7 +170,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // 1. Gambar Utama dengan AnimatedSwitcher dan CachedNetworkImage
+                  // Gambar Utama dengan AnimatedSwitcher
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Container(
@@ -216,8 +183,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(12),
                         child: AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 400),
+                          duration: const Duration(milliseconds: 100),
                           transitionBuilder: (Widget child, Animation<double> animation) {
+                            // Menggabungkan Fade dan Scale transition untuk efek yang lebih halus
                             return FadeTransition(
                               opacity: animation,
                               child: ScaleTransition(
@@ -231,8 +199,49 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                               ),
                             );
                           },
-                          // ➡️ Menggunakan _buildMainImage yang sudah Cached
-                          child: _buildMainImage(selectedVariant.id, selectedVariant.image),
+                          // PENTING: Key harus berbeda agar AnimatedSwitcher bekerja
+                          child: selectedVariant.image.isNotEmpty
+                              ? Image.network(
+                                  key: ValueKey<int>(selectedVariant.id), // Key berdasarkan ID variant
+                                  'https://your-domain.com${selectedVariant.image}',
+                                  fit: BoxFit.contain,
+                                  loadingBuilder: (context, child, loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return Center(
+                                      child: CircularProgressIndicator(
+                                        value: loadingProgress.expectedTotalBytes != null
+                                            ? loadingProgress.cumulativeBytesLoaded /
+                                                loadingProgress.expectedTotalBytes!
+                                            : null,
+                                      ),
+                                    );
+                                  },
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Image.asset(
+                                      'assets${selectedVariant.image}',
+                                      fit: BoxFit.contain,
+                                      errorBuilder: (ctx, err, stack) {
+                                        return const Center(
+                                          child: Icon(
+                                            Icons.image_not_supported,
+                                            size: 80,
+                                            color: Colors.grey,
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  },
+                                )
+                              : Container(
+                                  key: ValueKey<int>(selectedVariant.id),
+                                  child: const Center(
+                                    child: Icon(
+                                      Icons.image_not_supported,
+                                      size: 80,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ),
                         ),
                       ),
                     ),
@@ -240,7 +249,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
                   const SizedBox(height: 16),
 
-                  // 2. Thumbnail Gallery (Gambar Kecil) dengan CachedNetworkImage
+                  // Thumbnail Gallery (Gambar Kecil)
                   SizedBox(
                     height: 80,
                     child: ListView.builder(
@@ -251,8 +260,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       itemBuilder: (context, index) {
                         final variant = product.variants[index];
                         final isSelected = index == _selectedVariantIndex;
-                        final String thumbnailUrl = '$_imageBaseUrl${variant.image}';
-
 
                         return GestureDetector(
                           onTap: () {
@@ -275,26 +282,31 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(6),
                               child: variant.image.isNotEmpty
-                                  ? CachedNetworkImage( // 🚀 Thumbnail pakai CachedNetworkImage
-                                        imageUrl: thumbnailUrl,
+                                  ? Image.network(
+                                        'https://your-domain.com${variant.image}',
                                         fit: BoxFit.cover,
-                                        placeholder: (context, url) => const Center(
+                                        loadingBuilder: (context, child, loadingProgress) {
+                                          if (loadingProgress == null) return child;
+                                          return const Center(
                                             child: SizedBox(
-                                                width: 20,
-                                                height: 20,
-                                                child: CircularProgressIndicator(strokeWidth: 2),
+                                              width: 20,
+                                              height: 20,
+                                              child: CircularProgressIndicator(strokeWidth: 2),
                                             ),
-                                        ),
-                                        errorWidget: (context, url, error) => Image.asset(
-                                            'assets${variant.image}', // Fallback asset
+                                          );
+                                        },
+                                        errorBuilder: (context, error, stackTrace) {
+                                          return Image.asset(
+                                            'assets${variant.image}',
                                             fit: BoxFit.cover,
                                             errorBuilder: (ctx, err, stack) {
-                                                return const Icon(
-                                                    Icons.image,
-                                                    color: Colors.grey,
-                                                );
+                                              return const Icon(
+                                                  Icons.image,
+                                                  color: Colors.grey,
+                                              );
                                             },
-                                        ),
+                                          );
+                                        },
                                     )
                                   : const Icon(
                                       Icons.image,
@@ -309,7 +321,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
                   const SizedBox(height: 24),
 
-                  // Pilih Warna/Type Section (Tidak ada perubahan)
+                  // Pilih Warna/Type Section - DINAMIS
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Builder(
@@ -385,7 +397,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
                   const SizedBox(height: 24),
 
-                  // Item Name & Product Info (Tidak ada perubahan)
+                  // Item Name & Product Info (Tetap sama)
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Column(
