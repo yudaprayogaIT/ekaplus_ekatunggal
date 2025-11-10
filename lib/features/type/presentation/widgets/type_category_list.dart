@@ -121,7 +121,7 @@ class TypeCategoryList extends StatelessWidget {
                 GestureDetector(
                   onTap: () {
                     // 🎯 BUKA MODAL CATEGORY
-                    showCategoryModalWithCustomAnimation(context);
+                    showCategoryModal(context);
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(

@@ -364,10 +364,10 @@ class _CategoryTile extends StatelessWidget {
   }
 
   Widget _buildCategoryImage(Category category) {
-    final String? imgPath = category.image;
+    final String? iconPath = category.icon;
 
     // No image - show placeholder
-    if (imgPath == null || imgPath.isEmpty) {
+    if (iconPath == null || iconPath.isEmpty) {
       return Container(
         color: Colors.grey[200],
         child: const Center(
@@ -377,9 +377,9 @@ class _CategoryTile extends StatelessWidget {
     }
 
     // Network image (http/https)
-    if (imgPath.startsWith('http')) {
+    if (iconPath.startsWith('http')) {
       return CachedNetworkImage(
-        imageUrl: imgPath,
+        imageUrl: iconPath,
         fit: BoxFit.contain,
         placeholder: (context, url) => Container(
           color: Colors.grey[200],
@@ -397,9 +397,9 @@ class _CategoryTile extends StatelessWidget {
     }
 
     // Local asset image (png, jpg, webp)
-    if (!imgPath.toLowerCase().endsWith('.svg')) {
+    if (!iconPath.toLowerCase().endsWith('.svg')) {
       return Image.asset(
-        imgPath,
+        iconPath,
         fit: BoxFit.cover,
         errorBuilder: (_, __, ___) => Container(
           color: Colors.grey[200],
@@ -413,7 +413,7 @@ class _CategoryTile extends StatelessWidget {
     // SVG fallback (requires flutter_svg package)
     // If you have flutter_svg installed, uncomment:
     // return SvgPicture.asset(
-    //   imgPath,
+    //   iconPath,
     //   fit: BoxFit.cover,
     // );
     

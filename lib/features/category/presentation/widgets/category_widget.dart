@@ -1,4 +1,6 @@
 // lib/features/category/presentation/widgets/category_widget.dart
+// (hanya file lengkapnya, bagian yang diubah ada pada _buildCategoryItem)
+import 'package:ekaplus_ekatunggal/features/category/presentation/pages/category_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ekaplus_ekatunggal/constant.dart';
@@ -54,25 +56,17 @@ class _CategoryModalWidgetState extends State<CategoryModalWidget> {
               // Drag indicator (draggable area)
               GestureDetector(
                 onVerticalDragUpdate: (details) {
-                  // Hitung perubahan posisi relatif terhadap tinggi layar
                   final screenHeight = MediaQuery.of(context).size.height;
                   final delta = -details.delta.dy / screenHeight;
-
-                  // Update size dengan menambahkan delta
                   final currentSize = _dragController.size;
                   final newSize = (currentSize + delta).clamp(0.3, 0.95);
-
                   _dragController.jumpTo(newSize);
                 },
                 onVerticalDragEnd: (details) {
-                  // Snap ke posisi terdekat saat drag selesai
                   final currentSize = _dragController.size;
                   final snapSizes = [0.3, 0.85, 0.95];
-
-                  // Cari snap size terdekat
                   double closestSnap = snapSizes[0];
                   double minDistance = (currentSize - closestSnap).abs();
-
                   for (final snap in snapSizes) {
                     final distance = (currentSize - snap).abs();
                     if (distance < minDistance) {
@@ -80,8 +74,6 @@ class _CategoryModalWidgetState extends State<CategoryModalWidget> {
                       closestSnap = snap;
                     }
                   }
-
-                  // Animate ke snap position
                   _dragController.animateTo(
                     closestSnap,
                     duration: const Duration(milliseconds: 250),
@@ -177,8 +169,7 @@ class _CategoryModalWidgetState extends State<CategoryModalWidget> {
                       }
 
                       return ListView.builder(
-                        controller:
-                            scrollController, // Penting: gunakan scrollController dari DraggableScrollableSheet
+                        controller: scrollController,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 18,
                           vertical: 8,
@@ -193,9 +184,7 @@ class _CategoryModalWidgetState extends State<CategoryModalWidget> {
                             children: [
                               // Type Header
                               Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 12,
-                                ),
+                                padding: const EdgeInsets.symmetric(vertical: 12),
                                 child: Text(
                                   typeName,
                                   style: TextStyle(
@@ -212,22 +201,11 @@ class _CategoryModalWidgetState extends State<CategoryModalWidget> {
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(12),
-                                  // boxShadow: [
-                                  //   BoxShadow(
-                                  //     color: Colors.black.withOpacity(0.04),
-                                  //     blurRadius: 8,
-                                  //     offset: const Offset(0, 2),
-                                  //   ),
-                                  // ],
                                 ),
                                 child: ListView.builder(
                                   shrinkWrap: true,
                                   physics: const NeverScrollableScrollPhysics(),
                                   itemCount: categories.length,
-                                  // separatorBuilder: (_, __) => Divider(
-                                  //   height: 1,
-                                  //   color: Colors.grey.shade200,
-                                  // ),
                                   itemBuilder: (context, catIndex) {
                                     final category = categories[catIndex];
                                     return _buildCategoryItem(category);
@@ -254,12 +232,18 @@ class _CategoryModalWidgetState extends State<CategoryModalWidget> {
 
   Widget _buildCategoryItem(Category category) {
     return InkWell(
-      onTap: () {
+      onTap: () async {
+        // TUTUP modal dulu agar tidak tetap berada di background
         Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Membuka kategori: ${category.name}'),
-            duration: const Duration(seconds: 2),
+        // Pastikan kita mengirim id yang benar (bukan name)
+        final idToSend = category.id?.toString() ?? category.name;
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CategoryDetailPage(
+              categoryId: idToSend,
+              categoryName: category.name,
+            ),
           ),
         );
       },
@@ -314,15 +298,15 @@ class _CategoryModalWidgetState extends State<CategoryModalWidget> {
   }
 
   Widget _buildCategoryImage(Category category) {
-    final String? imgPath = category.image;
+    final String? iconPath = category.icon;
 
-    if (imgPath == null || imgPath.isEmpty) {
+    if (iconPath == null || iconPath.isEmpty) {
       return const Icon(Icons.category, size: 28, color: Colors.black54);
     }
 
-    if (imgPath.startsWith('http')) {
+    if (iconPath.startsWith('http')) {
       return CachedNetworkImage(
-        imageUrl: imgPath,
+        imageUrl: iconPath,
         fit: BoxFit.contain,
         width: 32,
         height: 32,
@@ -331,16 +315,15 @@ class _CategoryModalWidgetState extends State<CategoryModalWidget> {
           height: 20,
           child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
         ),
-        errorWidget: (context, url, error) =>
-            const Icon(Icons.broken_image, size: 28),
+        errorWidget: (context, url, error) => const Icon(Icons.broken_image, size: 28),
       );
     }
 
-    if (!imgPath.toLowerCase().endsWith('.svg')) {
+    if (!iconPath.toLowerCase().endsWith('.svg')) {
       return Padding(
         padding: const EdgeInsets.all(8.0),
         child: Image.asset(
-          imgPath,
+          iconPath,
           fit: BoxFit.contain,
           errorBuilder: (_, __, ___) => const Icon(Icons.category, size: 28),
         ),
@@ -357,20 +340,20 @@ void showCategoryModal(BuildContext context) {
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
-    isDismissible: true, // 👈 Bisa ditutup dengan klik di luar
-    enableDrag: true, // 👈 Bisa di-drag untuk menutup
+    isDismissible: true,
+    enableDrag: true,
     builder: (context) => GestureDetector(
-      onTap: () => Navigator.pop(context), // 👈 Tutup saat tap di area kosong
+      onTap: () => Navigator.pop(context),
       behavior: HitTestBehavior.opaque,
       child: GestureDetector(
-        onTap: () {}, // 👈 Prevent tap dari propagate ke parent
+        onTap: () {},
         child: const CategoryModalWidget(),
       ),
     ),
+    
   );
 }
 
-// 🎨 Alternatif dengan animasi custom yang lebih smooth
 void showCategoryModalWithCustomAnimation(BuildContext context) {
   showGeneralDialog(
     context: context,

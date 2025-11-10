@@ -12,6 +12,18 @@ class TypeModel extends TypeEntity {
     return {'id': id, 'name': name};
   }
 }
+
+class ProductModel extends ProductEntity {
+  const ProductModel({required super.id, required super.name, required super.image});
+
+  factory ProductModel.fromJson(Map<String, dynamic> json) {
+    return ProductModel(id: json['id'] ?? 0, name: json['name'] ?? '', image: json['image'] ?? '');
+  }
+
+  Map<String, dynamic> toJson() {
+    return {'id': id, 'name': name, 'image': image};
+  }
+}
 class UserModel extends UserEntity {
   const UserModel({required super.id, required super.name});
 
@@ -28,6 +40,7 @@ class CategoryModel extends Category {
   const CategoryModel({
     required super.id,
     required super.name,
+    super.icon,
     super.image,
     super.description,
     required super.type,
@@ -47,6 +60,7 @@ class CategoryModel extends Category {
     return CategoryModel(
       id: data['id'] ?? 0,
       name: data['name'] ?? '',
+      icon: data['icon'],
       image: data['image'],
       description: data['description'],
       type: data['type'] != null
@@ -75,6 +89,7 @@ class CategoryModel extends Category {
     return {
       "id": id,
       "name": name,
+      "icon": icon,
       "image": image,
       "description": description,
       "type": type != null

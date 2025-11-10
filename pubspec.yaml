@@ -45,6 +45,8 @@ flutter:
   assets:
     - assets/data/
     - assets/fonts/
+    - assets/icons/
+    - assets/icons/kategori/
     - assets/images/
     - assets/images/items/
     - assets/images/type/

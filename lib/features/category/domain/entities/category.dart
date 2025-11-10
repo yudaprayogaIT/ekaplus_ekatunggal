@@ -11,6 +11,17 @@ class TypeEntity extends Equatable {
   List<Object?> get props => [id, name];
 }
 
+class ProductEntity extends Equatable {
+  final int id;
+  final String name;
+  final String image;
+
+  const ProductEntity({required this.id, required this.name, required this.image});
+
+  @override
+  List<Object?> get props => [id, name, image];
+}
+
 class UserEntity extends Equatable {
   final int id;
   final String name;
@@ -24,6 +35,7 @@ class UserEntity extends Equatable {
 class Category extends Equatable {
   final int id;
   final String name;
+  final String? icon;
   final String? image;
   final String? description;
   final TypeEntity? type;
@@ -39,6 +51,7 @@ class Category extends Equatable {
   const Category({
     required this.id,
     required this.name,
+    this.icon = "",
     this.image = "",
     this.description = "",
     required this.type,
@@ -56,6 +69,7 @@ class Category extends Equatable {
   List<Object?> get props => [
     id,
     name,
+    icon,
     image,
     description,
     type,
