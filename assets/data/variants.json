@@ -5,6 +5,8 @@
       "id": 1,
       "code": "0010010000107",
       "name": "ACC BED BAUT SAKURA BESAR 5 CM",
+      "color": "",
+      "type": "BESAR 5 CM",
       "uom": "PCS",
       "image": "/images/items/ACC BED BAUT SAKURA BESAR 5 CM.png",
       "branches": [
@@ -24,6 +26,8 @@
       "id": 2,
       "code": "0010010000044",
       "name": "ACC BED BAUT SAKURA BESAR 7 CM",
+      "color": "",
+      "type": "BESAR 7 CM",
       "uom": "PCS",
       "image": "/images/items/ACC BED BAUT SAKURA BESAR 7 CM.jpg",
       "branches": [
@@ -45,6 +49,8 @@
       "id": 3,
       "code": "0010010000054",
       "name": "ACC BED BAUT SAKURA KECIL",
+      "color": "",
+      "type": "KECIL",
       "uom": "PCS",
       "image": "/images/items/ACC BED BAUT SAKURA KECIL.jpg",
       "branches": [
@@ -66,6 +72,8 @@
       "id": 4,
       "code": "0010030110000",
       "name": "ACC BED LOBANG ANGIN PUTIH CREAM",
+      "color": "PUTIH",
+      "type": "",
       "uom": "PCS",
       "image": "/images/items/ACC BED LOBANG ANGIN PUTIH CREAM.jpg",
       "branches": [
@@ -87,6 +95,8 @@
       "id": 5,
       "code": "0010036009047",
       "name": "ACC BED LOBANG ANGIN EMAS HITAM COMFORT SLEEP",
+      "color": "EMAS",
+      "type": "COMFORT SLEEP",
       "uom": "PCS",
       "image": "/images/items/ACC BED LOBANG ANGIN EMAS HITAM.jpeg",
       "branches": [
@@ -108,6 +118,8 @@
       "id": 6,
       "code": "0010030157000",
       "name": "ACC BED LOBANG ANGIN PUTIH BIRU",
+      "color": "PUTIH",
+      "type": "",
       "uom": "PCS",
       "image": "/images/items/ACC BED LOBANG ANGIN PUTIH BIRU.jpg",
       "branches": [
@@ -128,6 +140,8 @@
       "id": 7,
       "code": "0010240000042",
       "name": "ACC SOFA ENGSEL BESAR",
+      "color": "",
+      "type": "BESAR",
       "uom": "SET",
       "image": "/images/items/ACC SOFA ENGSEL BESAR.jpg",
       "branches": [
@@ -150,6 +164,8 @@
       "id": 8,
       "code": "0010240000054",
       "name": "ACC SOFA ENGSEL KECIL",
+      "color": "",
+      "type": "KECIL",
       "uom": "SET",
       "image": "/images/items/ACC SOFA ENGSEL KECIL.jpg",
       "branches": [
@@ -170,6 +186,8 @@
       "id": 9,
       "code": "0010240000051",
       "name": "ACC SOFA ENGSEL HEADREST",
+      "color": "",
+      "type": "HEADREST",
       "uom": "PSG",
       "image": "/images/items/ACC SOFA ENGSEL HEADREST.jpeg",
       "branches": [
@@ -190,6 +208,8 @@
       "id": 10,
       "code": "0020060900000",
       "name": "ACK STABIL KAYU GUCI HITAM",
+      "color": "HITAM",
+      "type": "",
       "uom": "PCS",
       "image": "/images/items/ACK STABIL KAYU GUCI HITAM.png",
       "branches": [
@@ -210,8 +230,10 @@
       "id": 11,
       "code": "0020062000000",
       "name": "ACK STABIL KAYU GUCI MAROON",
+      "color": "MAROON",
+      "type": "",
       "uom": "PCS",
-      "image": "/images/items/ACK STABIL KAYU GUCI MAROON.jpeg",
+      "image": "/images/items/ACK STABIL KAYU GUCI MAROON.jpg",
       "branches": [
         { "id": 1, "name": "Ekatunggal Tunas Medan" },
         { "id": 4, "name": "Ekatunggal Tunas Mandiri" },
@@ -228,8 +250,10 @@
     "id": 12,
     "item": {
       "id": 12,
-      "code": "0081350600000",
+      "code": "0081350600000-G12",
       "name": "KP SOFA BELUDRU CITRUS ABU MUDA G12",
+      "color": "ABU MUDA",
+      "type": "",
       "uom": "MTR",
       "image": "/images/items/KP SOFA BELUDRU CITRUS ABU MUDA.jpg",
       "branches": [
@@ -249,6 +273,8 @@
       "id": 13,
       "code": "0081355800000-G13",
       "name": "KP SOFA BELUDRU CITRUS BIRU TUA G13",
+      "color": "BIRU TUA",
+      "type": "",
       "uom": "MTR",
       "image": "/images/items/KP SOFA BELUDRU CITRUS BIRU TUA.jpeg",
       "branches": [
@@ -268,8 +294,10 @@
     "id": 14,
     "item": {
       "id": 14,
-      "code": "0081351900000",
+      "code": "0081351900000-G2",
       "name": "KP SOFA BELUDRU CITRUS COKLAT COFFEE G2",
+      "color": "COKLAT COFFEE",
+      "type": "",
       "uom": "MTR",
       "image": "/images/items/KP SOFA BELUDRU CITRUS COKLAT COFFEE.png",
       "branches": [
@@ -289,6 +317,8 @@
       "id": 15,
       "code": "0081354400000-G11",
       "name": "KP SOFA BELUDRU CITRUS HIJAU STABILO G11",
+      "color": "HIJAU STABILO",
+      "type": "",
       "uom": "MTR",
       "image": "/images/items/KP SOFA BELUDRU CITRUS HIJAU STABILO.png",
       "branches": [
@@ -309,6 +339,8 @@
       "id": 16,
       "code": "0050060000008-KNT#061",
       "name": "FNT KASUR 200X140X30CM KNT INOAC",
+      "color": "",
+      "type": "200X140X30CM INOAC",
       "uom": "LBR",
       "image": "/images/items/FNT KASUR 200X140X30CM.jpg",
       "branches": [
@@ -328,6 +360,8 @@
       "id": 17,
       "code": "0050060000008#030",
       "name": "FNT KASUR 200X140X30CM CENTRAL",
+      "color": "",
+      "type": "200X140X30CM CENTRAL",
       "uom": "LBR",
       "image": "/images/items/FNT KASUR 200X140X30CM.jpg",
       "branches": [

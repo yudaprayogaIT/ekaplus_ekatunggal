@@ -1,11 +1,12 @@
 import 'package:ekaplus_ekatunggal/core/shared_widgets/app_bar.dart';
+import 'package:ekaplus_ekatunggal/features/product/presentation/pages/product_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ekaplus_ekatunggal/constant.dart';
 import 'package:ekaplus_ekatunggal/features/product/presentation/bloc/product_bloc.dart';
 import 'package:ekaplus_ekatunggal/features/product/domain/entities/product.dart';
 import 'package:ekaplus_ekatunggal/features/product/presentation/widgets/product_card.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+// import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
 
 final GetIt myinjection = GetIt.instance;
@@ -366,10 +367,13 @@ class _ProductsPageState extends State<ProductsPage> {
                                       product: p,
                                       width: double.infinity,
                                       onTap: () {
-                                        Navigator.pushNamed(
+                                        Navigator.push(
                                           context,
-                                          '/productDetail',
-                                          arguments: p.id.toString(),
+                                          MaterialPageRoute(
+                                            builder: (context) => ProductDetailPage(
+                                              productId: p.id.toString(),
+                                            ),
+                                          ),
                                         );
                                       },
                                     );

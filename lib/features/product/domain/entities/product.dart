@@ -13,19 +13,23 @@ class CategoryEntity extends Equatable {
 
 class VariantEntity extends Equatable {
   final int id;
-  final String name;
   final String code;
+  final String name;
+  final String color;
+  final String type;
   final String image;
 
   const VariantEntity({
     required this.id, 
-    required this.name, 
     required this.code, 
+    required this.name, 
+    required this.color, 
+    required this.type, 
     this.image = ""
   });
 
   @override
-  List<Object?> get props => [id, name, code, image];
+  List<Object?> get props => [id, code, name, color, type, image];
 }
 
 class Product extends Equatable {

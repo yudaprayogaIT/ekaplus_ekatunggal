@@ -19,16 +19,20 @@ class CategoryModel extends CategoryEntity {
 class VariantModel extends VariantEntity {
   const VariantModel({
     required super.id,
-    required super.name,
     required super.code,
+    required super.name,
+    super.color = "",
+    super.type = "",
     super.image = "",
   });
 
   factory VariantModel.fromJson(Map<String, dynamic> json) {
     return VariantModel(
       id: json['id'] ?? 0,
-      name: json['name'] ?? '',
       code: json['code'] ?? '',
+      name: json['name'] ?? '',
+      color: json['color'] ?? '',
+      type: json['type'] ?? '',
       image: json['image'] ?? '',
     );
   }
@@ -36,8 +40,10 @@ class VariantModel extends VariantEntity {
   Map<String, dynamic> toJson() {
     return {
       'id': id, 
-      'name': name, 
       'code': code, // ⚠️ Perbaiki: tadinya 'code': 'code' (hardcoded string)
+      'name': name, 
+      'color': color, 
+      'type': type, 
       'image': image // ⚠️ Perbaiki: tadinya 'image': 'image'
     };
   }

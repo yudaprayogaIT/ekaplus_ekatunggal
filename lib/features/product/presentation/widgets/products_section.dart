@@ -1,6 +1,7 @@
 // lib/features/product/presentation/widgets/product_section.dart
 import 'dart:convert';
 import 'package:ekaplus_ekatunggal/constant.dart';
+import 'package:ekaplus_ekatunggal/features/product/presentation/pages/product_detail_page.dart';
 import 'package:ekaplus_ekatunggal/features/product/presentation/pages/products_page.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/material.dart';
@@ -323,7 +324,13 @@ class _ProductsSectionState extends State<ProductsSection> {
                       product: p,
                       width: 176,
                       onTap: () {
-                        // TODO: buka detail product (dispatch bloc / navigate)
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                ProductDetailPage(productId: p.id.toString()),
+                          ),
+                        );
                       },
                     );
                   },
