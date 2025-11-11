@@ -1,11 +1,21 @@
 // lib/features/product/domain/entities/product.dart
 import 'package:equatable/equatable.dart';
 
-class CategoryEntity extends Equatable {
+class TypeEntity extends Equatable {
   final int id;
   final String name;
 
-  const CategoryEntity({required this.id, required this.name});
+  const TypeEntity({required this.id, required this.name});
+
+  @override
+  List<Object?> get props => [id, name];
+}
+
+class ItemCategoryEntity extends Equatable {
+  final int id;
+  final String name;
+
+  const ItemCategoryEntity({required this.id, required this.name});
 
   @override
   List<Object?> get props => [id, name];
@@ -37,16 +47,18 @@ class VariantEntity extends Equatable {
 class Product extends Equatable {
   final int id;
   final String name;
-  final CategoryEntity? category;
-  final List<VariantEntity> variants; // ⚠️ Ubah jadi List
+  final TypeEntity? type;
+  final ItemCategoryEntity? itemCategory;
+  final List<VariantEntity> variants;
   final int disabled;
   final bool isHotDeals;
 
   const Product({
     required this.id,
     required this.name,
-    this.category,
-    this.variants = const [], // ⚠️ Default empty list
+    this.type,
+    this.itemCategory,
+    this.variants = const [],
     this.disabled = 0,
     this.isHotDeals = false,
   });
@@ -55,7 +67,8 @@ class Product extends Equatable {
   List<Object?> get props => [
     id,
     name,
-    category,
+    type,
+    itemCategory,
     variants,
     disabled,
     isHotDeals,

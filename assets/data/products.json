@@ -2,7 +2,7 @@
   {
     "id": 1,
     "name": "FNT KASUR",
-    "category": { "id": 15, "name": "Kasur" },
+    "itemCategory": { "id": 15, "name": "Kasur" },
     "variants": [
       {
         "id": 16,
@@ -29,7 +29,7 @@
   {
     "id": 2,
     "name": "ACC Bed Lobang Angin",
-    "category": { "id": 7, "name": "Aksesories" },
+    "itemCategory": { "id": 7, "name": "Aksesories" },
     "variants": [
       {
         "id": 4,
@@ -65,7 +65,7 @@
   {
     "id": 3,
     "name": "ACC Sofa Engsel",
-    "category": { "id": 7, "name": "Aksesories" },
+    "itemCategory": { "id": 7, "name": "Aksesories" },
     "variants": [
       {
         "id": 7,
@@ -101,7 +101,7 @@
   {
     "id": 4,
     "name": "ACK Stabil Kayu Guci",
-    "category": { "id": 7, "name": "Aksesories" },
+    "itemCategory": { "id": 7, "name": "Aksesories" },
     "variants": [
       {
         "id": 10,
@@ -128,7 +128,7 @@
   {
     "id": 5,
     "name": "ACC Bed Baut Sakura",
-    "category": { "id": 7, "name": "Aksesories" },
+    "itemCategory": { "id": 7, "name": "Aksesories" },
     "variants": [
       {
         "id": 1,
@@ -164,7 +164,7 @@
   {
     "id": 6,
     "name": "KP SOFA BELUDRU CITRUS",
-    "category": { "id": 6, "name": "Kain Polos Sofa" },
+    "itemCategory": { "id": 6, "name": "Kain Polos Sofa" },
     "variants": [
       {
         "id": 12,
@@ -209,7 +209,7 @@
   {
     "id": 7,
     "name": "FNT KASUR",
-    "category": { "id": 15, "name": "Kasur" },
+    "itemCategory": { "id": 15, "name": "Kasur" },
     "variants": [
       {
         "id": 16,
@@ -236,7 +236,7 @@
   {
     "id": 8,
     "name": "ACC Bed Lobang Angin",
-    "category": { "id": 7, "name": "Aksesories" },
+    "itemCategory": { "id": 7, "name": "Aksesories" },
     "variants": [
       {
         "id": 4,
@@ -272,7 +272,7 @@
   {
     "id": 9,
     "name": "ACC Sofa Engsel",
-    "category": { "id": 7, "name": "Aksesories" },
+    "itemCategory": { "id": 7, "name": "Aksesories" },
     "variants": [
       {
         "id": 7,
@@ -308,7 +308,7 @@
   {
     "id": 10,
     "name": "ACK Stabil Kayu Guci",
-    "category": { "id": 7, "name": "Aksesories" },
+    "itemCategory": { "id": 7, "name": "Aksesories" },
     "variants": [
       {
         "id": 10,
@@ -335,7 +335,7 @@
   {
     "id": 11,
     "name": "ACC Bed Baut Sakura",
-    "category": { "id": 7, "name": "Aksesories" },
+    "itemCategory": { "id": 7, "name": "Aksesories" },
     "variants": [
       {
         "id": 1,
@@ -371,7 +371,7 @@
   {
     "id": 12,
     "name": "KP SOFA BELUDRU CITRUS",
-    "category": { "id": 6, "name": "Kain Polos Sofa" },
+    "itemCategory": { "id": 6, "name": "Kain Polos Sofa" },
     "variants": [
       {
         "id": 12,
@@ -416,7 +416,7 @@
   {
     "id": 13,
     "name": "FNT KASUR",
-    "category": { "id": 15, "name": "Kasur" },
+    "itemCategory": { "id": 15, "name": "Kasur" },
     "variants": [
       {
         "id": 16,
@@ -443,7 +443,7 @@
   {
     "id": 14,
     "name": "ACC Bed Lobang Angin",
-    "category": { "id": 7, "name": "Aksesories" },
+    "itemCategory": { "id": 7, "name": "Aksesories" },
     "variants": [
       {
         "id": 4,
@@ -479,7 +479,7 @@
   {
     "id": 15,
     "name": "ACC Sofa Engsel",
-    "category": { "id": 7, "name": "Aksesories" },
+    "itemCategory": { "id": 7, "name": "Aksesories" },
     "variants": [
       {
         "id": 7,
@@ -515,7 +515,7 @@
   {
     "id": 16,
     "name": "ACK Stabil Kayu Guci",
-    "category": { "id": 7, "name": "Aksesories" },
+    "itemCategory": { "id": 7, "name": "Aksesories" },
     "variants": [
       {
         "id": 10,
@@ -542,7 +542,7 @@
   {
     "id": 17,
     "name": "ACC Bed Baut Sakura",
-    "category": { "id": 7, "name": "Aksesories" },
+    "itemCategory": { "id": 7, "name": "Aksesories" },
     "variants": [
       {
         "id": 1,
@@ -578,7 +578,7 @@
   {
     "id": 18,
     "name": "KP SOFA BELUDRU CITRUS",
-    "category": { "id": 6, "name": "Kain Polos Sofa" },
+    "itemCategory": { "id": 6, "name": "Kain Polos Sofa" },
     "variants": [
       {
         "id": 12,
@@ -623,7 +623,7 @@
   {
     "id": 19,
     "name": "FNT KASUR",
-    "category": { "id": 15, "name": "Kasur" },
+    "itemCategory": { "id": 15, "name": "Kasur" },
     "variants": [
       {
         "id": 16,
@@ -650,7 +650,7 @@
   {
     "id": 20,
     "name": "ACC Bed Lobang Angin",
-    "category": { "id": 7, "name": "Aksesories" },
+    "itemCategory": { "id": 7, "name": "Aksesories" },
     "variants": [
       {
         "id": 4,
@@ -686,7 +686,7 @@
   {
     "id": 21,
     "name": "ACC Sofa Engsel",
-    "category": { "id": 7, "name": "Aksesories" },
+    "itemCategory": { "id": 7, "name": "Aksesories" },
     "variants": [
       {
         "id": 7,
@@ -722,7 +722,7 @@
   {
     "id": 22,
     "name": "ACK Stabil Kayu Guci",
-    "category": { "id": 7, "name": "Aksesories" },
+    "itemCategory": { "id": 7, "name": "Aksesories" },
     "variants": [
       {
         "id": 10,
@@ -749,7 +749,7 @@
   {
     "id": 23,
     "name": "ACC Bed Baut Sakura",
-    "category": { "id": 7, "name": "Aksesories" },
+    "itemCategory": { "id": 7, "name": "Aksesories" },
     "variants": [
       {
         "id": 1,
@@ -785,7 +785,7 @@
   {
     "id": 24,
     "name": "KP SOFA BELUDRU CITRUS",
-    "category": { "id": 6, "name": "Kain Polos Sofa" },
+    "itemCategory": { "id": 6, "name": "Kain Polos Sofa" },
     "variants": [
       {
         "id": 12,
@@ -830,7 +830,7 @@
   {
     "id": 25,
     "name": "FNT KASUR",
-    "category": { "id": 15, "name": "Kasur" },
+    "itemCategory": { "id": 15, "name": "Kasur" },
     "variants": [
       {
         "id": 16,
@@ -857,7 +857,7 @@
   {
     "id": 26,
     "name": "ACC Bed Lobang Angin",
-    "category": { "id": 7, "name": "Aksesories" },
+    "itemCategory": { "id": 7, "name": "Aksesories" },
     "variants": [
       {
         "id": 4,
@@ -893,7 +893,7 @@
   {
     "id": 27,
     "name": "ACC Sofa Engsel",
-    "category": { "id": 7, "name": "Aksesories" },
+    "itemCategory": { "id": 7, "name": "Aksesories" },
     "variants": [
       {
         "id": 7,
@@ -929,7 +929,7 @@
   {
     "id": 28,
     "name": "ACK Stabil Kayu Guci",
-    "category": { "id": 7, "name": "Aksesories" },
+    "itemCategory": { "id": 7, "name": "Aksesories" },
     "variants": [
       {
         "id": 10,
@@ -956,7 +956,7 @@
   {
     "id": 29,
     "name": "ACC Bed Baut Sakura",
-    "category": { "id": 7, "name": "Aksesories" },
+    "itemCategory": { "id": 7, "name": "Aksesories" },
     "variants": [
       {
         "id": 1,
@@ -992,7 +992,7 @@
   {
     "id": 30,
     "name": "KP SOFA BELUDRU CITRUS",
-    "category": { "id": 6, "name": "Kain Polos Sofa" },
+    "itemCategory": { "id": 6, "name": "Kain Polos Sofa" },
     "variants": [
       {
         "id": 12,

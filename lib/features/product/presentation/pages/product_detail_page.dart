@@ -316,9 +316,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                               bottom: verticalPadding,
                             ),
                             child: Container(
-                              width: size, // 70 atau 60
-                              height:
-                                  size, // 70 atau 60 (Ini adalah kunci, harus diatur)
+                              width: size,
+                              height: size,
                               decoration: BoxDecoration(
                                 border: Border.all(
                                   color: isSelected
@@ -490,7 +489,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                         Text(
+                        Text(
                           selectedVariant.name,
                           style: TextStyle(
                             fontSize: 14,
@@ -550,8 +549,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                             'Tipe',
                             (selectedVariant as dynamic).type.toString(),
                           ),
-                        if (product.category != null)
-                          _buildInfoRow('Kategori', product.category!.name),
+                        if (product.itemCategory != null)
+                          _buildInfoRow('Kategori', product.itemCategory!.name),
                         _buildInfoRow('Deskripsi', selectedVariant.description),
                       ],
                     ),

@@ -1,14 +1,23 @@
 // lib/features/product/data/models/product_model.dart
 import 'package:ekaplus_ekatunggal/features/product/domain/entities/product.dart';
 
-class CategoryModel extends CategoryEntity {
-  const CategoryModel({required super.id, required super.name});
+class TypeModel extends TypeEntity {
+  const TypeModel({required super.id, required super.name});
 
-  factory CategoryModel.fromJson(Map<String, dynamic> json) {
-    return CategoryModel(
-      id: json['id'] ?? 0, 
-      name: json['name'] ?? ''
-    );
+  factory TypeModel.fromJson(Map<String, dynamic> json) {
+    return TypeModel(id: json['id'] ?? 0, name: json['name'] ?? '');
+  }
+
+  Map<String, dynamic> toJson() {
+    return {'id': id, 'name': name};
+  }
+}
+
+class ItemCategoryModel extends ItemCategoryEntity {
+  const ItemCategoryModel({required super.id, required super.name});
+
+  factory ItemCategoryModel.fromJson(Map<String, dynamic> json) {
+    return ItemCategoryModel(id: json['id'] ?? 0, name: json['name'] ?? '');
   }
 
   Map<String, dynamic> toJson() {
@@ -41,13 +50,13 @@ class VariantModel extends VariantEntity {
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id, 
-      'code': code, // ⚠️ Perbaiki: tadinya 'code': 'code' (hardcoded string)
-      'name': name, 
-      'color': color, 
-      'type': type, 
-      'description': description, 
-      'image': image // ⚠️ Perbaiki: tadinya 'image': 'image'
+      'id': id,
+      'code': code,
+      'name': name,
+      'color': color,
+      'type': type,
+      'description': description,
+      'image': image,
     };
   }
 }
@@ -56,14 +65,15 @@ class ProductModel extends Product {
   const ProductModel({
     required super.id,
     required super.name,
-    super.category,
-    super.variants = const [], // ⚠️ Ubah jadi List
+    super.type,
+    super.itemCategory,
+    super.variants = const [],
     super.disabled = 0,
-    super.isHotDeals = false
+    super.isHotDeals = false,
   });
 
   factory ProductModel.fromJson(Map<String, dynamic> json) {
-    // ⚠️ Parse array variants
+    // Parse array variants
     List<VariantModel> variantsList = [];
     if (json['variants'] != null && json['variants'] is List) {
       variantsList = (json['variants'] as List)
@@ -74,12 +84,13 @@ class ProductModel extends Product {
     return ProductModel(
       id: json['id'] ?? 0,
       name: json['name'] ?? '',
-      category: json['category'] != null
-          ? CategoryModel.fromJson(json['category'])
+      type: json['type'] != null ? TypeModel.fromJson(json['type']) : null,
+      itemCategory: json['itemCategory'] != null
+          ? ItemCategoryModel.fromJson(json['itemCategory'])
           : null,
-      variants: variantsList, // ⚠️ Assign list
+      variants: variantsList,
       disabled: json['disabled'] ?? 0,
-      isHotDeals: json['isHotDeals'] ?? false
+      isHotDeals: json['isHotDeals'] ?? false,
     );
   }
 
@@ -87,21 +98,18 @@ class ProductModel extends Product {
     return {
       "id": id,
       "name": name,
-      "category": category != null
-          ? (category as CategoryModel).toJson()
+      "type": type != null ? (type as TypeModel).toJson() : null,
+      "itemCategory": itemCategory != null
+          ? (itemCategory as ItemCategoryModel).toJson()
           : null,
-      "variants": variants // ⚠️ Ubah jadi variants (plural)
-          .map((v) => (v as VariantModel).toJson())
-          .toList(),
+      "variants": variants.map((v) => (v as VariantModel).toJson()).toList(),
       "disabled": disabled,
-      "isHotDeals": isHotDeals
+      "isHotDeals": isHotDeals,
     };
   }
 
   static List<ProductModel> fromJsonList(List data) {
     if (data.isEmpty) return [];
-    return data
-        .map((item) => ProductModel.fromJson(item))
-        .toList();
+    return data.map((item) => ProductModel.fromJson(item)).toList();
   }
 }

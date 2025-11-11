@@ -2,7 +2,7 @@
 import 'dart:convert';
 import 'package:ekaplus_ekatunggal/constant.dart';
 import 'package:ekaplus_ekatunggal/features/product/presentation/pages/product_detail_page.dart';
-import 'package:ekaplus_ekatunggal/features/product/presentation/pages/products_page.dart';
+import 'package:ekaplus_ekatunggal/features/product/presentation/pages/products_highlight_page.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/material.dart';
 import 'package:ekaplus_ekatunggal/features/product/data/models/product_model.dart';
@@ -59,7 +59,7 @@ class _ProductsSectionState extends State<ProductsSection> {
   void _buildCategoryList() {
     final Map<int, String> map = {};
     for (var p in _allProducts) {
-      final cat = p.category;
+      final cat = p.itemCategory;
       if (cat != null) {
         map.putIfAbsent(cat.id, () => cat.name);
       }
@@ -86,7 +86,7 @@ class _ProductsSectionState extends State<ProductsSection> {
     // apply category filter if selected
     if (_selectedCategoryId != null) {
       results = results
-          .where((p) => p.category?.id == _selectedCategoryId)
+          .where((p) => p.itemCategory?.id == _selectedCategoryId)
           .toList();
     }
 
@@ -177,7 +177,7 @@ class _ProductsSectionState extends State<ProductsSection> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => ProductsPage(
+                            builder: (_) => ProductsHighlight(
                               // ✅ PERBAIKI: Menggunakan nilai widget.hotDealsOnly yang sesuai dengan section ini.
                               hotDealsOnly: widget.hotDealsOnly,
                               title: widget.hotDealsOnly
@@ -259,7 +259,7 @@ class _ProductsSectionState extends State<ProductsSection> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => ProductsPage(
+                          builder: (_) => ProductsHighlight(
                             // ✅ PERBAIKI: Menggunakan nilai widget.hotDealsOnly yang sesuai dengan section ini.
                             hotDealsOnly: widget.hotDealsOnly,
                             title: widget.hotDealsOnly

@@ -1,4 +1,5 @@
 // lib/features/category/presentation/pages/category_page.dart
+import 'package:ekaplus_ekatunggal/features/product/presentation/pages/product_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ekaplus_ekatunggal/constant.dart';
@@ -167,7 +168,14 @@ class _CategoryPageState extends State<CategoryPage> with TickerProviderStateMix
                               return _CategoryTile(
                                 category: cat,
                                 width: 120,
-                                onTap: () => _onCategoryTap(cat),
+                               onTap: () {
+                                        Navigator.push(
+  context,
+  MaterialPageRoute(
+    builder: (context) => ProductPage(),
+  ),
+);
+                                      },
                               );
                             },
                           ),

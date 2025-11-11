@@ -11,13 +11,13 @@ import 'package:get_it/get_it.dart';
 
 final GetIt myinjection = GetIt.instance;
 
-class ProductsPage extends StatefulWidget {
+class ProductsHighlight extends StatefulWidget {
   final bool hotDealsOnly;
   final String title;
   final String headerTitle;
   final String headerSubTitle;
 
-  const ProductsPage({
+  const ProductsHighlight({
     Key? key,
     this.hotDealsOnly = false,
     this.headerTitle = '',
@@ -26,10 +26,10 @@ class ProductsPage extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<ProductsPage> createState() => _ProductsPageState();
+  State<ProductsHighlight> createState() => _ProductsHighlightState();
 }
 
-class _ProductsPageState extends State<ProductsPage> {
+class _ProductsHighlightState extends State<ProductsHighlight> {
   late ProductBloc _bloc;
   List<Product> _allProducts = [];
   List<Product> _displayProducts = [];
@@ -97,7 +97,7 @@ class _ProductsPageState extends State<ProductsPage> {
   void _buildCategoriesFromProducts() {
     final Map<int, String> map = {};
     for (var p in _allProducts) {
-      final cat = p.category;
+      final cat = p.itemCategory;
       if (cat != null) map.putIfAbsent(cat.id, () => cat.name);
     }
     _categories = map.entries
@@ -119,7 +119,7 @@ class _ProductsPageState extends State<ProductsPage> {
     // Apply category filter
     if (_selectedCategoryId != null) {
       results = results
-          .where((p) => p.category?.id == _selectedCategoryId)
+          .where((p) => p.itemCategory?.id == _selectedCategoryId)
           .toList();
     }
 

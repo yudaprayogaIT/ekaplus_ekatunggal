@@ -346,7 +346,7 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
 
           final filteredProducts = products.where((p) {
             if (resolvedName == null) return false;
-            return p.category?.name.toLowerCase().trim() == resolvedName.toLowerCase().trim();
+            return p.itemCategory?.name.toLowerCase().trim() == resolvedName.toLowerCase().trim();
           }).toList();
 
           if (filteredProducts.isEmpty) {
