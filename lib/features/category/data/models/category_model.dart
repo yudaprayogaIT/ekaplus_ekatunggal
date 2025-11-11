@@ -43,6 +43,8 @@ class CategoryModel extends Category {
     super.icon,
     super.image,
     super.description,
+    super.title,
+    super.subtitle,
     required super.type,
     super.docstatus = 0,
     super.status,
@@ -63,6 +65,8 @@ class CategoryModel extends Category {
       icon: data['icon'],
       image: data['image'],
       description: data['description'],
+      title: data['title'],
+      subtitle: data['subtitle'],
       type: data['type'] != null
           ? TypeModel.fromJson(data['type'])
           : null,
@@ -92,6 +96,8 @@ class CategoryModel extends Category {
       "icon": icon,
       "image": image,
       "description": description,
+      "title": title,
+      "subtitle": subtitle,
       "type": type != null
           ? (type as TypeModel).toJson()
           : null,

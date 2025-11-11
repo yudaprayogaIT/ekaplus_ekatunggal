@@ -38,6 +38,8 @@ class Category extends Equatable {
   final String? icon;
   final String? image;
   final String? description;
+  final String? title;
+  final String? subtitle;
   final TypeEntity? type;
   final int? docstatus;
   final String? status;
@@ -54,6 +56,8 @@ class Category extends Equatable {
     this.icon = "",
     this.image = "",
     this.description = "",
+    this.title = "",
+    this.subtitle = "",
     required this.type,
     this.docstatus = 0,
     this.status = "",
@@ -72,6 +76,8 @@ class Category extends Equatable {
     icon,
     image,
     description,
+    title,
+    subtitle,
     type,
     docstatus,
     status,
