@@ -1,6 +1,6 @@
 // lib/features/product/presentation/widgets/filter_product.dart
-
 import 'dart:convert';
+import 'package:ekaplus_ekatunggal/constant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -72,10 +72,10 @@ class FilterProduct extends StatefulWidget {
 class _FilterProductState extends State<FilterProduct> {
   List<ItemType> allTypes = [];
   List<ItemCategory> allCategories = [];
-  
+
   List<int> _selectedTypeIds = [];
   List<int> _selectedCategoryIds = [];
-  
+
   bool _isTypeExpanded = true;
   bool _isKategoriExpanded = true;
   bool _isLoading = true;
@@ -128,6 +128,18 @@ class _FilterProductState extends State<FilterProduct> {
       } else {
         _selectedTypeIds.add(typeId);
       }
+
+      // Jika ada type yang terpilih, buang selected categories yang bukan anak dari type yang dipilih
+      if (_selectedTypeIds.isNotEmpty) {
+        _selectedCategoryIds = _selectedCategoryIds.where((catId) {
+          final cat = allCategories.firstWhere(
+            (c) => c.id == catId,
+            orElse: () => ItemCategory(id: 0, name: ''),
+          );
+          final catTypeId = cat.type != null ? (cat.type!['id'] as int?) : null;
+          return catTypeId != null && _selectedTypeIds.contains(catTypeId);
+        }).toList();
+      }
     });
   }
 
@@ -168,15 +180,14 @@ class _FilterProductState extends State<FilterProduct> {
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           // Header
           Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              border: Border(
-                bottom: BorderSide(color: Colors.grey.shade200),
-              ),
-            ),
+            padding: const EdgeInsets.only(left: 20, top: 10, right: 6),
+            // decoration: BoxDecoration(
+            //   border: Border(bottom: BorderSide(color: Colors.grey.shade200)),
+            // ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -202,12 +213,10 @@ class _FilterProductState extends State<FilterProduct> {
           Expanded(
             child: _isLoading
                 ? const Center(
-                    child: CircularProgressIndicator(
-                      color: Color(0xFFB71C1C),
-                    ),
+                    child: CircularProgressIndicator(color: Color(0xFFB71C1C)),
                   )
                 : SingleChildScrollView(
-                    padding: const EdgeInsets.all(20),
+                    padding: const EdgeInsets.only(top: 5, left: 20, right: 20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -221,18 +230,41 @@ class _FilterProductState extends State<FilterProduct> {
                             });
                           },
                           child: Column(
-                            children: allTypes.map((type) {
-                              final isSelected = _selectedTypeIds.contains(type.id);
-                              return _buildCheckboxItem(
+                            // Ubah children: allTypes.map... menjadi List.generate
+                            children: List.generate(allTypes.length, (index) {
+                              final type = allTypes[index];
+                              final isSelected = _selectedTypeIds.contains(
+                                type.id,
+                              );
+
+                              // Buat item checkbox
+                              final checkboxItem = _buildCheckboxItem(
                                 label: type.name,
                                 isSelected: isSelected,
                                 onChanged: (value) => _toggleType(type.id),
                               );
-                            }).toList(),
+
+                              // Tambahkan Divider setelah item, kecuali jika itu item terakhir
+                              if (index < allTypes.length) {
+                                return Column(
+                                  children: [
+                                    checkboxItem,
+                                    // Tambahkan Garis Pembatas (Divider) di sini
+                                    const Divider(
+                                      height: 20,
+                                      thickness: 1,
+                                      color: Colors.grey,
+                                    ),
+                                  ],
+                                );
+                              }
+
+                              return checkboxItem;
+                            }),
                           ),
                         ),
 
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 10),
 
                         // Kategori Section (grouped by selected types)
                         _buildExpandableSection(
@@ -243,9 +275,7 @@ class _FilterProductState extends State<FilterProduct> {
                               _isKategoriExpanded = !_isKategoriExpanded;
                             });
                           },
-                          child: Column(
-                            children: _buildCategoryContent(),
-                          ),
+                          child: Column(children: _buildCategoryContent()),
                         ),
                       ],
                     ),
@@ -254,16 +284,9 @@ class _FilterProductState extends State<FilterProduct> {
 
           // Footer Buttons
           Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
             decoration: BoxDecoration(
               color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, -2),
-                ),
-              ],
             ),
             child: Row(
               children: [
@@ -272,38 +295,38 @@ class _FilterProductState extends State<FilterProduct> {
                     onPressed: _resetFilter,
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 14),
-                      side: BorderSide(color: Colors.grey.shade300),
+                      // side: BorderSide(color: Colors.grey.shade300),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(30),
                       ),
                     ),
                     child: const Text(
                       'Hapus',
                       style: TextStyle(
                         color: Colors.black87,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w500,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400,
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 40),
                 Expanded(
                   child: ElevatedButton(
                     onPressed: _applyFilter,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFFDD835),
+                      backgroundColor: AppColors.secondaryColor,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       elevation: 0,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(30),
                       ),
                     ),
                     child: const Text(
                       'Terapkan',
                       style: TextStyle(
                         color: Colors.black87,
-                        fontSize: 15,
+                        fontSize: 12,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -336,23 +359,23 @@ class _FilterProductState extends State<FilterProduct> {
                 Text(
                   title,
                   style: const TextStyle(
-                    fontSize: 15,
+                    fontSize: 12,
+                    fontFamily: AppFonts.primaryFont,
                     fontWeight: FontWeight.w600,
                     color: Colors.black87,
                   ),
                 ),
                 Icon(
-                  isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                  isExpanded
+                      ? Icons.keyboard_arrow_up
+                      : Icons.keyboard_arrow_down,
                   color: Colors.grey.shade600,
                 ),
               ],
             ),
           ),
         ),
-        if (isExpanded) ...[
-          const SizedBox(height: 8),
-          child,
-        ],
+        if (isExpanded) ...[const SizedBox(height: 8), child],
       ],
     );
   }
@@ -366,26 +389,27 @@ class _FilterProductState extends State<FilterProduct> {
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         children: [
-          SizedBox(
-            width: 24,
-            height: 24,
-            child: Checkbox(
-              value: isSelected,
-              onChanged: onChanged,
-              activeColor: const Color(0xFFB71C1C),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(4),
-              ),
-            ),
-          ),
-          const SizedBox(width: 12),
           Expanded(
             child: Text(
               label,
               style: TextStyle(
-                fontSize: 14,
+                fontSize: 12,
+                fontFamily: AppFonts.primaryFont,
                 color: isSelected ? Colors.black87 : Colors.grey.shade700,
                 fontWeight: isSelected ? FontWeight.w500 : FontWeight.normal,
+              ),
+            ),
+          ),
+          // const SizedBox(width: 12),
+          SizedBox(
+            width: 16,
+            height: 16,
+            child: Checkbox(
+              value: isSelected,
+              onChanged: onChanged,
+              activeColor: AppColors.primaryColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(4),
               ),
             ),
           ),
@@ -397,61 +421,117 @@ class _FilterProductState extends State<FilterProduct> {
   List<Widget> _buildCategoryContent() {
     List<Widget> widgets = [];
 
-    // Jika tidak ada type yang dipilih, tampilkan semua kategori
-    if (_selectedTypeIds.isEmpty) {
-      for (var category in allCategories) {
-        widgets.add(
-          _buildCategoryChip(
-            label: category.name,
-            isSelected: _selectedCategoryIds.contains(category.id),
-            onTap: () => _toggleCategory(category.id),
-          ),
-        );
-      }
-    } else {
-      // Tampilkan kategori berdasarkan type yang dipilih
-      for (var typeId in _selectedTypeIds) {
-        final type = allTypes.firstWhere(
-          (t) => t.id == typeId,
-          orElse: () => ItemType(id: 0, name: ''),
-        );
-        
-        if (type.id == 0) continue;
+    // Filter types yang memiliki kategori, dan urutkan berdasarkan abjad
+    final typesWithCategories = allTypes.where((type) {
+      return allCategories.any(
+        (c) => c.type != null && (c.type!['id'] as int?) == type.id,
+      );
+    }).toList();
 
-        final categories = _getCategoriesForType(typeId);
-        
-        if (categories.isNotEmpty) {
-          // Type label
-          widgets.add(
-            Padding(
-              padding: const EdgeInsets.only(top: 12, bottom: 8),
-              child: Text(
-                type.name,
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.grey.shade700,
-                ),
+    // Mengurutkan Type berdasarkan nama (abjad)
+    // typesWithCategories.sort((a, b) => a.name.compareTo(b.name));
+
+    for (var type in typesWithCategories) {
+      // Ambil kategori untuk type ini dan urutkan berdasarkan nama (abjad)
+      final categories = allCategories
+          .where((c) => c.type != null && (c.type!['id'] as int?) == type.id)
+          .toList();
+
+      // Mengurutkan Kategori di dalam Type berdasarkan nama (abjad)
+      categories.sort((a, b) => a.name.compareTo(b.name));
+
+      // Label type (Rata Kiri secara default karena parent Column/SingleChildScrollView)
+      widgets.add(
+        Padding(
+          padding: const EdgeInsets.only(top: 8, bottom: 8),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              type.name,
+              style: const TextStyle(
+                fontSize: 12, // Dibuat lebih besar sedikit
+                fontWeight: FontWeight.w500,
+                color: Colors.black87, // Dibuat lebih gelap
               ),
             ),
-          );
+          ),
+        ),
+      );
 
-          // Category chips
-          widgets.add(
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: categories.map((category) {
-                return _buildCategoryChip(
-                  label: category.name,
-                  isSelected: _selectedCategoryIds.contains(category.id),
-                  onTap: () => _toggleCategory(category.id),
-                );
-              }).toList(),
+      // Tentukan apakah kategori-kategori di section ini enabled:
+      final bool sectionEnabled =
+          _selectedTypeIds.isEmpty || _selectedTypeIds.contains(type.id);
+
+      widgets.add(
+        Container(
+          width: double.infinity,
+          child: Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            alignment: WrapAlignment.start,
+            runAlignment: WrapAlignment.start,
+            children: categories.map((category) {
+              final isSelected = _selectedCategoryIds.contains(category.id);
+              return _buildCategoryChip(
+                label: category.name,
+                isSelected: isSelected,
+                enabled: sectionEnabled,
+                onTap: () {
+                  if (sectionEnabled) _toggleCategory(category.id);
+                },
+              );
+            }).toList(),
+          ),
+        ),
+      );
+    }
+
+    // Tampilkan kategori tanpa type (jika ada) di bagian "Other" (opsional)
+    final uncategorized = allCategories.where((c) => c.type == null).toList();
+
+    // Mengurutkan Kategori "Other" berdasarkan nama (abjad)
+    uncategorized.sort((a, b) => a.name.compareTo(b.name));
+
+    if (uncategorized.isNotEmpty) {
+      widgets.add(
+        Padding(
+          padding: const EdgeInsets.only(top: 12, bottom: 8),
+          child: Text(
+            'Other',
+            style: const TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+              color: Colors.black87,
             ),
-          );
-        }
-      }
+          ),
+        ),
+      );
+
+      final bool sectionEnabled = _selectedTypeIds.isEmpty;
+
+      // <<< Perbaikan juga untuk bagian uncategorized >>>
+      widgets.add(
+        Container(
+          width: double.infinity,
+          child: Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            alignment: WrapAlignment.start,
+            runAlignment: WrapAlignment.start,
+            children: uncategorized.map((category) {
+              final isSelected = _selectedCategoryIds.contains(category.id);
+              return _buildCategoryChip(
+                label: category.name,
+                isSelected: isSelected,
+                enabled: sectionEnabled,
+                onTap: () {
+                  if (sectionEnabled) _toggleCategory(category.id);
+                },
+              );
+            }).toList(),
+          ),
+        ),
+      );
     }
 
     if (widgets.isEmpty) {
@@ -460,10 +540,7 @@ class _FilterProductState extends State<FilterProduct> {
           padding: const EdgeInsets.symmetric(vertical: 20),
           child: Text(
             'Tidak ada kategori tersedia',
-            style: TextStyle(
-              color: Colors.grey.shade500,
-              fontSize: 13,
-            ),
+            style: TextStyle(color: Colors.grey.shade500, fontSize: 13),
           ),
         ),
       );
@@ -475,29 +552,39 @@ class _FilterProductState extends State<FilterProduct> {
   Widget _buildCategoryChip({
     required String label,
     required bool isSelected,
+    required bool enabled,
     required VoidCallback onTap,
   }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFFDD835) : Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: isSelected ? const Color(0xFFFDD835) : Colors.grey.shade300,
-            width: 1,
-          ),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 13,
-            color: Colors.black87,
-            fontWeight: isSelected ? FontWeight.w500 : FontWeight.normal,
-          ),
+    final borderColor = isSelected
+        ? const Color(0xFFFDD835)
+        : (enabled ? Colors.grey.shade300 : Colors.grey.shade200);
+
+    final bgColor = isSelected ? const Color(0xFFFDD835) : Colors.white;
+    final textColor = isSelected ? Colors.black87 : Colors.grey.shade700;
+
+    final child = Container(
+      padding: const EdgeInsets.symmetric(horizontal: 19, vertical: 8),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: borderColor, width: 1),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: 12,
+          color: textColor,
+          fontWeight: isSelected ? FontWeight.w500 : FontWeight.normal,
         ),
       ),
     );
+
+    // Jika disabled, beri opacity & non-interaktif
+    if (!enabled) {
+      return Opacity(opacity: 0.5, child: child);
+    }
+
+    // enabled -> tappable
+    return GestureDetector(onTap: onTap, child: child);
   }
 }
