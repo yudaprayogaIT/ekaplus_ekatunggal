@@ -1,6 +1,11 @@
 // lib/features/product/presentation/pages/product_page.dart
 
 import 'dart:convert';
+import 'package:ekaplus_ekatunggal/constant.dart';
+import 'package:ekaplus_ekatunggal/core/shared_widgets/app_bar.dart';
+import 'package:ekaplus_ekatunggal/features/category/domain/entities/category.dart';
+import 'package:ekaplus_ekatunggal/features/product/presentation/pages/product_detail_page.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,16 +13,14 @@ import 'package:ekaplus_ekatunggal/features/product/domain/entities/product.dart
 import 'package:ekaplus_ekatunggal/features/product/presentation/bloc/product_bloc.dart';
 import 'package:ekaplus_ekatunggal/features/product/presentation/widgets/filter_product.dart';
 import 'package:ekaplus_ekatunggal/features/product/presentation/widgets/product_card.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class ProductPage extends StatefulWidget {
   final String? categoryName;
   final int? categoryId;
 
-  const ProductPage({
-    Key? key,
-    this.categoryName,
-    this.categoryId,
-  }) : super(key: key);
+  const ProductPage({Key? key, this.categoryName, this.categoryId})
+    : super(key: key);
 
   @override
   State<ProductPage> createState() => _ProductPageState();
@@ -35,6 +38,11 @@ class _ProductPageState extends State<ProductPage> {
   // tambahan: mapping typeId -> list of categoryIds
   Map<int, List<int>> _categoryIdsByType = {};
 
+  // Variable untuk menyimpan data dari arguments
+  Category? _initialCategory;
+  String _pageTitle = 'Produk';
+  int? _lockedTypeId; // Type ID yang dikunci (tidak bisa diubah)
+
   @override
   void initState() {
     super.initState();
@@ -42,21 +50,63 @@ class _ProductPageState extends State<ProductPage> {
     _loadFilterData();
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // Membaca arguments dari route (hanya sekali)
+    if (_initialCategory == null) {
+      final args = ModalRoute.of(context)?.settings.arguments;
+
+      if (args is Category) {
+        _initialCategory = args;
+        _pageTitle = args.name;
+
+        // Set filter otomatis berdasarkan kategori
+        _selectedCategoryIds = [args.id];
+
+        // Jika kategori memiliki type, KUNCI type tersebut
+        if (args.type?.id != null) {
+          _selectedTypeIds = [args.type!.id];
+          _lockedTypeId = args.type!.id;
+        }
+
+        setState(() {});
+      }
+      // Fallback ke widget parameters jika ada
+      else if (widget.categoryName != null) {
+        _pageTitle = widget.categoryName!;
+        if (widget.categoryId != null) {
+          _selectedCategoryIds = [widget.categoryId!];
+        }
+        setState(() {});
+      }
+    }
+  }
+
   Future<void> _loadFilterData() async {
     try {
       // Load Type names
-      final String typesJson = await rootBundle.loadString('assets/data/itemType.json');
+      final String typesJson = await rootBundle.loadString(
+        'assets/data/itemType.json',
+      );
       final List<dynamic> typesData = jsonDecode(typesJson);
       for (var type in typesData) {
-        final int id = (type['id'] ?? 0) is int ? type['id'] as int : int.parse((type['id'] ?? '0').toString());
+        final int id = (type['id'] ?? 0) is int
+            ? type['id'] as int
+            : int.parse((type['id'] ?? '0').toString());
         _typeNames[id] = type['name'] ?? '';
       }
 
       // Load Category names and build mapping type -> categories
-      final String categoriesJson = await rootBundle.loadString('assets/data/itemCategories.json');
+      final String categoriesJson = await rootBundle.loadString(
+        'assets/data/itemCategories.json',
+      );
       final List<dynamic> categoriesData = jsonDecode(categoriesJson);
       for (var category in categoriesData) {
-        final int catId = (category['id'] ?? 0) is int ? category['id'] as int : int.parse((category['id'] ?? '0').toString());
+        final int catId = (category['id'] ?? 0) is int
+            ? category['id'] as int
+            : int.parse((category['id'] ?? '0').toString());
         _categoryNames[catId] = category['name'] ?? '';
 
         // category may include "type": { "id": X, "name": "..." }
@@ -84,10 +134,18 @@ class _ProductPageState extends State<ProductPage> {
   }
 
   void _removeTypeFilter(int typeId) {
+    if (_lockedTypeId != null && typeId == _lockedTypeId) {
+      return; // Tidak bisa dihapus
+    }
+
     setState(() {
       _selectedTypeIds.remove(typeId);
-      // optionally clear categories when removing a type? keep as-is
     });
+  }
+
+  void _loadProducts() {
+    // saat ini kita fetch all products (ProductBloc akan handle caching/pagination)
+    context.read<ProductBloc>().add(const ProductEventGetAllProducts(1));
   }
 
   void _removeCategoryFilter(int categoryId) {
@@ -98,7 +156,12 @@ class _ProductPageState extends State<ProductPage> {
 
   void _clearAllFilters() {
     setState(() {
-      _selectedTypeIds.clear();
+      // ✅ Jangan clear type yang dikunci
+      if (_lockedTypeId != null) {
+        _selectedTypeIds = [_lockedTypeId!];
+      } else {
+        _selectedTypeIds.clear();
+      }
       _selectedCategoryIds.clear();
       _searchController.clear();
     });
@@ -113,7 +176,8 @@ class _ProductPageState extends State<ProductPage> {
       filtered = filtered.where((p) {
         final nameMatch = p.name.toLowerCase().contains(query);
         final typeMatch = (p.type?.name.toLowerCase().contains(query) ?? false);
-        final itemCatMatch = (p.itemCategory?.name.toLowerCase().contains(query) ?? false);
+        final itemCatMatch =
+            (p.itemCategory?.name.toLowerCase().contains(query) ?? false);
         return nameMatch || typeMatch || itemCatMatch;
       }).toList();
     }
@@ -152,22 +216,7 @@ class _ProductPageState extends State<ProductPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFB71C1C),
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text(
-          widget.categoryName ?? 'Produk',
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ),
+      appBar: CustomAppBar(title: _pageTitle),
       body: Column(
         children: [
           // Search Bar dan Filter Button
@@ -177,54 +226,65 @@ class _ProductPageState extends State<ProductPage> {
               children: [
                 Expanded(
                   child: Container(
-                    height: 45,
+                    height: 30,
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.grey.shade300),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: AppColors.grayColor),
                     ),
                     child: TextField(
                       controller: _searchController,
                       onChanged: (value) => setState(() {}),
                       decoration: InputDecoration(
                         hintText: 'Cari',
-                        hintStyle: TextStyle(color: Colors.grey.shade500),
-                        prefixIcon: Icon(Icons.search, color: Colors.grey.shade600),
+                        hintStyle: TextStyle(
+                          color: AppColors.grayColor,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        suffixIcon: Icon(
+                          FontAwesomeIcons.magnifyingGlass,
+                          color: Colors.grey.shade600,
+                          size: 14,
+                        ),
                         border: InputBorder.none,
                         contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
+                          horizontal: 10,
+                          vertical: 9,
                         ),
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(width: 12),
-                Container(
+                const SizedBox(width: 10),
+                SizedBox(
                   height: 45,
                   width: 45,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.grey.shade300),
-                  ),
+                  // decoration: BoxDecoration(
+                  //   color: Colors.white,
+                  //   // borderRadius: BorderRadius.circular(8),
+                  //   // border: Border.all(color: Colors.grey.shade300),
+                  // ),
                   child: Stack(
+                    alignment: Alignment.center,
                     children: [
-                      IconButton(
-                        icon: Icon(Icons.tune, color: Colors.grey.shade700),
-                        onPressed: () => _showFilterBottomSheet(context),
+                      GestureDetector(
+                        onTap: () => _showFilterBottomSheet(context),
+                        child: Image.asset(
+                          'assets/icons/filter.png',
+                          width: 24,
+                          height: 24,
+                          color: Colors.black,
+                        ),
                       ),
-                      if (_selectedTypeIds.isNotEmpty || _selectedCategoryIds.isNotEmpty)
-                        Positioned(
+                      if (_selectedTypeIds.isNotEmpty ||
+                          _selectedCategoryIds.isNotEmpty)
+                        const Positioned(
                           right: 8,
                           top: 8,
-                          child: Container(
-                            width: 8,
-                            height: 8,
-                            decoration: const BoxDecoration(
-                              color: Color(0xFFB71C1C),
-                              shape: BoxShape.circle,
-                            ),
+                          child: CircleAvatar(
+                            radius: 4,
+                            backgroundColor: AppColors.primaryColor,
                           ),
                         ),
                     ],
@@ -264,33 +324,71 @@ class _ProductPageState extends State<ProductPage> {
                           'Hapus Semua',
                           style: TextStyle(
                             fontSize: 12,
-                            color: Color(0xFFB71C1C),
+                            color: AppColors.primaryColor,
                           ),
                         ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      // Type Chips
-                      ..._selectedTypeIds.map((typeId) {
-                        return _buildFilterChip(
-                          label: _typeNames[typeId] ?? 'Type $typeId',
-                          onRemove: () => _removeTypeFilter(typeId),
-                        );
-                      }),
-                      // Category Chips
-                      ..._selectedCategoryIds.map((categoryId) {
-                        return _buildFilterChip(
-                          label: _categoryNames[categoryId] ?? 'Kategori $categoryId',
-                          onRemove: () => _removeCategoryFilter(categoryId),
-                        );
-                      }),
-                    ],
+
+                  // ===== Type section (label di atas, chips di bawah) =====
+                  const Text(
+                    'Type',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.black87,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
+                  const SizedBox(height: 8),
+                  // Tampilkan chips (atau teks dash jika kosong)
+                  _selectedTypeIds.isEmpty
+                      ? const Text('-', style: TextStyle(color: Colors.black54))
+                      : Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: _selectedTypeIds.map((typeId) {
+                            final isLocked =
+                                _lockedTypeId != null &&
+                                typeId == _lockedTypeId;
+                            return _buildFilterChip(
+                              label: _typeNames[typeId] ?? 'Type $typeId',
+                              onRemove: isLocked
+                                  ? null
+                                  : () => _removeTypeFilter(typeId),
+                              isLocked: isLocked,
+                            );
+                          }).toList(),
+                        ),
+
+                  const SizedBox(height: 12),
+
+                  // ===== Kategori section (label di atas, chips di bawah) =====
+                  const Text(
+                    'Kategori',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.black87,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  _selectedCategoryIds.isEmpty
+                      ? const Text('-', style: TextStyle(color: Colors.black54))
+                      : Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: _selectedCategoryIds.map((categoryId) {
+                            return _buildFilterChip(
+                              label:
+                                  _categoryNames[categoryId] ??
+                                  'Kategori $categoryId',
+                              onRemove: () => _removeCategoryFilter(categoryId),
+                            );
+                          }).toList(),
+                        ),
+
                   const SizedBox(height: 16),
                 ],
               ),
@@ -302,9 +400,7 @@ class _ProductPageState extends State<ProductPage> {
               builder: (context, state) {
                 if (state is ProductStateLoading) {
                   return const Center(
-                    child: CircularProgressIndicator(
-                      color: Color(0xFFB71C1C),
-                    ),
+                    child: CircularProgressIndicator(color: Color(0xFFB71C1C)),
                   );
                 }
 
@@ -361,7 +457,8 @@ class _ProductPageState extends State<ProductPage> {
                               fontSize: 16,
                             ),
                           ),
-                          if (_selectedTypeIds.isNotEmpty || _selectedCategoryIds.isNotEmpty)
+                          if (_selectedTypeIds.isNotEmpty ||
+                              _selectedCategoryIds.isNotEmpty)
                             Padding(
                               padding: const EdgeInsets.only(top: 12),
                               child: TextButton(
@@ -379,24 +476,29 @@ class _ProductPageState extends State<ProductPage> {
 
                   return GridView.builder(
                     padding: const EdgeInsets.all(16),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 0.75,
-                      crossAxisSpacing: 12,
-                      mainAxisSpacing: 12,
-                    ),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 0.75,
+                          crossAxisSpacing: 12,
+                          mainAxisSpacing: 12,
+                        ),
                     itemCount: filteredProducts.length,
                     itemBuilder: (context, index) {
                       final product = filteredProducts[index];
                       return ProductCard(
                         product: product,
-                        onTap: () {
-                          // Navigate to product detail
-                          Navigator.pushNamed(
+                        onTap: () async {
+                          await Navigator.push(
                             context,
-                            '/productDetail',
-                            arguments: product.id.toString(),
+                            MaterialPageRoute(
+                              builder: (context) => ProductDetailPage(
+                                productId: product.id.toString(),
+                              ),
+                            ),
                           );
+                          // refresh products after returning
+                          _loadProducts();
                         },
                       );
                     },
@@ -414,12 +516,14 @@ class _ProductPageState extends State<ProductPage> {
 
   Widget _buildFilterChip({
     required String label,
-    required VoidCallback onRemove,
+    // required VoidCallback onRemove,
+    VoidCallback? onRemove,
+    bool isLocked = false,
   }) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: const Color(0xFFFDD835),
+        color: AppColors.secondaryColor,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
@@ -436,11 +540,7 @@ class _ProductPageState extends State<ProductPage> {
           const SizedBox(width: 4),
           GestureDetector(
             onTap: onRemove,
-            child: const Icon(
-              Icons.close,
-              size: 16,
-              color: Colors.black87,
-            ),
+            child: const Icon(Icons.close, size: 16, color: Colors.black87),
           ),
         ],
       ),
@@ -452,22 +552,18 @@ class _ProductPageState extends State<ProductPage> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
+      isDismissible: true, // Bisa ditutup dengan tap di luar
+      enableDrag: true, // Bisa di-drag untuk menutup
       builder: (context) {
-        return DraggableScrollableSheet(
-          initialChildSize: 0.9,
-          minChildSize: 0.5,
-          maxChildSize: 0.95,
-          builder: (context, scrollController) {
-            return FilterProduct(
-              selectedTypeIds: _selectedTypeIds,
-              selectedCategoryIds: _selectedCategoryIds,
-              onApplyFilter: (typeIds, categoryIds) {
-                setState(() {
-                  _selectedTypeIds = typeIds;
-                  _selectedCategoryIds = categoryIds;
-                });
-              },
-            );
+        return FilterProduct(
+          selectedTypeIds: _selectedTypeIds,
+          selectedCategoryIds: _selectedCategoryIds,
+          lockedTypeId: _lockedTypeId,
+          onApplyFilter: (typeIds, categoryIds) {
+            setState(() {
+              _selectedTypeIds = typeIds;
+              _selectedCategoryIds = categoryIds;
+            });
           },
         );
       },

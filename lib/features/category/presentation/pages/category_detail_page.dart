@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ekaplus_ekatunggal/constant.dart';
-import 'package:ekaplus_ekatunggal/features/category/domain/entities/category.dart';
+// import 'package:ekaplus_ekatunggal/features/category/domain/entities/category.dart';
 import 'package:ekaplus_ekatunggal/features/category/presentation/bloc/category_bloc.dart';
-import 'package:ekaplus_ekatunggal/features/product/domain/entities/product.dart';
+// import 'package:ekaplus_ekatunggal/features/product/domain/entities/product.dart';
 import 'package:ekaplus_ekatunggal/features/product/presentation/bloc/product_bloc.dart';
 import 'package:ekaplus_ekatunggal/features/product/presentation/pages/product_detail_page.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -65,8 +65,8 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
       final response = await categoryBloc.getSubCategory(widget.categoryId);
 
       setState(() {
-        _subCategories = response.subCategory ?? [];
-        _filters = response.filters ?? [];
+        _subCategories = response.subCategory;
+        _filters = response.filters;
 
         // set default selected subcategory (first) jika tersedia
         if (_subCategories.isNotEmpty) {

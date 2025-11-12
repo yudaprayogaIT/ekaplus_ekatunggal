@@ -15,7 +15,8 @@ class CategoryPage extends StatefulWidget {
   State<CategoryPage> createState() => _CategoryPageState();
 }
 
-class _CategoryPageState extends State<CategoryPage> with TickerProviderStateMixin {
+class _CategoryPageState extends State<CategoryPage>
+    with TickerProviderStateMixin {
   // Track which type is expanded
   String? _expandedType;
 
@@ -44,14 +45,20 @@ class _CategoryPageState extends State<CategoryPage> with TickerProviderStateMix
     return type.split(' ').first._capitalize();
   }
 
-  void _onCategoryTap(Category category) {
-    // TODO: Navigate to product list with category filter
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Membuka kategori: ${category.name}'),
-        duration: const Duration(seconds: 2),
+  /// Central navigation function: buka ProductPage dan sertakan kategori sebagai arguments
+  void _openProductPage(Category category) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ProductPage(),
+        settings: RouteSettings(arguments: category),
       ),
     );
+  }
+
+  /// wrapper (dipertahankan untuk compatibility)
+  void _onCategoryTap(Category category) {
+    _openProductPage(category);
   }
 
   @override
@@ -109,15 +116,23 @@ class _CategoryPageState extends State<CategoryPage> with TickerProviderStateMix
             // Ordered types (Material first, then Furniture, then others)
             final List<String> orderedTypes = [];
             if (grouped.keys.any((k) => k.toLowerCase().contains('material'))) {
-              final k = grouped.keys.firstWhere((k) => k.toLowerCase().contains('material'));
+              final k = grouped.keys.firstWhere(
+                (k) => k.toLowerCase().contains('material'),
+              );
               orderedTypes.add(k);
             }
-            if (grouped.keys.any((k) => k.toLowerCase().contains('furniture'))) {
-              final k = grouped.keys.firstWhere((k) => k.toLowerCase().contains('furniture'));
+            if (grouped.keys.any(
+              (k) => k.toLowerCase().contains('furniture'),
+            )) {
+              final k = grouped.keys.firstWhere(
+                (k) => k.toLowerCase().contains('furniture'),
+              );
               orderedTypes.add(k);
             }
             if (grouped.keys.any((k) => k.toLowerCase().contains('sofa'))) {
-              final k = grouped.keys.firstWhere((k) => k.toLowerCase().contains('sofa'));
+              final k = grouped.keys.firstWhere(
+                (k) => k.toLowerCase().contains('sofa'),
+              );
               if (!orderedTypes.contains(k)) orderedTypes.add(k);
             }
             for (var k in grouped.keys) {
@@ -140,7 +155,8 @@ class _CategoryPageState extends State<CategoryPage> with TickerProviderStateMix
                             physics: const NeverScrollableScrollPhysics(),
                             padding: EdgeInsets.zero,
                             itemCount: categories.length,
-                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 3,
                               mainAxisSpacing: 14,
                               crossAxisSpacing: 12,
@@ -149,7 +165,7 @@ class _CategoryPageState extends State<CategoryPage> with TickerProviderStateMix
                             itemBuilder: (context, index) {
                               final cat = categories[index];
                               return GestureDetector(
-                                onTap: () => _onCategoryTap(cat),
+                                onTap: () => _openProductPage(cat), // <-- unified navigation
                                 child: _CategoryTile(category: cat),
                               );
                             },
@@ -162,20 +178,17 @@ class _CategoryPageState extends State<CategoryPage> with TickerProviderStateMix
                             scrollDirection: Axis.horizontal,
                             physics: const BouncingScrollPhysics(),
                             itemCount: categories.length,
-                            separatorBuilder: (_, __) => const SizedBox(width: 12),
+                            separatorBuilder: (_, __) =>
+                                const SizedBox(width: 12),
                             itemBuilder: (context, index) {
                               final cat = categories[index];
                               return _CategoryTile(
                                 category: cat,
                                 width: 120,
-                               onTap: () {
-                                        Navigator.push(
-  context,
-  MaterialPageRoute(
-    builder: (context) => ProductPage(),
-  ),
-);
-                                      },
+                                onTap: () {
+                                  // juga pakai same navigation function
+                                  _openProductPage(cat);
+                                },
                               );
                             },
                           ),
@@ -199,7 +212,10 @@ class _CategoryPageState extends State<CategoryPage> with TickerProviderStateMix
 
                           return FadeTransition(
                             opacity: animation,
-                            child: SlideTransition(position: offsetAnim, child: child),
+                            child: SlideTransition(
+                              position: offsetAnim,
+                              child: child,
+                            ),
                           );
                         },
                         child: content,
@@ -229,7 +245,9 @@ class _CategoryPageState extends State<CategoryPage> with TickerProviderStateMix
                             TextButton(
                               onPressed: () => _toggleExpand(typeName),
                               style: TextButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(horizontal: 8),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                ),
                                 minimumSize: const Size(0, 0),
                                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                               ),
@@ -271,11 +289,7 @@ class _CategoryTile extends StatelessWidget {
   final double? width;
   final VoidCallback? onTap;
 
-  const _CategoryTile({
-    required this.category,
-    this.width,
-    this.onTap,
-  });
+  const _CategoryTile({required this.category, this.width, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -361,10 +375,7 @@ class _CategoryTile extends StatelessWidget {
     if (onTap != null) {
       return SizedBox(
         width: width,
-        child: GestureDetector(
-          onTap: onTap,
-          child: card,
-        ),
+        child: GestureDetector(onTap: onTap, child: card),
       );
     } else {
       return SizedBox(width: width, child: card);
@@ -391,9 +402,7 @@ class _CategoryTile extends StatelessWidget {
         fit: BoxFit.contain,
         placeholder: (context, url) => Container(
           color: Colors.grey[200],
-          child: const Center(
-            child: CircularProgressIndicator(strokeWidth: 2),
-          ),
+          child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
         ),
         errorWidget: (context, url, error) => Container(
           color: Colors.grey[200],
@@ -424,7 +433,7 @@ class _CategoryTile extends StatelessWidget {
     //   iconPath,
     //   fit: BoxFit.cover,
     // );
-    
+
     return Container(
       color: Colors.grey[200],
       child: const Center(
