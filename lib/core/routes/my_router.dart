@@ -1,9 +1,11 @@
 // lib/core/routes/my_router.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:ekaplus_ekatunggal/features/home/presentation/pages/home_page.dart';
 import 'package:ekaplus_ekatunggal/features/category/presentation/pages/category.dart';
+import 'package:ekaplus_ekatunggal/features/category/presentation/bloc/category_bloc.dart';
 import 'package:ekaplus_ekatunggal/core/shared_widgets/bottom_nav.dart';
 
 class MyRouter {
@@ -42,27 +44,8 @@ class MyRouter {
                   body: Center(child: Text('Profile (placeholder)')),
                 ),
               ),
-              // GoRoute(
-              //   name: 'product',
-              //   path: '/product',
-              //   builder: (context, state) => const Scaffold(
-              //     body: Center(child: Text('Products (placeholder)')),
-              //   ),
-              // ),
             ],
           ),
-          // Route tanpa bottom nav (jika diperlukan)
-          // GoRoute(
-          //   name: 'promoDetail',
-          //   path: '/promo/:id',
-          //   builder: (context, state) {
-          //     final id = state.pathParameters['id'];
-          //     return Scaffold(
-          //       appBar: AppBar(title: Text('Promo $id')),
-          //       body: Center(child: Text('Detail promo: $id')),
-          //     );
-          //   },
-          // ),
         ],
         errorBuilder: (context, state) => Scaffold(
           appBar: AppBar(title: const Text('Error')),
@@ -95,20 +78,69 @@ class AppShell extends StatelessWidget {
     'profile'
   ];
 
+  /// Method untuk refresh page berdasarkan index
+  void _refreshPage(BuildContext context, int index) {
+    switch (index) {
+      case 0: // Home
+        // Jika HomePage juga pakai BLoC, trigger event di sini
+        // context.read<HomeBloc>().add(HomeEventRefresh());
+        break;
+        
+      case 1: // Category
+        // Trigger ulang load categories
+        context.read<CategoryBloc>().add(
+          const CategoryEventGetAllCategories(1),
+        );
+        break;
+        
+      case 2: // Favorites
+        // Jika Favorites pakai BLoC, trigger event di sini
+        // context.read<FavoritesBloc>().add(FavoritesEventRefresh());
+        break;
+        
+      case 3: // Profile
+        // Jika Profile pakai BLoC, trigger event di sini
+        // context.read<ProfileBloc>().add(ProfileEventRefresh());
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final currentIndex = _locationToIndex(currentPath);
 
     return Scaffold(
       body: child,
-      bottomNavigationBar: BottomNavBar(
-        currentIndex: currentIndex,
-        onTap: (i) {
-          if (i == currentIndex) return;
-          final name = _routeNames[i];
-          context.goNamed(name);
-        },
-      ),
+     bottomNavigationBar: BottomNavBar(
+  currentIndex: currentIndex,
+  onTap: (i) {
+    final name = _routeNames[i];
+
+    if (i == currentIndex) {
+      // 1) navigasi ke root route tab itu
+      // Use GoRouter.of(context).go to ensure we call the router directly
+      GoRouter.of(context).goNamed(name);
+
+      // 2) setelah navigasi selesai (post-frame) trigger refresh jika perlu
+      // gunakan microtask/post frame supaya event diproses setelah route berubah
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        try {
+          _refreshPage(context, i);
+        } catch (e) {
+          // kalau bloc tidak tersedia di level ini, jangan crash — hanya cetak
+          // atau bisa kirim notification agar page sendiri yang menangani refresh
+          // debugPrint('Refresh event failed: $e');
+        }
+      });
+
+      return;
+    }
+
+    // tap pada tab berbeda -> pindah normal
+    GoRouter.of(context).goNamed(name);
+  },
+),
+
     );
   }
 }
