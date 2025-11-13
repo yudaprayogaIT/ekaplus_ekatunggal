@@ -1,8 +1,8 @@
 // lib/features/category/presentation/widgets/category_widget.dart
-// (hanya file lengkapnya, bagian yang diubah ada pada _buildCategoryItem)
 import 'package:ekaplus_ekatunggal/features/category/presentation/pages/category_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart'; // ✅ TAMBAHKAN
 import 'package:ekaplus_ekatunggal/constant.dart';
 import 'package:ekaplus_ekatunggal/features/category/domain/entities/category.dart';
 import 'package:ekaplus_ekatunggal/features/category/presentation/bloc/category_bloc.dart';
@@ -22,7 +22,6 @@ class _CategoryModalWidgetState extends State<CategoryModalWidget> {
   @override
   void initState() {
     super.initState();
-    // Load data categories saat modal dibuka
     context.read<CategoryBloc>().add(const CategoryEventGetAllCategories(1));
   }
 
@@ -53,7 +52,7 @@ class _CategoryModalWidgetState extends State<CategoryModalWidget> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Drag indicator (draggable area)
+              // Drag indicator
               GestureDetector(
                 onVerticalDragUpdate: (details) {
                   final screenHeight = MediaQuery.of(context).size.height;
@@ -99,7 +98,7 @@ class _CategoryModalWidgetState extends State<CategoryModalWidget> {
 
               const SizedBox(height: 8),
 
-              // Header dengan judul dan kategori
+              // Header
               Padding(
                 padding: const EdgeInsets.only(left: 18, right: 18),
                 child: Column(
@@ -131,7 +130,7 @@ class _CategoryModalWidgetState extends State<CategoryModalWidget> {
               Divider(height: 1, color: Colors.grey.shade300),
               const SizedBox(height: 8),
 
-              // List Categories (scrollable dengan controller dari DraggableScrollableSheet)
+              // List Categories
               Expanded(
                 child: BlocBuilder<CategoryBloc, CategoryState>(
                   builder: (context, state) {
@@ -232,19 +231,17 @@ class _CategoryModalWidgetState extends State<CategoryModalWidget> {
 
   Widget _buildCategoryItem(Category category) {
     return InkWell(
-      onTap: () async {
-        // TUTUP modal dulu agar tidak tetap berada di background
+      onTap: () {
+        // ✅ PERBAIKAN: Tutup modal dulu, kemudian navigasi dengan GoRouter
         Navigator.pop(context);
-        // Pastikan kita mengirim id yang benar (bukan name)
+        
         final idToSend = category.id?.toString() ?? category.name;
-        await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => CategoryDetailPage(
-              categoryId: idToSend,
-              categoryName: category.name,
-            ),
-          ),
+        context.pushNamed(
+          'categoryDetail',
+          pathParameters: {'id': idToSend},
+          extra: {
+            'categoryName': category.name,
+          },
         );
       },
       child: Padding(
@@ -334,7 +331,7 @@ class _CategoryModalWidgetState extends State<CategoryModalWidget> {
   }
 }
 
-// Helper function untuk show modal (UPDATED)
+// Helper functions tetap sama
 void showCategoryModal(BuildContext context) {
   showModalBottomSheet(
     context: context,
@@ -350,7 +347,6 @@ void showCategoryModal(BuildContext context) {
         child: const CategoryModalWidget(),
       ),
     ),
-    
   );
 }
 
@@ -358,19 +354,18 @@ void showCategoryModalWithCustomAnimation(BuildContext context) {
   showGeneralDialog(
     context: context,
     barrierLabel: 'Kategori',
-    barrierDismissible: true, // 👈 Klik di luar untuk menutup
+    barrierDismissible: true,
     barrierColor: Colors.black.withOpacity(0.5),
     transitionDuration: const Duration(milliseconds: 400),
     pageBuilder: (ctx, animation, secondaryAnimation) {
-      return const SizedBox.shrink(); // Placeholder
+      return const SizedBox.shrink();
     },
     transitionBuilder: (ctx, animation, secondaryAnimation, child) {
-      // Animasi slide dari bawah + fade in
       final slideAnimation =
           Tween<Offset>(begin: const Offset(0, 1), end: Offset.zero).animate(
             CurvedAnimation(
               parent: animation,
-              curve: Curves.easeOutCubic, // 👈 Curve yang lebih smooth
+              curve: Curves.easeOutCubic,
             ),
           );
 
@@ -381,11 +376,10 @@ void showCategoryModalWithCustomAnimation(BuildContext context) {
         ),
       );
 
-      // Animasi scale sedikit untuk efek "pop"
       final scaleAnimation = Tween<double>(begin: 0.95, end: 1.0).animate(
         CurvedAnimation(
           parent: animation,
-          curve: Curves.easeOutBack, // 👈 Efek "bounce" halus
+          curve: Curves.easeOutBack,
         ),
       );
 

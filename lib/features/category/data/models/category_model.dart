@@ -13,17 +13,19 @@ class TypeModel extends TypeEntity {
   }
 }
 
-class ProductModel extends ProductEntity {
-  const ProductModel({required super.id, required super.name, required super.image});
+// ✅ RENAME dari ProductModel menjadi CategoryProductModel
+class CategoryProductModel extends ProductEntity {
+  const CategoryProductModel({required super.id, required super.name, required super.image});
 
-  factory ProductModel.fromJson(Map<String, dynamic> json) {
-    return ProductModel(id: json['id'] ?? 0, name: json['name'] ?? '', image: json['image'] ?? '');
+  factory CategoryProductModel.fromJson(Map<String, dynamic> json) {
+    return CategoryProductModel(id: json['id'] ?? 0, name: json['name'] ?? '', image: json['image'] ?? '');
   }
 
   Map<String, dynamic> toJson() {
     return {'id': id, 'name': name, 'image': image};
   }
 }
+
 class UserModel extends UserEntity {
   const UserModel({required super.id, required super.name});
 

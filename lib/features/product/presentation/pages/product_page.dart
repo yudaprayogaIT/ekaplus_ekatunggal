@@ -4,11 +4,11 @@ import 'dart:convert';
 import 'package:ekaplus_ekatunggal/constant.dart';
 import 'package:ekaplus_ekatunggal/core/shared_widgets/app_bar.dart';
 import 'package:ekaplus_ekatunggal/features/category/domain/entities/category.dart';
-import 'package:ekaplus_ekatunggal/features/product/presentation/pages/product_detail_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart'; // ✅ TAMBAHKAN
 import 'package:ekaplus_ekatunggal/features/product/domain/entities/product.dart';
 import 'package:ekaplus_ekatunggal/features/product/presentation/bloc/product_bloc.dart';
 import 'package:ekaplus_ekatunggal/features/product/presentation/widgets/filter_product.dart';
@@ -20,7 +20,7 @@ class ProductPage extends StatefulWidget {
   final int? categoryId;
 
   const ProductPage({Key? key, this.categoryName, this.categoryId})
-    : super(key: key);
+      : super(key: key);
 
   @override
   State<ProductPage> createState() => _ProductPageState();
@@ -31,17 +31,13 @@ class _ProductPageState extends State<ProductPage> {
   List<int> _selectedTypeIds = [];
   List<int> _selectedCategoryIds = [];
 
-  // Maps untuk menyimpan nama Type dan Category
   Map<int, String> _typeNames = {};
   Map<int, String> _categoryNames = {};
-
-  // tambahan: mapping typeId -> list of categoryIds
   Map<int, List<int>> _categoryIdsByType = {};
 
-  // Variable untuk menyimpan data dari arguments
   Category? _initialCategory;
   String _pageTitle = 'Produk';
-  int? _lockedTypeId; // Type ID yang dikunci (tidak bisa diubah)
+  int? _lockedTypeId;
 
   @override
   void initState() {
@@ -54,7 +50,6 @@ class _ProductPageState extends State<ProductPage> {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    // Membaca arguments dari route (hanya sekali)
     if (_initialCategory == null) {
       final args = ModalRoute.of(context)?.settings.arguments;
 
@@ -62,19 +57,15 @@ class _ProductPageState extends State<ProductPage> {
         _initialCategory = args;
         _pageTitle = args.name;
 
-        // Set filter otomatis berdasarkan kategori
         _selectedCategoryIds = [args.id];
 
-        // Jika kategori memiliki type, KUNCI type tersebut
         if (args.type?.id != null) {
           _selectedTypeIds = [args.type!.id];
           _lockedTypeId = args.type!.id;
         }
 
         setState(() {});
-      }
-      // Fallback ke widget parameters jika ada
-      else if (widget.categoryName != null) {
+      } else if (widget.categoryName != null) {
         _pageTitle = widget.categoryName!;
         if (widget.categoryId != null) {
           _selectedCategoryIds = [widget.categoryId!];
@@ -86,7 +77,6 @@ class _ProductPageState extends State<ProductPage> {
 
   Future<void> _loadFilterData() async {
     try {
-      // Load Type names
       final String typesJson = await rootBundle.loadString(
         'assets/data/itemType.json',
       );
@@ -98,7 +88,6 @@ class _ProductPageState extends State<ProductPage> {
         _typeNames[id] = type['name'] ?? '';
       }
 
-      // Load Category names and build mapping type -> categories
       final String categoriesJson = await rootBundle.loadString(
         'assets/data/itemCategories.json',
       );
@@ -109,7 +98,6 @@ class _ProductPageState extends State<ProductPage> {
             : int.parse((category['id'] ?? '0').toString());
         _categoryNames[catId] = category['name'] ?? '';
 
-        // category may include "type": { "id": X, "name": "..." }
         if (category['type'] != null && category['type']['id'] != null) {
           final int typeId = (category['type']['id'] ?? 0) is int
               ? category['type']['id'] as int
@@ -121,8 +109,6 @@ class _ProductPageState extends State<ProductPage> {
 
       setState(() {});
     } catch (e) {
-      // jika gagal, jangan crash — tampilkan di console
-      // ignore: avoid_print
       print('Error loading filter data: $e');
     }
   }
@@ -135,7 +121,7 @@ class _ProductPageState extends State<ProductPage> {
 
   void _removeTypeFilter(int typeId) {
     if (_lockedTypeId != null && typeId == _lockedTypeId) {
-      return; // Tidak bisa dihapus
+      return;
     }
 
     setState(() {
@@ -144,7 +130,6 @@ class _ProductPageState extends State<ProductPage> {
   }
 
   void _loadProducts() {
-    // saat ini kita fetch all products (ProductBloc akan handle caching/pagination)
     context.read<ProductBloc>().add(const ProductEventGetAllProducts(1));
   }
 
@@ -156,7 +141,6 @@ class _ProductPageState extends State<ProductPage> {
 
   void _clearAllFilters() {
     setState(() {
-      // ✅ Jangan clear type yang dikunci
       if (_lockedTypeId != null) {
         _selectedTypeIds = [_lockedTypeId!];
       } else {
@@ -170,7 +154,6 @@ class _ProductPageState extends State<ProductPage> {
   List<Product> _filterProducts(List<Product> products) {
     List<Product> filtered = products;
 
-    // Filter by search query (name, type name, itemCategory name)
     if (_searchController.text.isNotEmpty) {
       final query = _searchController.text.toLowerCase();
       filtered = filtered.where((p) {
@@ -182,15 +165,11 @@ class _ProductPageState extends State<ProductPage> {
       }).toList();
     }
 
-    // Category filtering logic:
-    // 1) if user selected explicit category ids => use them
-    // 2) else if user selected type ids => use all categories that belong to those types (from _categoryIdsByType)
     List<int> categoryFilterIds = [];
 
     if (_selectedCategoryIds.isNotEmpty) {
       categoryFilterIds = List.from(_selectedCategoryIds);
     } else if (_selectedTypeIds.isNotEmpty) {
-      // gather categories for selected types
       final Set<int> allowed = {};
       for (final t in _selectedTypeIds) {
         final list = _categoryIdsByType[t];
@@ -219,7 +198,6 @@ class _ProductPageState extends State<ProductPage> {
       appBar: CustomAppBar(title: _pageTitle),
       body: Column(
         children: [
-          // Search Bar dan Filter Button
           Container(
             padding: const EdgeInsets.all(16),
             child: Row(
@@ -260,11 +238,6 @@ class _ProductPageState extends State<ProductPage> {
                 SizedBox(
                   height: 45,
                   width: 45,
-                  // decoration: BoxDecoration(
-                  //   color: Colors.white,
-                  //   // borderRadius: BorderRadius.circular(8),
-                  //   // border: Border.all(color: Colors.grey.shade300),
-                  // ),
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
@@ -294,7 +267,6 @@ class _ProductPageState extends State<ProductPage> {
             ),
           ),
 
-          // Active Filters Display
           if (_selectedTypeIds.isNotEmpty || _selectedCategoryIds.isNotEmpty)
             Container(
               width: double.infinity,
@@ -332,7 +304,6 @@ class _ProductPageState extends State<ProductPage> {
                   ),
                   const SizedBox(height: 8),
 
-                  // ===== Type section (label di atas, chips di bawah) =====
                   const Text(
                     'Type',
                     style: TextStyle(
@@ -342,7 +313,6 @@ class _ProductPageState extends State<ProductPage> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  // Tampilkan chips (atau teks dash jika kosong)
                   _selectedTypeIds.isEmpty
                       ? const Text('-', style: TextStyle(color: Colors.black54))
                       : Wrap(
@@ -364,7 +334,6 @@ class _ProductPageState extends State<ProductPage> {
 
                   const SizedBox(height: 12),
 
-                  // ===== Kategori section (label di atas, chips di bawah) =====
                   const Text(
                     'Kategori',
                     style: TextStyle(
@@ -394,7 +363,6 @@ class _ProductPageState extends State<ProductPage> {
               ),
             ),
 
-          // Product Grid
           Expanded(
             child: BlocBuilder<ProductBloc, ProductState>(
               builder: (context, state) {
@@ -479,7 +447,7 @@ class _ProductPageState extends State<ProductPage> {
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2,
-                          childAspectRatio: 0.75,
+                          childAspectRatio: 0.7,
                           crossAxisSpacing: 12,
                           mainAxisSpacing: 12,
                         ),
@@ -488,17 +456,12 @@ class _ProductPageState extends State<ProductPage> {
                       final product = filteredProducts[index];
                       return ProductCard(
                         product: product,
-                        onTap: () async {
-                          await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ProductDetailPage(
-                                productId: product.id.toString(),
-                              ),
-                            ),
-                          );
-                          // refresh products after returning
-                          _loadProducts();
+                        onTap: () {
+                          // ✅ PERBAIKAN: Gunakan GoRouter
+                          context.pushNamed(
+                            'productDetail',
+                            pathParameters: {'id': product.id.toString()},
+                          ).then((_) => _loadProducts());
                         },
                       );
                     },
@@ -516,7 +479,6 @@ class _ProductPageState extends State<ProductPage> {
 
   Widget _buildFilterChip({
     required String label,
-    // required VoidCallback onRemove,
     VoidCallback? onRemove,
     bool isLocked = false,
   }) {
@@ -552,8 +514,8 @@ class _ProductPageState extends State<ProductPage> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      isDismissible: true, // Bisa ditutup dengan tap di luar
-      enableDrag: true, // Bisa di-drag untuk menutup
+      isDismissible: true,
+      enableDrag: true,
       builder: (context) {
         return FilterProduct(
           selectedTypeIds: _selectedTypeIds,

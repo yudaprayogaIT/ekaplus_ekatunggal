@@ -490,7 +490,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          selectedVariant.name,
+                          selectedVariant.name.toUpperCase(),
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
