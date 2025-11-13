@@ -2,6 +2,7 @@
 import 'package:ekaplus_ekatunggal/features/product/presentation/pages/product_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart'; // ✅ TAMBAHKAN
 import 'package:ekaplus_ekatunggal/constant.dart';
 import 'package:ekaplus_ekatunggal/features/category/domain/entities/category.dart';
 import 'package:ekaplus_ekatunggal/features/category/presentation/bloc/category_bloc.dart';
@@ -17,7 +18,6 @@ class CategoryPage extends StatefulWidget {
 
 class _CategoryPageState extends State<CategoryPage>
     with TickerProviderStateMixin {
-  // Track which type is expanded
   String? _expandedType;
 
   @override
@@ -45,7 +45,6 @@ class _CategoryPageState extends State<CategoryPage>
     return type.split(' ').first._capitalize();
   }
 
-  /// Central navigation function: buka ProductPage dan sertakan kategori sebagai arguments
   void _openProductPage(Category category) {
     Navigator.push(
       context,
@@ -56,7 +55,6 @@ class _CategoryPageState extends State<CategoryPage>
     );
   }
 
-  /// wrapper (dipertahankan untuk compatibility)
   void _onCategoryTap(Category category) {
     _openProductPage(category);
   }
@@ -106,14 +104,12 @@ class _CategoryPageState extends State<CategoryPage>
               return const Center(child: Text('Belum ada kategori'));
             }
 
-            // Group by type
             final Map<String, List<Category>> grouped = {};
             for (final cat in allCategories) {
               final typeName = cat.type?.name ?? 'Lainnya';
               grouped.putIfAbsent(typeName, () => []).add(cat);
             }
 
-            // Ordered types (Material first, then Furniture, then others)
             final List<String> orderedTypes = [];
             if (grouped.keys.any((k) => k.toLowerCase().contains('material'))) {
               final k = grouped.keys.firstWhere(
@@ -146,7 +142,6 @@ class _CategoryPageState extends State<CategoryPage>
                   final categories = grouped[typeName]!;
                   final isExpanded = _expandedType == typeName;
 
-                  // Content widget (collapsed horizontal OR expanded grid)
                   final Widget content = isExpanded
                       ? Container(
                           key: ValueKey('expanded-$typeName'),
@@ -165,7 +160,7 @@ class _CategoryPageState extends State<CategoryPage>
                             itemBuilder: (context, index) {
                               final cat = categories[index];
                               return GestureDetector(
-                                onTap: () => _openProductPage(cat), // <-- unified navigation
+                                onTap: () => _openProductPage(cat),
                                 child: _CategoryTile(category: cat),
                               );
                             },
@@ -185,16 +180,12 @@ class _CategoryPageState extends State<CategoryPage>
                               return _CategoryTile(
                                 category: cat,
                                 width: 120,
-                                onTap: () {
-                                  // juga pakai same navigation function
-                                  _openProductPage(cat);
-                                },
+                                onTap: () => _openProductPage(cat),
                               );
                             },
                           ),
                         );
 
-                  // Animated wrapper for smooth transitions
                   final animated = ClipRect(
                     child: AnimatedSize(
                       key: ValueKey('size-$typeName'),
@@ -226,7 +217,6 @@ class _CategoryPageState extends State<CategoryPage>
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Header row: Title + Lihat Semua button
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 6),
                         child: Row(
@@ -265,7 +255,6 @@ class _CategoryPageState extends State<CategoryPage>
                         ),
                       ),
 
-                      // Animated content
                       animated,
 
                       const SizedBox(height: 18),
@@ -283,7 +272,6 @@ class _CategoryPageState extends State<CategoryPage>
   }
 }
 
-/// Category tile dengan gambar full + label overlay di bawah
 class _CategoryTile extends StatelessWidget {
   final Category category;
   final double? width;
@@ -314,10 +302,8 @@ class _CategoryTile extends StatelessWidget {
         child: Stack(
           fit: StackFit.loose,
           children: [
-            // Image background (full cover)
             _buildCategoryImage(category),
 
-            // Bottom red label overlay
             Align(
               alignment: Alignment.bottomCenter,
               child: Container(
@@ -346,7 +332,6 @@ class _CategoryTile extends StatelessWidget {
               ),
             ),
 
-            // Subtle gradient above label for better readability
             Positioned(
               left: 0,
               right: 0,
@@ -385,7 +370,6 @@ class _CategoryTile extends StatelessWidget {
   Widget _buildCategoryImage(Category category) {
     final String? iconPath = category.icon;
 
-    // No image - show placeholder
     if (iconPath == null || iconPath.isEmpty) {
       return Container(
         color: Colors.grey[200],
@@ -395,7 +379,6 @@ class _CategoryTile extends StatelessWidget {
       );
     }
 
-    // Network image (http/https)
     if (iconPath.startsWith('http')) {
       return CachedNetworkImage(
         imageUrl: iconPath,
@@ -413,7 +396,6 @@ class _CategoryTile extends StatelessWidget {
       );
     }
 
-    // Local asset image (png, jpg, webp)
     if (!iconPath.toLowerCase().endsWith('.svg')) {
       return Image.asset(
         iconPath,
@@ -427,13 +409,6 @@ class _CategoryTile extends StatelessWidget {
       );
     }
 
-    // SVG fallback (requires flutter_svg package)
-    // If you have flutter_svg installed, uncomment:
-    // return SvgPicture.asset(
-    //   iconPath,
-    //   fit: BoxFit.cover,
-    // );
-
     return Container(
       color: Colors.grey[200],
       child: const Center(
@@ -443,7 +418,6 @@ class _CategoryTile extends StatelessWidget {
   }
 }
 
-// Extension helper for capitalize
 extension _Cap on String {
   String _capitalize() {
     if (isEmpty) return this;

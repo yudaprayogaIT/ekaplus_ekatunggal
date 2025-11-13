@@ -44,6 +44,7 @@ class ProductCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         child: Container(
           width: width,
+          height: 280,
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(12),
@@ -83,53 +84,59 @@ class ProductCard extends StatelessWidget {
 
               const SizedBox(height: 8),
 
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8.0,
-                  vertical: 6,
-                ),
-                child: Row(
-                  children: [
-                    // kiri: nama + lihat
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            product.name,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w600,
+              SizedBox(
+                height: 65,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                    vertical: 6,
+                  ),
+                  child: Row(
+                    children: [
+                      // kiri: nama + lihat
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (product.name.length < 13)
+                            const Spacer(),
+                            Text(
+                              product.name.toUpperCase(),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Lihat',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Theme.of(context).primaryColor,
-                              fontFamily: AppFonts.secondaryFont,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
 
-                    // kanan: icon
-                    Container(
-                      margin: const EdgeInsets.only(left: 8),
-                      padding: const EdgeInsets.all(7),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(color: Colors.grey.shade200),
-                        borderRadius: BorderRadius.circular(6),
+                            const Spacer(),
+
+                            Text(
+                              'Lihat',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Theme.of(context).primaryColor,
+                                fontFamily: AppFonts.secondaryFont,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                      child: const Icon(CupertinoIcons.arrow_right, size: 13),
-                    ),
-                  ],
+
+                      // kanan: icon
+                      Container(
+                        margin: const EdgeInsets.only(left: 8),
+                        padding: const EdgeInsets.all(7),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border.all(color: Colors.grey.shade200),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: const Icon(CupertinoIcons.arrow_right, size: 13),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],

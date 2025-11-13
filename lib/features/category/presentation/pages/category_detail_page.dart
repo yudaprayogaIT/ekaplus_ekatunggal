@@ -2,18 +2,16 @@
 import 'package:ekaplus_ekatunggal/features/product/presentation/widgets/product_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart'; // ✅ TAMBAHKAN
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ekaplus_ekatunggal/constant.dart';
-// import 'package:ekaplus_ekatunggal/features/category/domain/entities/category.dart';
 import 'package:ekaplus_ekatunggal/features/category/presentation/bloc/category_bloc.dart';
-// import 'package:ekaplus_ekatunggal/features/product/domain/entities/product.dart';
 import 'package:ekaplus_ekatunggal/features/product/presentation/bloc/product_bloc.dart';
-import 'package:ekaplus_ekatunggal/features/product/presentation/pages/product_detail_page.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class CategoryDetailPage extends StatefulWidget {
   final String categoryId;
-  final String? categoryName; // optional prefill
+  final String? categoryName;
   final String? categoryTitle;
   final String? categorySubtitle;
 
@@ -35,7 +33,6 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
   List<List<String>> _filters = [];
   bool _loadingSub = true;
 
-  // local resolved texts (updated from bloc listener)
   String? _resolvedCategoryTitle;
   String? _resolvedCategorySubtitle;
 
@@ -43,16 +40,13 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
   void initState() {
     super.initState();
 
-    // init from incoming params
     _resolvedCategoryTitle = widget.categoryTitle;
     _resolvedCategorySubtitle = widget.categorySubtitle;
 
-    // request detail & lists
     context.read<CategoryBloc>().add(
       CategoryEventGetDetailCategory(widget.categoryId),
     );
 
-    // load subcategories & products
     _loadSubCategories();
     _loadProducts();
   }
@@ -61,14 +55,12 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
     setState(() => _loadingSub = true);
     try {
       final categoryBloc = context.read<CategoryBloc>();
-      // jika CategoryBloc punya helper getSubCategory (async), gunakan itu
       final response = await categoryBloc.getSubCategory(widget.categoryId);
 
       setState(() {
         _subCategories = response.subCategory;
         _filters = response.filters;
 
-        // set default selected subcategory (first) jika tersedia
         if (_subCategories.isNotEmpty) {
           _selectedSubIndex = 0;
           for (int i = 0; i < _subCategories.length; i++) {
@@ -77,23 +69,20 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
         }
       });
 
-      // jika ada filter/subcategory, reload products sesuai kebutuhan
       if (_filters.isNotEmpty || _subCategories.isNotEmpty) {
         _loadProducts();
       }
     } catch (e) {
-      // ignore, biarkan kosong; UI akan menampilkan fallback
+      // ignore
     } finally {
       setState(() => _loadingSub = false);
     }
   }
 
   void _loadProducts() {
-    // saat ini kita fetch all products (ProductBloc akan handle caching/pagination)
     context.read<ProductBloc>().add(const ProductEventGetAllProducts(1));
   }
 
-  // fallback resolver for category name used in product filtering
   String? _resolvedCategoryName() {
     if (widget.categoryName != null && widget.categoryName!.isNotEmpty) {
       return widget.categoryName;
@@ -110,7 +99,6 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
     return BlocListener<CategoryBloc, CategoryState>(
       listener: (context, state) {
         if (state is CategoryStateLoadedCategory) {
-          // update local title/subtitle if available
           setState(() {
             _resolvedCategoryTitle =
                 state.detailCategory.title ?? _resolvedCategoryTitle;
@@ -125,7 +113,6 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
           slivers: [
             _buildSliverAppBar(),
 
-            // Sub categories / title block
             if (!_loadingSub &&
                 (_subCategories.isNotEmpty ||
                     (_resolvedCategoryTitle != null &&
@@ -134,7 +121,6 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
             else if (_loadingSub)
               const SliverToBoxAdapter(child: SizedBox(height: 12)),
 
-            // Products grid
             _buildProductsGrid(),
           ],
         ),
@@ -147,12 +133,10 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
       builder: (context, state) {
         String categoryName = widget.categoryName ?? 'Kategori';
         String? categoryImage;
-        // String? categoryDescription;
 
         if (state is CategoryStateLoadedCategory) {
           categoryName = state.detailCategory.name;
           categoryImage = state.detailCategory.image;
-          // categoryDescription = state.detailCategory.description;
         }
 
         return SliverAppBar(
@@ -165,7 +149,7 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
               color: Colors.white,
               size: 20,
             ),
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => context.pop(), // ✅ PERBAIKAN: Gunakan context.pop()
           ),
           flexibleSpace: FlexibleSpaceBar(
             title: Text(
@@ -205,35 +189,6 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
                       ),
                     ),
                   ),
-                // if (categoryDescription != null && categoryDescription.isNotEmpty)
-                //   Positioned(
-                //     bottom: 60,
-                //     left: 0,
-                //     right: 0,
-                //     child: Container(
-                //       padding: const EdgeInsets.symmetric(
-                //         horizontal: 32,
-                //         vertical: 8,
-                //       ),
-                //       child: Text(
-                //         categoryDescription,
-                //         textAlign: TextAlign.center,
-                //         style: TextStyle(
-                //           fontFamily: AppFonts.primaryFont,
-                //           fontSize: 12,
-                //           color: Colors.white,
-                //           shadows: [
-                //             Shadow(
-                //               color: Colors.black.withOpacity(0.5),
-                //               blurRadius: 4,
-                //             ),
-                //           ],
-                //         ),
-                //         maxLines: 2,
-                //         overflow: TextOverflow.ellipsis,
-                //       ),
-                //     ),
-                //   ),
               ],
             ),
           ),
@@ -371,7 +326,7 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
             sliver: SliverGrid(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
-                childAspectRatio: 0.75,
+                childAspectRatio: 0.7,
                 crossAxisSpacing: 14,
                 mainAxisSpacing: 14,
               ),
@@ -380,15 +335,12 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
                   final product = filteredProducts[index];
                   return ProductCard(
                     product: product,
-                    onTap: () async {
-                      await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ProductDetailPage(productId: product.id.toString()),
-                        ),
-                      );
-                      // refresh products after returning
-                      _loadProducts();
+                    onTap: () {
+                      // ✅ PERBAIKAN: Gunakan GoRouter
+                      context.pushNamed(
+                        'productDetail',
+                        pathParameters: {'id': product.id.toString()},
+                      ).then((_) => _loadProducts());
                     },
                   );
                 },

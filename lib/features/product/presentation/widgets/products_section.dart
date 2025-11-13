@@ -1,10 +1,9 @@
 // lib/features/product/presentation/widgets/product_section.dart
 import 'dart:convert';
 import 'package:ekaplus_ekatunggal/constant.dart';
-import 'package:ekaplus_ekatunggal/features/product/presentation/pages/product_detail_page.dart';
-import 'package:ekaplus_ekatunggal/features/product/presentation/pages/products_highlight_page.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart'; // ✅ TAMBAHKAN
 import 'package:ekaplus_ekatunggal/features/product/data/models/product_model.dart';
 import 'package:ekaplus_ekatunggal/features/product/presentation/widgets/product_card.dart';
 import 'package:ekaplus_ekatunggal/features/product/domain/entities/product.dart';
@@ -15,8 +14,6 @@ class ProductsSection extends StatefulWidget {
   final int showCount;
   final bool hotDealsOnly;
 
-  /// hotDealsOnly: jika true -> tampilkan hanya yang isHotDeals == true (urut id asc/oldest)
-  /// jika false -> tampilkan semua produk (urut id desc/newest)
   const ProductsSection({
     Key? key,
     this.title = 'Yang Baru Dari Kami',
@@ -34,7 +31,7 @@ class _ProductsSectionState extends State<ProductsSection> {
   List<ProductModel> _allProducts = [];
   List<ProductModel> _filteredProducts = [];
   List<_CategoryItem> _categories = [];
-  int? _selectedCategoryId; // null = show semua
+  int? _selectedCategoryId;
 
   @override
   void initState() {
@@ -49,7 +46,6 @@ class _ProductsSectionState extends State<ProductsSection> {
         ? decoded
         : (decoded['data'] ?? []);
     final products = ProductModel.fromJsonList(list);
-    // simpan ke state-ready lists (tidak langsung setState di init)
     _allProducts = products;
     _buildCategoryList();
     _applyFiltersAndSort();
@@ -70,20 +66,15 @@ class _ProductsSectionState extends State<ProductsSection> {
   }
 
   void _applyFiltersAndSort() {
-    // start from all products
     List<ProductModel> results = List<ProductModel>.from(_allProducts);
 
-    // filter hot deals if requested
     if (widget.hotDealsOnly) {
       results = results.where((p) => p.isHotDeals == true).toList();
-      // sort by id ascending (oldest first)
       results.sort((a, b) => a.id.compareTo(b.id));
     } else {
-      // not hot deals mode -> show all but sort newest first (id desc)
       results.sort((a, b) => b.id.compareTo(a.id));
     }
 
-    // apply category filter if selected
     if (_selectedCategoryId != null) {
       results = results
           .where((p) => p.itemCategory?.id == _selectedCategoryId)
@@ -96,7 +87,6 @@ class _ProductsSectionState extends State<ProductsSection> {
   void _onCategoryTap(int categoryId) {
     setState(() {
       if (_selectedCategoryId == categoryId) {
-        // toggle off
         _selectedCategoryId = null;
       } else {
         _selectedCategoryId = categoryId;
@@ -105,28 +95,11 @@ class _ProductsSectionState extends State<ProductsSection> {
     });
   }
 
-  String _normalizeImagePathFromVariant(Product p) {
-    try {
-      if (p.variants.isNotEmpty) {
-        final v = p.variants.first;
-        final raw = (v as dynamic).image ?? '';
-        if (raw is String && raw.isNotEmpty) {
-          // remove any leading slashes and prefix with assets/
-          final normalized = raw.replaceFirst(RegExp(r'^/+'), '');
-          if (normalized.startsWith('assets/')) return normalized;
-          return 'assets/$normalized';
-        }
-      }
-    } catch (_) {}
-    return ''; // fallback
-  }
-
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<ProductModel>>(
       future: _futureProducts,
       builder: (context, snapshot) {
-        // Loading
         if (snapshot.connectionState != ConnectionState.done) {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -144,8 +117,6 @@ class _ProductsSectionState extends State<ProductsSection> {
           );
         }
 
-        // Data ready: use _filteredProducts (already computed in init)
-        // but ensure we recompute if _allProducts was empty earlier
         if (_allProducts.isEmpty) {
           final products = snapshot.data ?? [];
           _allProducts = products;
@@ -153,14 +124,12 @@ class _ProductsSectionState extends State<ProductsSection> {
           _applyFiltersAndSort();
         }
 
-        // guard: still empty
         if (_filteredProducts.isEmpty) {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // header
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -174,23 +143,21 @@ class _ProductsSectionState extends State<ProductsSection> {
                     ),
                     InkWell(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => ProductsHighlight(
-                              // ✅ PERBAIKI: Menggunakan nilai widget.hotDealsOnly yang sesuai dengan section ini.
-                              hotDealsOnly: widget.hotDealsOnly,
-                              title: widget.hotDealsOnly
-                                  ? 'Produk Terlaris'
-                                  : 'Produk Terbaru',
-                              headerTitle: widget.hotDealsOnly
-                                  ? 'Jangan Kehabisan Produk Terlaris 🤩'
-                                  : 'Yang Baru Dari Kami 🔥',
-                              headerSubTitle: widget.hotDealsOnly
-                                  ? 'Siapa cepat, dia dapat, sikaaat ...'
-                                  : 'Yang baru - baru, dijamin menarik !!!',
-                            ),
-                          ),
+                        // ✅ PERBAIKAN: Gunakan GoRouter
+                        context.pushNamed(
+                          'productsHighlight',
+                          extra: {
+                            'hotDealsOnly': widget.hotDealsOnly,
+                            'title': widget.hotDealsOnly
+                                ? 'Produk Terlaris'
+                                : 'Produk Terbaru',
+                            'headerTitle': widget.hotDealsOnly
+                                ? 'Jangan Kehabisan Produk Terlaris 🤩'
+                                : 'Yang Baru Dari Kami 🔥',
+                            'headerSubTitle': widget.hotDealsOnly
+                                ? 'Siapa cepat, dia dapat, sikaaat ...'
+                                : 'Yang baru - baru, dijamin menarik !!!',
+                          },
                         );
                       },
                       child: const Text(
@@ -217,7 +184,6 @@ class _ProductsSectionState extends State<ProductsSection> {
                   ),
                 ],
                 const SizedBox(height: 8),
-                // categories (still show)
                 _buildCategoryChips(),
                 const SizedBox(height: 16),
                 SizedBox(
@@ -234,7 +200,6 @@ class _ProductsSectionState extends State<ProductsSection> {
           );
         }
 
-        // take showCount after filtering and sorting
         final displayList = _filteredProducts.take(widget.showCount).toList();
 
         return Padding(
@@ -242,7 +207,6 @@ class _ProductsSectionState extends State<ProductsSection> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // header: title + lihat semua
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -256,23 +220,21 @@ class _ProductsSectionState extends State<ProductsSection> {
                   ),
                   InkWell(
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => ProductsHighlight(
-                            // ✅ PERBAIKI: Menggunakan nilai widget.hotDealsOnly yang sesuai dengan section ini.
-                            hotDealsOnly: widget.hotDealsOnly,
-                            title: widget.hotDealsOnly
-                                ? 'Produk Terlaris'
-                                : 'Produk Terbaru',
-                            headerTitle: widget.hotDealsOnly
-                                ? 'Jangan Kehabisan Produk Terlaris 🤩'
-                                : 'Yang Baru Dari Kami 🔥',
-                            headerSubTitle: widget.hotDealsOnly
-                                ? 'Siapa cepat, dia dapat, sikaaat ...'
-                                : 'Yang baru - baru, dijamin menarik !!!',
-                          ),
-                        ),
+                      // ✅ PERBAIKAN: Gunakan GoRouter
+                      context.pushNamed(
+                        'productsHighlight',
+                        extra: {
+                          'hotDealsOnly': widget.hotDealsOnly,
+                          'title': widget.hotDealsOnly
+                              ? 'Produk Terlaris'
+                              : 'Produk Terbaru',
+                          'headerTitle': widget.hotDealsOnly
+                              ? 'Jangan Kehabisan Produk Terlaris 🤩'
+                              : 'Yang Baru Dari Kami 🔥',
+                          'headerSubTitle': widget.hotDealsOnly
+                              ? 'Siapa cepat, dia dapat, sikaaat ...'
+                              : 'Yang baru - baru, dijamin menarik !!!',
+                        },
                       );
                     },
                     child: const Text(
@@ -301,14 +263,12 @@ class _ProductsSectionState extends State<ProductsSection> {
 
               const SizedBox(height: 10),
 
-              // category chips
               _buildCategoryChips(),
 
               const SizedBox(height: 12),
 
-              // horizontal product list
               SizedBox(
-                height: 260,
+                height: 280,
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.symmetric(
@@ -319,17 +279,14 @@ class _ProductsSectionState extends State<ProductsSection> {
                   separatorBuilder: (_, __) => const SizedBox(width: 20),
                   itemBuilder: (context, index) {
                     final p = displayList[index];
-                    // ProductCard expects Product entity; our ProductModel extends Product so it's fine
                     return ProductCard(
                       product: p,
                       width: 176,
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                ProductDetailPage(productId: p.id.toString()),
-                          ),
+                        // ✅ PERBAIKAN: Gunakan GoRouter
+                        context.pushNamed(
+                          'productDetail',
+                          pathParameters: {'id': p.id.toString()},
                         );
                       },
                     );
@@ -350,7 +307,7 @@ class _ProductsSectionState extends State<ProductsSection> {
       height: 30,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        itemCount: _categories.length + 1, // +1 for 'All' chip
+        itemCount: _categories.length + 1,
         separatorBuilder: (_, __) => const SizedBox(width: 8),
         itemBuilder: (context, index) {
           if (index == 0) {

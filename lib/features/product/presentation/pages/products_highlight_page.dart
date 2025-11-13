@@ -1,12 +1,12 @@
+// lib/features/product/presentation/pages/products_highlight_page.dart
 import 'package:ekaplus_ekatunggal/core/shared_widgets/app_bar.dart';
-import 'package:ekaplus_ekatunggal/features/product/presentation/pages/product_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart'; // ✅ TAMBAHKAN
 import 'package:ekaplus_ekatunggal/constant.dart';
 import 'package:ekaplus_ekatunggal/features/product/presentation/bloc/product_bloc.dart';
 import 'package:ekaplus_ekatunggal/features/product/domain/entities/product.dart';
 import 'package:ekaplus_ekatunggal/features/product/presentation/widgets/product_card.dart';
-// import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
 
 final GetIt myinjection = GetIt.instance;
@@ -36,13 +36,11 @@ class _ProductsHighlightState extends State<ProductsHighlight> {
   List<_CategoryItem> _categories = [];
   int? _selectedCategoryId;
 
-  // 🔄 Fitur Load More: Variabel State
   late ScrollController _scrollController;
   int _currentPage = 1;
   bool _isLoadingMore = false;
-  bool _hasMoreData = true; // Asumsikan ada data awal
+  bool _hasMoreData = true;
 
-  // ⚠️ PENTING: Tentukan ukuran halaman per request
   static const int _pageSize = 20;
 
   @override
@@ -50,11 +48,9 @@ class _ProductsHighlightState extends State<ProductsHighlight> {
     super.initState();
     _bloc = myinjection<ProductBloc>();
 
-    // 🔄 Fitur Load More: Inisialisasi ScrollController
     _scrollController = ScrollController();
     _scrollController.addListener(_onScroll);
 
-    // Dispatch initial event
     if (widget.hotDealsOnly) {
       _bloc.add(ProductEventGetHotDeals());
     } else {
@@ -62,27 +58,22 @@ class _ProductsHighlightState extends State<ProductsHighlight> {
     }
   }
 
-  // 🔄 Fitur Load More: Scroll Listener
   void _onScroll() {
-    // Pastikan ScrollController terpasang dan posisi sudah terdeteksi
     if (!_scrollController.hasClients) return;
 
-    // Tambahkan buffer untuk memuat sebelum mencapai akhir (misal 85%)
     final triggerFetchMoreSize =
         _scrollController.position.maxScrollExtent * 0.85;
 
     if (_scrollController.position.pixels >= triggerFetchMoreSize &&
         !_isLoadingMore &&
         !widget.hotDealsOnly &&
-        _hasMoreData && // ✅ PENTING: Hanya load jika masih ada data
+        _hasMoreData &&
         _selectedCategoryId == null) {
       _loadNextPage();
     }
   }
 
-  // 🔄 Fitur Load More: Memuat Halaman Berikutnya
   void _loadNextPage() {
-    // Agar tidak memicu berkali-kali
     if (_isLoadingMore || !_hasMoreData) return;
 
     setState(() {
@@ -91,8 +82,6 @@ class _ProductsHighlightState extends State<ProductsHighlight> {
     _currentPage++;
     _bloc.add(ProductEventGetAllProducts(_currentPage));
   }
-
-  // [Kode _buildCategoriesFromProducts, _applyCategoryFilter, _onCategoryTap, _buildCategoryChips dihilangkan untuk fokus pada perbaikan]
 
   void _buildCategoriesFromProducts() {
     final Map<int, String> map = {};
@@ -108,7 +97,6 @@ class _ProductsHighlightState extends State<ProductsHighlight> {
   void _applyCategoryFilter() {
     List<Product> results = List<Product>.from(_allProducts);
 
-    // Filter dan sort berdasarkan tipe halaman
     if (widget.hotDealsOnly) {
       results = results.where((p) => p.isHotDeals == true).toList();
       results.sort((a, b) => a.id.compareTo(b.id));
@@ -116,7 +104,6 @@ class _ProductsHighlightState extends State<ProductsHighlight> {
       results.sort((a, b) => b.id.compareTo(a.id));
     }
 
-    // Apply category filter
     if (_selectedCategoryId != null) {
       results = results
           .where((p) => p.itemCategory?.id == _selectedCategoryId)
@@ -181,12 +168,10 @@ class _ProductsHighlightState extends State<ProductsHighlight> {
     super.dispose();
   }
 
-  // 🔄 Refresh Logic
   Future<void> _refresh() async {
     _currentPage = 1;
     _hasMoreData = true;
     _allProducts = [];
-    // _selectedCategoryId = null; // opsional
 
     if (widget.hotDealsOnly) {
       _bloc.add(ProductEventGetHotDeals());
@@ -207,25 +192,19 @@ class _ProductsHighlightState extends State<ProductsHighlight> {
               if (state is ProductStateLoadedHotDeals) {
                 setState(() {
                   _allProducts = state.hotDeals;
-                  _hasMoreData =
-                      false; // Hot Deals biasanya tidak berpagination
+                  _hasMoreData = false;
                   _buildCategoriesFromProducts();
                   _applyCategoryFilter();
                 });
               } else if (state is ProductStateLoadedAllProduct) {
                 setState(() {
-                  // 🔄 Load More: Gabungkan data baru
                   if (_currentPage == 1) {
                     _allProducts = state.allProduct;
                   } else {
-                    // Hanya tambahkan data baru jika belum ada
                     _allProducts.addAll(state.allProduct);
                   }
 
-                  // ✅ PERBAIKAN PENTING: Logika Penghentian Load More
-                  // Jika data yang diterima kurang dari _pageSize (20), anggap sudah habis
                   _hasMoreData = state.allProduct.length == _pageSize;
-
                   _isLoadingMore = false;
 
                   _buildCategoriesFromProducts();
@@ -236,25 +215,17 @@ class _ProductsHighlightState extends State<ProductsHighlight> {
               if (state is ProductStateError && _isLoadingMore) {
                 setState(() {
                   _isLoadingMore = false;
-                  _currentPage--; // Mundurkan halaman
+                  _currentPage--;
                 });
-              }
-
-              // Jika error terjadi di halaman 1, _isLoadingMore adalah false
-              if (state is ProductStateError && _currentPage == 1) {
-                // Tidak perlu setstate karena error sudah ditangani di builder
-                // (kecuali Anda ingin menampilkan snackbar)
               }
             },
             builder: (context, state) {
-              // ⚙️ Tampilkan Loading Awal (halaman 1)
               if ((state is ProductStateLoading ||
                       state is ProductStateEmpty) &&
                   _currentPage == 1) {
                 return const Center(child: CircularProgressIndicator());
               }
 
-              // 🚫 Tampilkan Error (halaman 1)
               if (state is ProductStateError &&
                   _currentPage == 1 &&
                   _allProducts.isEmpty) {
@@ -271,7 +242,6 @@ class _ProductsHighlightState extends State<ProductsHighlight> {
                 );
               }
 
-              // 🧱 Struktur UI
               return RefreshIndicator(
                 onRefresh: _refresh,
                 child: CustomScrollView(
@@ -287,8 +257,7 @@ class _ProductsHighlightState extends State<ProductsHighlight> {
                               vertical: 12,
                             ),
                             child: Column(
-                              crossAxisAlignment: CrossAxisAlignment
-                                  .start, // sejajarkan ke kiri
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Row(
                                   children: [
@@ -356,7 +325,7 @@ class _ProductsHighlightState extends State<ProductsHighlight> {
                                   gridDelegate:
                                       const SliverGridDelegateWithFixedCrossAxisCount(
                                         crossAxisCount: 2,
-                                        childAspectRatio: 0.72,
+                                        childAspectRatio: 0.7,
                                         crossAxisSpacing: 12,
                                         mainAxisSpacing: 12,
                                       ),
@@ -367,13 +336,10 @@ class _ProductsHighlightState extends State<ProductsHighlight> {
                                       product: p,
                                       width: double.infinity,
                                       onTap: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => ProductDetailPage(
-                                              productId: p.id.toString(),
-                                            ),
-                                          ),
+                                        // ✅ PERBAIKAN: Gunakan GoRouter
+                                        context.pushNamed(
+                                          'productDetail',
+                                          pathParameters: {'id': p.id.toString()},
                                         );
                                       },
                                     );
@@ -383,9 +349,7 @@ class _ProductsHighlightState extends State<ProductsHighlight> {
                       ),
                     ),
 
-                    // 🔄 Load More: Tampilkan Loading Indikator HANYA JIKA _isLoadingMore=true DAN _hasMoreData=true
-                    if (_isLoadingMore &&
-                        _hasMoreData) // Cek _hasMoreData untuk mencegah loop loading tak berujung
+                    if (_isLoadingMore && _hasMoreData)
                       const SliverToBoxAdapter(
                         child: Padding(
                           padding: EdgeInsets.only(bottom: 20, top: 10),
@@ -395,7 +359,6 @@ class _ProductsHighlightState extends State<ProductsHighlight> {
                         ),
                       ),
 
-                    // 🚫 Tampilkan Teks 'Semua Produk Sudah Dimuat' HANYA JIKA _hasMoreData=false DAN daftar tidak kosong
                     if (!_hasMoreData &&
                         _allProducts.isNotEmpty &&
                         !widget.hotDealsOnly)
@@ -444,7 +407,6 @@ class _CategoryChip extends StatelessWidget {
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-
         decoration: BoxDecoration(
           color: selected ? AppColors.secondaryColor : Colors.white,
           borderRadius: BorderRadius.circular(20),

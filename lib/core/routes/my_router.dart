@@ -1,9 +1,17 @@
 // lib/core/routes/my_router.dart
+import 'package:ekaplus_ekatunggal/features/search/presentation/bloc/search_bloc.dart';
+import 'package:ekaplus_ekatunggal/features/search/presentation/pages/search_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:ekaplus_ekatunggal/features/home/presentation/pages/home_page.dart';
 import 'package:ekaplus_ekatunggal/features/category/presentation/pages/category.dart';
+import 'package:ekaplus_ekatunggal/features/category/presentation/pages/category_detail_page.dart';
+import 'package:ekaplus_ekatunggal/features/product/presentation/pages/product_page.dart';
+import 'package:ekaplus_ekatunggal/features/product/presentation/pages/product_detail_page.dart';
+import 'package:ekaplus_ekatunggal/features/product/presentation/pages/products_highlight_page.dart';
+import 'package:ekaplus_ekatunggal/features/category/domain/entities/category.dart';
 import 'package:ekaplus_ekatunggal/core/shared_widgets/bottom_nav.dart';
 
 class MyRouter {
@@ -42,27 +50,70 @@ class MyRouter {
                   body: Center(child: Text('Profile (placeholder)')),
                 ),
               ),
-              // GoRoute(
-              //   name: 'product',
-              //   path: '/product',
-              //   builder: (context, state) => const Scaffold(
-              //     body: Center(child: Text('Products (placeholder)')),
-              //   ),
-              // ),
             ],
           ),
-          // Route tanpa bottom nav (jika diperlukan)
-          // GoRoute(
-          //   name: 'promoDetail',
-          //   path: '/promo/:id',
-          //   builder: (context, state) {
-          //     final id = state.pathParameters['id'];
-          //     return Scaffold(
-          //       appBar: AppBar(title: Text('Promo $id')),
-          //       body: Center(child: Text('Detail promo: $id')),
-          //     );
-          //   },
-          // ),
+          
+          // Routes tanpa bottom nav
+          GoRoute(
+            name: 'search', // ✅ TAMBAHKAN ROUTE SEARCH
+            path: '/search',
+            builder: (context, state) {
+              return BlocProvider(
+                create: (context) => SearchBloc(),
+                child: const SearchPage(),
+              );
+            },
+          ),
+
+          GoRoute(
+            name: 'categoryDetail',
+            path: '/category/:id',
+            builder: (context, state) {
+              final id = state.pathParameters['id']!;
+              final extra = state.extra as Map<String, dynamic>?;
+              return CategoryDetailPage(
+                categoryId: id,
+                categoryName: extra?['categoryName'],
+                categoryTitle: extra?['categoryTitle'],
+                categorySubtitle: extra?['categorySubtitle'],
+              );
+            },
+          ),
+          
+          GoRoute(
+            name: 'productPage',
+            path: '/products',
+            builder: (context, state) {
+              final extra = state.extra as Category?;
+              return ProductPage(
+                categoryName: extra?.name,
+                categoryId: extra?.id,
+              );
+            },
+          ),
+          
+          GoRoute(
+            name: 'productDetail',
+            path: '/product/:id',
+            builder: (context, state) {
+              final id = state.pathParameters['id']!;
+              return ProductDetailPage(productId: id);
+            },
+          ),
+          
+          GoRoute(
+            name: 'productsHighlight',
+            path: '/products-highlight',
+            builder: (context, state) {
+              final extra = state.extra as Map<String, dynamic>? ?? {};
+              return ProductsHighlight(
+                hotDealsOnly: extra['hotDealsOnly'] ?? false,
+                title: extra['title'] ?? 'Products',
+                headerTitle: extra['headerTitle'] ?? '',
+                headerSubTitle: extra['headerSubTitle'] ?? 'Products',
+              );
+            },
+          ),
         ],
         errorBuilder: (context, state) => Scaffold(
           appBar: AppBar(title: const Text('Error')),
