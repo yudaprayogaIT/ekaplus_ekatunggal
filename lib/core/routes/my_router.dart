@@ -1,4 +1,5 @@
 // lib/core/routes/my_router.dart
+import 'package:ekaplus_ekatunggal/features/account/presentation/pages/account_page.dart';
 import 'package:ekaplus_ekatunggal/features/search/presentation/bloc/search_bloc.dart';
 import 'package:ekaplus_ekatunggal/features/search/presentation/pages/search_page.dart';
 import 'package:ekaplus_ekatunggal/features/wishlist/presentation/pages/wishlist.dart';
@@ -45,11 +46,9 @@ class MyRouter {
                 builder: (context, state) => const WishlistPage(),
               ),
               GoRoute(
-                name: 'profile',
-                path: '/profile',
-                builder: (context, state) => const Scaffold(
-                  body: Center(child: Text('Profile (placeholder)')),
-                ),
+                name: 'account',
+                path: '/account',
+                builder: (context, state) => const AccountPage(),
               ),
             ],
           ),

@@ -48,6 +48,7 @@ flutter:
     - assets/icons/
     - assets/icons/kategori/
     - assets/images/
+    - assets/images/account/
     - assets/images/items/
     - assets/images/type/
     - assets/images/banner/

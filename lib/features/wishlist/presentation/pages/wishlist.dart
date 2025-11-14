@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:ekaplus_ekatunggal/constant.dart'; // AppFonts, warna jika ada
+import 'package:ekaplus_ekatunggal/constant.dart';
 
 class WishlistPage extends StatelessWidget {
   /// Jika kamu sudah punya mekanisme auth, pass [isLoggedIn] = true untuk
@@ -11,10 +11,8 @@ class WishlistPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final headerColor = const Color(
-      0xFFB71C1C,
-    ); // merah gelap seperti screenshot
-    final primaryYellow = const Color(0xFFFFC107); // kuning tombol MASUK
+    final headerColor = AppColors.primaryColor;
+    final primaryYellow = AppColors.secondaryColor;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -62,14 +60,12 @@ class WishlistPage extends StatelessWidget {
         child: Column(
           children: [
             const Spacer(),
-            // Icon love (pakai asset jika ada), fallback ke Icon widget
             SizedBox(
               width: 140,
               height: 140,
               child: Center(
                 child: Builder(
                   builder: (ctx) {
-                    // ganti path jika file icon-mu di assets berbeda
                     const assetPath = 'assets/images/wishlistIcon.png';
                     try {
                       return Image.asset(assetPath, fit: BoxFit.contain);
@@ -99,9 +95,7 @@ class WishlistPage extends StatelessWidget {
                   ),
                   TextSpan(
                     text: 'masuk atau daftar',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w800,
-                    ),
+                    style: TextStyle(fontWeight: FontWeight.w800),
                   ),
                   TextSpan(text: ' untuk menyimpan produk favorit Anda.'),
                 ],
