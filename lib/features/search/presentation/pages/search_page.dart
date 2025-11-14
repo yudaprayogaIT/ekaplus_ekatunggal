@@ -25,6 +25,10 @@ class _SearchPageState extends State<SearchPage> {
     super.initState();
     context.read<SearchBloc>().add(const SearchEventInitial());
 
+    _searchController.addListener(() {
+      setState(() {}); // supaya suffixIcon update
+    });
+
     // Auto focus pada search field
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _searchFocusNode.requestFocus();
@@ -75,7 +79,7 @@ class _SearchPageState extends State<SearchPage> {
                     icon: const Icon(
                       FontAwesomeIcons.arrowLeft,
                       size: 20,
-                      color: Colors.black87,
+                      color: AppColors.grayColor,
                     ),
                     onPressed: () => context.pop(),
                     padding: EdgeInsets.zero,
@@ -88,36 +92,49 @@ class _SearchPageState extends State<SearchPage> {
                     child: Container(
                       height: 42,
                       decoration: BoxDecoration(
-                        color: Colors.grey[100],
+                        color: Colors.white,
+                        border: Border.all(
+                          color: const Color.fromARGB(28, 0, 0, 0),
+                        ),
                         borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Color.fromRGBO(0, 0, 0, 0.1),
+                            blurRadius: 15,
+                            spreadRadius: -3,
+                            offset: Offset(0, 10),
+                          ),
+                          BoxShadow(
+                            color: Color.fromRGBO(0, 0, 0, 0.05),
+                            blurRadius: 6,
+                            spreadRadius: -2,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
                       ),
                       child: TextField(
                         controller: _searchController,
                         focusNode: _searchFocusNode,
                         onChanged: _onSearchChanged,
-                        style: TextStyle(
-                          fontFamily: AppFonts.primaryFont,
-                          fontSize: 14,
-                          color: Colors.black87,
-                        ),
                         decoration: InputDecoration(
                           hintText: 'Cari produk',
                           hintStyle: TextStyle(
-                            fontFamily: AppFonts.primaryFont,
                             fontSize: 14,
-                            color: Colors.grey[500],
+                            color: AppColors.grayColor,
+                            fontWeight: FontWeight.w500,
                           ),
                           prefixIcon: Icon(
                             FontAwesomeIcons.magnifyingGlass,
-                            size: 16,
-                            color: Colors.grey[600],
+                            size: 14,
+                            color: AppColors.grayColor,
+                            fontWeight: FontWeight.w500,
                           ),
                           suffixIcon: _searchController.text.isNotEmpty
                               ? IconButton(
                                   icon: Icon(
                                     Icons.clear,
                                     size: 20,
-                                    color: Colors.grey[600],
+                                    color: AppColors.grayColor,
                                   ),
                                   onPressed: _clearSearch,
                                 )
@@ -233,7 +250,7 @@ class _SearchPageState extends State<SearchPage> {
               physics: const NeverScrollableScrollPhysics(),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 3,
-                childAspectRatio: 0.85,
+                childAspectRatio: 0.83,
                 crossAxisSpacing: 12,
                 mainAxisSpacing: 16,
               ),
@@ -292,8 +309,8 @@ class _SearchPageState extends State<SearchPage> {
       child: Column(
         children: [
           Container(
-            width: 72,
-            height: 72,
+            width: 100,
+            height: 100,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
               border: Border.all(color: Colors.black, width: 1),
@@ -351,31 +368,16 @@ class _SearchPageState extends State<SearchPage> {
     }
 
     if (!iconPath.toLowerCase().endsWith('.svg')) {
-      return Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Image.asset(
-          iconPath,
-          fit: BoxFit.contain,
-          errorBuilder: (_, __, ___) =>
-              const Icon(Icons.category, size: 32, color: Colors.black54),
-        ),
+      return Image.asset(
+        iconPath,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) =>
+            const Icon(Icons.category, size: 32, color: Colors.black54),
       );
     }
 
     return const Icon(Icons.image, size: 80, color: Colors.black54);
   }
-
-  // Color _getRandomPastelColor(int seed) {
-  //   final colors = [
-  //     const Color(0xFFB2EBF2), // Cyan pastel
-  //     const Color(0xFFFFF9C4), // Yellow pastel
-  //     const Color(0xFFC8E6C9), // Green pastel
-  //     const Color(0xFFFFCCBC), // Orange pastel
-  //     const Color(0xFFE1BEE7), // Purple pastel
-  //     const Color(0xFFFFE0B2), // Peach pastel
-  //   ];
-  //   return colors[seed.abs() % colors.length];
-  // }
 
   Widget _buildSearchResults(SearchStateLoaded state) {
     return Column(
