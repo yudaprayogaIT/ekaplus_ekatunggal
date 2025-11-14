@@ -1,4 +1,5 @@
 // lib/core/routes/my_router.dart
+import 'package:ekaplus_ekatunggal/features/account/presentation/pages/about_page.dart';
 import 'package:ekaplus_ekatunggal/features/account/presentation/pages/account_page.dart';
 import 'package:ekaplus_ekatunggal/features/search/presentation/bloc/search_bloc.dart';
 import 'package:ekaplus_ekatunggal/features/search/presentation/pages/search_page.dart';
@@ -20,122 +21,129 @@ import 'package:ekaplus_ekatunggal/core/shared_widgets/bottom_nav.dart';
 
 class MyRouter {
   GoRouter get router => GoRouter(
-        initialLocation: "/",
+    initialLocation: "/",
+    routes: [
+      ShellRoute(
+        builder: (context, state, child) {
+          return AppShell(currentPath: state.matchedLocation, child: child);
+        },
         routes: [
-          ShellRoute(
-            builder: (context, state, child) {
-              return AppShell(
-                currentPath: state.matchedLocation,
-                child: child,
-              );
-            },
-            routes: [
-              GoRoute(
-                name: 'home',
-                path: '/',
-                builder: (context, state) => const HomePage(),
-              ),
-              GoRoute(
-                name: 'category',
-                path: '/category',
-                builder: (context, state) => const CategoryPage(),
-              ),
-              GoRoute(
-                name: 'wishlist',
-                path: '/wishlist',
-                builder: (context, state) => const WishlistPage(),
-              ),
-              GoRoute(
-                name: 'account',
-                path: '/account',
-                builder: (context, state) => const AccountPage(),
-              ),
-            ],
-          ),
-          
-          // Routes tanpa bottom nav
           GoRoute(
-            name: 'search', // ✅ TAMBAHKAN ROUTE SEARCH
-            path: '/search',
-            builder: (context, state) {
-              return BlocProvider(
-                create: (context) => SearchBloc(),
-                child: const SearchPage(),
-              );
-            },
+            name: 'home',
+            path: '/',
+            builder: (context, state) => const HomePage(),
           ),
-
           GoRoute(
-            name: 'categoryDetail',
-            path: '/category/:id',
-            builder: (context, state) {
-              final id = state.pathParameters['id']!;
-              final extra = state.extra as Map<String, dynamic>?;
-              return CategoryDetailPage(
-                categoryId: id,
-                categoryName: extra?['categoryName'],
-                categoryTitle: extra?['categoryTitle'],
-                categorySubtitle: extra?['categorySubtitle'],
-              );
-            },
+            name: 'category',
+            path: '/category',
+            builder: (context, state) => const CategoryPage(),
           ),
-          
           GoRoute(
-            name: 'productPage',
-            path: '/products',
-            builder: (context, state) {
-              final extra = state.extra as Category?;
-              return ProductPage(
-                categoryName: extra?.name,
-                categoryId: extra?.id,
-              );
-            },
+            name: 'wishlist',
+            path: '/wishlist',
+            builder: (context, state) => const WishlistPage(),
           ),
-          
-          GoRoute(
-            name: 'productDetail',
-            path: '/product/:id',
-            builder: (context, state) {
-              final id = state.pathParameters['id']!;
-              return ProductDetailPage(productId: id);
-            },
-          ),
-          
-          GoRoute(
-            name: 'productsHighlight',
-            path: '/products-highlight',
-            builder: (context, state) {
-              final extra = state.extra as Map<String, dynamic>? ?? {};
-              return ProductsHighlight(
-                hotDealsOnly: extra['hotDealsOnly'] ?? false,
-                title: extra['title'] ?? 'Products',
-                headerTitle: extra['headerTitle'] ?? '',
-                headerSubTitle: extra['headerSubTitle'] ?? 'Products',
-              );
-            },
-          ),
+          // GoRoute(
+          //   name: 'account',
+          //   path: '/account',
+          //   builder: (context, state) => const AccountPage(),
+          // ),
         ],
-        errorBuilder: (context, state) => Scaffold(
-          appBar: AppBar(title: const Text('Error')),
-          body: Center(child: Text(state.error.toString())),
-        ),
-      );
+      ),
+
+      // Routes tanpa bottom nav
+      GoRoute(
+        name: 'account',
+        path: '/account',
+        builder: (context, state) {
+          // final extra = state.extra as Category?;
+          return AccountPage();
+        },
+      ),
+
+      GoRoute(
+        name: 'about',
+        path: '/about',
+        builder: (context, state) {
+          return AboutPage();
+        },
+      ),
+
+      GoRoute(
+        name: 'search', // ✅ TAMBAHKAN ROUTE SEARCH
+        path: '/search',
+        builder: (context, state) {
+          return BlocProvider(
+            create: (context) => SearchBloc(),
+            child: const SearchPage(),
+          );
+        },
+      ),
+
+      GoRoute(
+        name: 'categoryDetail',
+        path: '/category/:id',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          final extra = state.extra as Map<String, dynamic>?;
+          return CategoryDetailPage(
+            categoryId: id,
+            categoryName: extra?['categoryName'],
+            categoryTitle: extra?['categoryTitle'],
+            categorySubtitle: extra?['categorySubtitle'],
+          );
+        },
+      ),
+
+      GoRoute(
+        name: 'productPage',
+        path: '/products',
+        builder: (context, state) {
+          final extra = state.extra as Category?;
+          return ProductPage(categoryName: extra?.name, categoryId: extra?.id);
+        },
+      ),
+
+      GoRoute(
+        name: 'productDetail',
+        path: '/product/:id',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return ProductDetailPage(productId: id);
+        },
+      ),
+
+      GoRoute(
+        name: 'productsHighlight',
+        path: '/products-highlight',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>? ?? {};
+          return ProductsHighlight(
+            hotDealsOnly: extra['hotDealsOnly'] ?? false,
+            title: extra['title'] ?? 'Products',
+            headerTitle: extra['headerTitle'] ?? '',
+            headerSubTitle: extra['headerSubTitle'] ?? 'Products',
+          );
+        },
+      ),
+    ],
+    errorBuilder: (context, state) => Scaffold(
+      appBar: AppBar(title: const Text('Error')),
+      body: Center(child: Text(state.error.toString())),
+    ),
+  );
 }
 
 class AppShell extends StatelessWidget {
   final Widget child;
   final String currentPath;
-  
-  const AppShell({
-    required this.child,
-    required this.currentPath,
-    super.key,
-  });
+
+  const AppShell({required this.child, required this.currentPath, super.key});
 
   int _locationToIndex(String path) {
     if (path.startsWith('/category')) return 1;
     if (path.startsWith('/wishlist')) return 2;
-    if (path.startsWith('/profile')) return 3;
+    if (path.startsWith('/account')) return 3;
     return 0;
   }
 
@@ -143,7 +151,7 @@ class AppShell extends StatelessWidget {
     'home',
     'category',
     'wishlist',
-    'profile'
+    'account',
   ];
 
   /// Method untuk refresh page berdasarkan index
@@ -153,22 +161,22 @@ class AppShell extends StatelessWidget {
         // Jika HomePage juga pakai BLoC, trigger event di sini
         // context.read<HomeBloc>().add(HomeEventRefresh());
         break;
-        
+
       case 1: // Category
         // Trigger ulang load categories
         context.read<CategoryBloc>().add(
           const CategoryEventGetAllCategories(1),
         );
         break;
-        
+
       case 2: // Wishlist
         // Jika Wishlist pakai BLoC, trigger event di sini
         // context.read<WishlistBloc>().add(WishlistEventRefresh());
         break;
-        
-      case 3: // Profile
-        // Jika Profile pakai BLoC, trigger event di sini
-        // context.read<ProfileBloc>().add(ProfileEventRefresh());
+
+      case 3: // account
+        // Jika Account pakai BLoC, trigger event di sini
+        // context.read<AccountBloc>().add(AccountEventRefresh());
         break;
     }
   }
@@ -179,36 +187,35 @@ class AppShell extends StatelessWidget {
 
     return Scaffold(
       body: child,
-     bottomNavigationBar: BottomNavBar(
-  currentIndex: currentIndex,
-  onTap: (i) {
-    final name = _routeNames[i];
+      bottomNavigationBar: BottomNavBar(
+        currentIndex: currentIndex,
+        onTap: (i) {
+          final name = _routeNames[i];
 
-    if (i == currentIndex) {
-      // 1) navigasi ke root route tab itu
-      // Use GoRouter.of(context).go to ensure we call the router directly
-      GoRouter.of(context).goNamed(name);
+          if (i == currentIndex) {
+            // 1) navigasi ke root route tab itu
+            // Use GoRouter.of(context).go to ensure we call the router directly
+            GoRouter.of(context).goNamed(name);
 
-      // 2) setelah navigasi selesai (post-frame) trigger refresh jika perlu
-      // gunakan microtask/post frame supaya event diproses setelah route berubah
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        try {
-          _refreshPage(context, i);
-        } catch (e) {
-          // kalau bloc tidak tersedia di level ini, jangan crash — hanya cetak
-          // atau bisa kirim notification agar page sendiri yang menangani refresh
-          // debugPrint('Refresh event failed: $e');
-        }
-      });
+            // 2) setelah navigasi selesai (post-frame) trigger refresh jika perlu
+            // gunakan microtask/post frame supaya event diproses setelah route berubah
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              try {
+                _refreshPage(context, i);
+              } catch (e) {
+                // kalau bloc tidak tersedia di level ini, jangan crash — hanya cetak
+                // atau bisa kirim notification agar page sendiri yang menangani refresh
+                // debugPrint('Refresh event failed: $e');
+              }
+            });
 
-      return;
-    }
+            return;
+          }
 
-    // tap pada tab berbeda -> pindah normal
-    GoRouter.of(context).goNamed(name);
-  },
-),
-
+          // tap pada tab berbeda -> pindah normal
+          GoRouter.of(context).goNamed(name);
+        },
+      ),
     );
   }
 }

@@ -1,6 +1,7 @@
 import 'package:ekaplus_ekatunggal/constant.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 enum UserStatus { guest, loggedIn, member }
 
@@ -43,31 +44,25 @@ class ProfileHeader extends StatelessWidget {
                   fontSize: 15,
                 ),
               ),
-              // const SizedBox(height: 4),
-              GestureDetector(
-                onTap: onLoginTap ??
-                    () {
-                      // default navigation ke LoginPage (stub)
-                      Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => const LoginPage()),
-                      );
-                    },
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Masuk atau Daftar Sekarang',
-                      style: TextStyle(
-                        color: AppColors.primaryColor,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w500,
-                        fontFamily: AppFonts.primaryFont,
-                      ),
+              // Hanya teks, navigasi utama ditangani oleh GestureDetector di luar
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Masuk atau Daftar Sekarang',
+                    style: TextStyle(
+                      color: AppColors.primaryColor,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w500,
+                      fontFamily: AppFonts.primaryFont,
                     ),
-                    // const SizedBox(width: 2),
-                    Icon(Icons.chevron_right, size: 18, color: AppColors.primaryColor),
-                  ],
-                ),
+                  ),
+                  Icon(
+                    Icons.chevron_right,
+                    size: 18,
+                    color: AppColors.primaryColor,
+                  ),
+                ],
               ),
             ],
           );
@@ -113,11 +108,14 @@ class ProfileHeader extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               GestureDetector(
-                onTap: onCompanyTap ??
+                onTap:
+                    onCompanyTap ??
                     () {
                       // stub: nanti akan show company selector
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Pilih perusahaan (stub)')),
+                        const SnackBar(
+                          content: Text('Pilih perusahaan (stub)'),
+                        ),
                       );
                     },
                 child: Row(
@@ -144,56 +142,48 @@ class ProfileHeader extends StatelessWidget {
 
     return Row(
       children: [
-        Container(
-          width: 44,
-          height: 44,
-          decoration: BoxDecoration(
-            color: Colors.transparent,
-            shape: BoxShape.circle,
-            boxShadow: const [
-              BoxShadow(
-                color: Colors.black12,
-                blurRadius: 3,
-                offset: Offset(0, 2),
-              ),
-            ],
+        Expanded(
+          child: GestureDetector(
+            onTap: () {
+              context.pushNamed('account');
+            },
+            child: Row(
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    shape: BoxShape.circle,
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 3,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: ClipOval(child: avatarImage),
+                ),
+                const SizedBox(width: 12),
+                Expanded(child: buildTextArea()),
+              ],
+            ),
           ),
-          child: ClipOval(child: avatarImage),
         ),
-        const SizedBox(width: 12),
-        Expanded(child: buildTextArea()),
+
         IconButton(
           onPressed: () {
-            // notifikasi tap (stub)
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Notifikasi (stub)')));
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(const SnackBar(content: Text('Notifikasi (stub)')));
           },
-          icon: const Icon(CupertinoIcons.bell_solid, color: AppColors.grayColor,)
+          icon: const Icon(
+            CupertinoIcons.bell_solid,
+            color: AppColors.grayColor,
+          ),
         ),
       ],
-    );
-  }
-}
-
-/// --- Halaman login stub untuk demo navigasi ---
-class LoginPage extends StatelessWidget {
-  const LoginPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Masuk / Daftar'),
-        backgroundColor: AppColors.primaryColor,
-      ),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            // contoh: kembali ke home
-            Navigator.of(context).pop();
-          },
-          child: const Text('Kembali (stub)'),
-        ),
-      ),
     );
   }
 }
