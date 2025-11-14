@@ -1,4 +1,5 @@
 // lib/features/search/presentation/pages/search_page.dart
+import 'package:ekaplus_ekatunggal/features/product/presentation/pages/product_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -23,7 +24,7 @@ class _SearchPageState extends State<SearchPage> {
   void initState() {
     super.initState();
     context.read<SearchBloc>().add(const SearchEventInitial());
-    
+
     // Auto focus pada search field
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _searchFocusNode.requestFocus();
@@ -139,9 +140,7 @@ class _SearchPageState extends State<SearchPage> {
               child: BlocBuilder<SearchBloc, SearchState>(
                 builder: (context, state) {
                   if (state is SearchStateLoading) {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
+                    return const Center(child: CircularProgressIndicator());
                   }
 
                   if (state is SearchStateError) {
@@ -238,7 +237,9 @@ class _SearchPageState extends State<SearchPage> {
                 crossAxisSpacing: 12,
                 mainAxisSpacing: 16,
               ),
-              itemCount: state.categories.length > 9 ? 9 : state.categories.length,
+              itemCount: state.categories.length > 9
+                  ? 9
+                  : state.categories.length,
               itemBuilder: (context, index) {
                 final category = state.categories[index];
                 return _buildCategoryItem(category);
@@ -280,23 +281,29 @@ class _SearchPageState extends State<SearchPage> {
     return InkWell(
       onTap: () {
         // Navigate to product page with category filter
-        context.pushNamed('productPage', extra: category);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ProductPage(),
+            settings: RouteSettings(arguments: category),
+          ),
+        );
       },
       child: Column(
         children: [
           Container(
-          width: 72,
-          height: 72,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.black, width: 1),
+            width: 72,
+            height: 72,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: Colors.black, width: 1),
+            ),
+            // ClipRRect agar isi (gambar) ikut membulatkan sudut
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: _buildCategoryIcon(category),
+            ),
           ),
-          // ClipRRect agar isi (gambar) ikut membulatkan sudut
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(16),
-            child: _buildCategoryIcon(category),
-          ),
-        ),
           const SizedBox(height: 8),
           Text(
             category.name,
@@ -318,33 +325,30 @@ class _SearchPageState extends State<SearchPage> {
     final String? iconPath = category.icon;
 
     if (iconPath == null || iconPath.isEmpty) {
-    // Tampilan fallback (ikon) tetap berada di tengah dan memenuhi kotak
-    return Container(
-      color: Colors.transparent,
-      alignment: Alignment.center,
-      child: const Icon(Icons.category, size: 32, color: Colors.black54),
-    );
-  }
+      // Tampilan fallback (ikon) tetap berada di tengah dan memenuhi kotak
+      return Container(
+        color: Colors.transparent,
+        alignment: Alignment.center,
+        child: const Icon(Icons.category, size: 32, color: Colors.black54),
+      );
+    }
 
-     // Network image -> pakai CachedNetworkImage dengan BoxFit.cover
-  if (iconPath.startsWith('http')) {
-    return CachedNetworkImage(
-      imageUrl: iconPath,
-      fit: BoxFit.cover,
-      width: double.infinity,
-      height: double.infinity,
-      placeholder: (context, url) => const SizedBox(
-        width: 24,
-        height: 24,
-        child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
-      ),
-      errorWidget: (context, url, error) => const Icon(
-        Icons.broken_image,
-        size: 32,
-        color: Colors.black54,
-      ),
-    );
-  }
+    // Network image -> pakai CachedNetworkImage dengan BoxFit.cover
+    if (iconPath.startsWith('http')) {
+      return CachedNetworkImage(
+        imageUrl: iconPath,
+        fit: BoxFit.cover,
+        width: double.infinity,
+        height: double.infinity,
+        placeholder: (context, url) => const SizedBox(
+          width: 24,
+          height: 24,
+          child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+        ),
+        errorWidget: (context, url, error) =>
+            const Icon(Icons.broken_image, size: 32, color: Colors.black54),
+      );
+    }
 
     if (!iconPath.toLowerCase().endsWith('.svg')) {
       return Padding(
@@ -352,11 +356,8 @@ class _SearchPageState extends State<SearchPage> {
         child: Image.asset(
           iconPath,
           fit: BoxFit.contain,
-          errorBuilder: (_, __, ___) => const Icon(
-            Icons.category,
-            size: 32,
-            color: Colors.black54,
-          ),
+          errorBuilder: (_, __, ___) =>
+              const Icon(Icons.category, size: 32, color: Colors.black54),
         ),
       );
     }
@@ -427,11 +428,7 @@ class _SearchPageState extends State<SearchPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.search_off,
-              size: 80,
-              color: Colors.grey[400],
-            ),
+            Icon(Icons.search_off, size: 80, color: Colors.grey[400]),
             const SizedBox(height: 16),
             Text(
               'Tidak ada hasil untuk "$query"',
