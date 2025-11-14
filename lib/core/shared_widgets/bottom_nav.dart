@@ -28,7 +28,7 @@ class BottomNavBar extends StatelessWidget {
         children: [
           _NavItem(icon: Icons.home, label: 'Beranda', selected: currentIndex == 0, onTap: () => onTap(0)),
           _NavItem(icon: Icons.grid_view, label: 'Kategori', selected: currentIndex == 1, onTap: () => onTap(1)),
-          _NavItem(icon: Icons.favorite_border, label: 'Favorit', selected: currentIndex == 2, onTap: () => onTap(2)),
+          _NavItem(icon: Icons.favorite_border, label: 'Wishlist', selected: currentIndex == 2, onTap: () => onTap(2)),
           _NavItem(icon: Icons.person_outline, label: 'Akun', selected: currentIndex == 3, onTap: () => onTap(3)),
         ],
       ),

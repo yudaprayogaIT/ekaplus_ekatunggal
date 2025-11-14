@@ -1,6 +1,7 @@
 // lib/core/routes/my_router.dart
 import 'package:ekaplus_ekatunggal/features/search/presentation/bloc/search_bloc.dart';
 import 'package:ekaplus_ekatunggal/features/search/presentation/pages/search_page.dart';
+import 'package:ekaplus_ekatunggal/features/wishlist/presentation/pages/wishlist.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -39,11 +40,9 @@ class MyRouter {
                 builder: (context, state) => const CategoryPage(),
               ),
               GoRoute(
-                name: 'favorites',
-                path: '/favorites',
-                builder: (context, state) => const Scaffold(
-                  body: Center(child: Text('Favorites (placeholder)')),
-                ),
+                name: 'wishlist',
+                path: '/wishlist',
+                builder: (context, state) => const WishlistPage(),
               ),
               GoRoute(
                 name: 'profile',
@@ -136,7 +135,7 @@ class AppShell extends StatelessWidget {
 
   int _locationToIndex(String path) {
     if (path.startsWith('/category')) return 1;
-    if (path.startsWith('/favorites')) return 2;
+    if (path.startsWith('/wishlist')) return 2;
     if (path.startsWith('/profile')) return 3;
     return 0;
   }
@@ -144,7 +143,7 @@ class AppShell extends StatelessWidget {
   static const List<String> _routeNames = [
     'home',
     'category',
-    'favorites',
+    'wishlist',
     'profile'
   ];
 
@@ -163,9 +162,9 @@ class AppShell extends StatelessWidget {
         );
         break;
         
-      case 2: // Favorites
-        // Jika Favorites pakai BLoC, trigger event di sini
-        // context.read<FavoritesBloc>().add(FavoritesEventRefresh());
+      case 2: // Wishlist
+        // Jika Wishlist pakai BLoC, trigger event di sini
+        // context.read<WishlistBloc>().add(WishlistEventRefresh());
         break;
         
       case 3: // Profile
