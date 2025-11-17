@@ -1,6 +1,9 @@
 // lib/core/routes/my_router.dart
 import 'package:ekaplus_ekatunggal/features/account/presentation/pages/about_page.dart';
 import 'package:ekaplus_ekatunggal/features/account/presentation/pages/account_page.dart';
+import 'package:ekaplus_ekatunggal/features/auth/presentation/pages/otp_page.dart';
+import 'package:ekaplus_ekatunggal/features/auth/presentation/pages/register_form_page.dart';
+import 'package:ekaplus_ekatunggal/features/auth/presentation/pages/register_page.dart';
 import 'package:ekaplus_ekatunggal/features/search/presentation/bloc/search_bloc.dart';
 import 'package:ekaplus_ekatunggal/features/search/presentation/pages/search_page.dart';
 import 'package:ekaplus_ekatunggal/features/wishlist/presentation/pages/wishlist.dart';
@@ -52,6 +55,28 @@ class MyRouter {
       ),
 
       // Routes tanpa bottom nav
+      GoRoute(
+        path: '/register',
+        name: 'register',
+        builder: (context, state) => const RegisterPage(),
+      ),
+      GoRoute(
+        path: '/otp',
+        name: 'otp',
+        builder: (context, state) {
+          final phone = state.extra as String? ?? '';
+          return OtpPage(phone: phone);
+        },
+      ),
+      GoRoute(
+        path: '/register-form',
+        name: 'register-form',
+        builder: (context, state) {
+          final phone = state.extra as String?;
+          return RegisterFormPage(phone: phone);
+        },
+      ),
+
       GoRoute(
         name: 'account',
         path: '/account',
