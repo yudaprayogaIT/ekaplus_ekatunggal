@@ -1,12 +1,15 @@
-import 'package:ekaplus_ekatunggal/constant.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
+import 'package:pin_code_fields/pin_code_fields.dart';
+
+// Asumsi 'ekaplus_ekatunggal/constant.dart' ada
+import 'package:ekaplus_ekatunggal/constant.dart';
 import 'package:ekaplus_ekatunggal/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:ekaplus_ekatunggal/features/auth/presentation/bloc/auth_event.dart';
 import 'package:ekaplus_ekatunggal/features/auth/presentation/bloc/auth_state.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:go_router/go_router.dart';
+
 
 class OtpPage extends StatefulWidget {
   final String phone;
@@ -16,162 +19,91 @@ class OtpPage extends StatefulWidget {
   State<OtpPage> createState() => _OtpPageState();
 }
 
-class _OtpPageState extends State<OtpPage> {
-  static const int otpLength = 6;
-
-  // controllers & focus nodes untuk tiap kotak
-  late final List<TextEditingController> _controllers;
-  late final List<FocusNode> _focusNodes;
+class _OtpPageState extends State<OtpPage> { // Hapus SingleTickerProviderStateMixin
+  final TextEditingController _pinController = TextEditingController();
+  
+  bool _isNavigating = false;
+  // bool _isShaking = false; // Dihapus
+  
+  // Semua variabel Cooldown Timer Dihapus
+  // Timer? _cooldownTimer;
+  // int _cooldownSeconds = 0;
+  // int _resendAttempt = 0;
+  
+  // Semua Cooldown durations Dihapus
+  // static const int _firstCooldown = 60; 
+  // static const int _secondCooldown = 180; 
+  // static const int _thirdCooldown = 300; 
+  
+  // Semua Shake Animation Dihapus
+  // late AnimationController _shakeController;
+  // late Animation<double> _shakeAnimation;
 
   @override
   void initState() {
     super.initState();
-    _controllers = List.generate(otpLength, (_) => TextEditingController());
-    _focusNodes = List.generate(otpLength, (_) => FocusNode());
-    // set fokus awal ke kotak pertama ketika halaman muncul
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _focusNodes.first.requestFocus();
-    });
+    
+    // Inisialisasi Shake Animation Dihapus
+    // _shakeController = AnimationController(
+    //   vsync: this,
+    //   duration: const Duration(milliseconds: 500),
+    // );
+    
+    // _shakeAnimation = Tween<double>(
+    //   begin: 0,
+    //   end: 10,
+    // ).chain(CurveTween(curve: Curves.elasticIn)).animate(_shakeController);
   }
 
   @override
   void dispose() {
-    for (final c in _controllers) {
-      c.dispose();
-    }
-    for (final f in _focusNodes) {
-      f.dispose();
-    }
+    _pinController.dispose();
+    // _cooldownTimer?.cancel(); // Dihapus
+    // _shakeController.dispose(); // Dihapus
     super.dispose();
   }
 
-  String get _currentOtp {
-    return _controllers.map((c) => c.text).join();
+  // Fungsi _getCooldownDuration Dihapus
+  // int _getCooldownDuration(int attempt) { ... }
+
+  // Fungsi _startCooldown Dihapus
+  // void _startCooldown() { ... }
+
+  // Fungsi _formatCooldown Dihapus
+  // String _formatCooldown() { ... }
+
+  // Fungsi _playShakeAnimation Dihapus
+  // void _playShakeAnimation() { ... }
+
+  // Fungsi _onResendOtp Dihapus total, karena fitur resend dihilangkan
+  void _onResendOtp() {
+    // Fungsi ini dikosongkan/dihapus, tetapi biarkan agar TextButton yang dinonaktifkan di bawah tidak error
   }
 
-  void _submitOtpIfComplete() {
-    final code = _currentOtp;
-    if (code.length == otpLength && !code.contains('')) {
-      // panggil bloc verify
-      context.read<AuthBloc>().add(VerifyOtpEvent(widget.phone, code));
-    }
-  }
-
-  void _handleInput(int index, String value) async {
-    // ambil hanya digit
-    final digits = value.replaceAll(RegExp(r'[^0-9]'), '');
-
-    if (digits.isEmpty) {
-      // user hapus; pindah fokus ke sebelumnya
-      if (_controllers[index].text.isEmpty) {
-        // sudah kosong, pindah ke previous dan clear
-        if (index - 1 >= 0) {
-          _focusNodes[index - 1].requestFocus();
-          _controllers[index - 1].selection = TextSelection.fromPosition(
-            TextPosition(offset: _controllers[index - 1].text.length),
-          );
-        }
-      } else {
-        // normal clear current (happens automatically)
-      }
-      return;
-    }
-
-    // Jika user mem-paste lebih dari 1 char (misal '1234'), distribusikan
-    if (digits.length > 1) {
-      _handlePaste(digits, startIndex: index);
-      return;
-    }
-
-    // Single digit input
-    _controllers[index].text = digits;
-    // setelah memasukkan, pindah fokus ke kotak berikutnya
-    if (index + 1 < otpLength) {
-      _focusNodes[index + 1].requestFocus();
-      _controllers[index + 1].selection = TextSelection.fromPosition(
-        TextPosition(offset: _controllers[index + 1].text.length),
-      );
-    } else {
-      // jika di kotak terakhir -> lepas fokus keyboard
-      _focusNodes[index].unfocus();
-    }
-
-    // jika lengkap, submit
-    if (_currentOtp.length == otpLength && !_currentOtp.contains('')) {
-      _submitOtpIfComplete();
-    }
-  }
-
-  void _handlePaste(String pasted, {int startIndex = 0}) {
-    final digits = pasted.replaceAll(RegExp(r'[^0-9]'), '');
-    for (var i = 0; i < digits.length && (startIndex + i) < otpLength; i++) {
-      _controllers[startIndex + i].text = digits[i];
-    }
-
-    // set focus ke next empty or unfocus if complete
-    final firstEmpty = _controllers.indexWhere((c) => c.text.isEmpty);
-    if (firstEmpty != -1) {
-      _focusNodes[firstEmpty].requestFocus();
-    } else {
-      // semua terisi
-      _focusNodes.last.unfocus();
-      _submitOtpIfComplete();
-    }
-  }
-
-  Widget _buildOtpBox(int index) {
-    return SizedBox(
-      width: 60,
-      height: 60,
-      child: TextField(
-        controller: _controllers[index],
-        focusNode: _focusNodes[index],
-        keyboardType: TextInputType.number,
-        textAlign: TextAlign.center,
-        inputFormatters: [
-          FilteringTextInputFormatter.digitsOnly,
-          LengthLimitingTextInputFormatter(1),
-        ],
-        style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
-        decoration: InputDecoration(
-          counterText: '',
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-            borderSide: BorderSide(color: AppColors.grayColor),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-            borderSide: BorderSide(color: Colors.blue, width: 2),
-          ),
-        ),
-        onChanged: (value) => _handleInput(index, value),
-        onTap: () {
-          // jika user men-tap dan ada text, letakkan cursor di akhir
-          _controllers[index].selection = TextSelection.fromPosition(
-            TextPosition(offset: _controllers[index].text.length),
-          );
-        },
-        // support paste from keyboard/menu: detect via onChanged where value.length>1 handled
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
-    final primaryColor = const Color(0xFFB11F23);
+    // print('🔄 Building OTP Page - ...'); // Dihapus
+
+    final primaryColor = AppColors.primaryColor;
     final yellowColor = const Color(0xFFFDD100);
+    // final isCooldownActive = _cooldownSeconds > 0; // Dihapus
 
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(153),
         child: AppBar(
-          backgroundColor: AppColors.primaryColor,
+          backgroundColor: primaryColor,
           elevation: 0,
           leading: Padding(
             padding: const EdgeInsets.only(top: 20),
             child: IconButton(
               icon: const Icon(FontAwesomeIcons.arrowLeft, color: Colors.white),
-              onPressed: () => context.pop(),
+              onPressed: () {
+                if (!_isNavigating) {
+                  context.pop();
+                }
+              },
             ),
           ),
           flexibleSpace: SafeArea(
@@ -193,7 +125,7 @@ class _OtpPageState extends State<OtpPage> {
                     ),
                     SizedBox(height: 4),
                     Text(
-                      'Masukkan kode OTP',
+                      'Masukkan kode OTP 6 digit',
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w500,
@@ -208,91 +140,238 @@ class _OtpPageState extends State<OtpPage> {
         ),
       ),
       body: BlocListener<AuthBloc, AuthState>(
+        listenWhen: (previous, current) => previous != current,
         listener: (context, state) {
           if (state is OtpVerificationSuccess) {
+            if (_isNavigating) return;
+            _isNavigating = true;
+
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text('OTP Berhasil! Lanjut ke Registrasi.'),
+                content: Text('✅ OTP Berhasil! Lanjut ke Registrasi.'),
                 backgroundColor: Colors.green,
+                duration: Duration(seconds: 1),
               ),
             );
-            // TODO: navigasi ke halaman form registrasi
+
+            // Navigate to next screen
+            Future.delayed(const Duration(milliseconds: 800), () {
+              if (!mounted) return;
+              _isNavigating = false;
+              // Gunakan pop() untuk kembali ke halaman sebelumnya (RegisterPhone)
+              context.pop(); 
+              // *Anda mungkin ingin menavigasi ke halaman RegisterForm di sini*
+            });
           } else if (state is OtpVerificationError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
-            );
-          } else if (state is OtpRequestSuccess) {
+            // _playShakeAnimation(); // Dihapus
+            
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('OTP baru terkirim. (DEBUG: ${state.otp})'),
-                backgroundColor: Colors.blue,
+                content: Text('❌ ${state.message}'),
+                backgroundColor: Colors.red,
+                duration: const Duration(seconds: 2),
               ),
             );
-            // Jika OTP dikirim ulang, kita bisa auto-isi debug OTP jika mau:
-            // _handlePaste(state.otp);
+          } 
+          // Logika OtpRequestSuccess dan OtpRequestError Dihapus/Dibersihkan
+          else if (state is OtpRequestSuccess) {
+            print('✅ OTP Request Success.');
+            
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('📩 OTP baru dikirim (DEBUG: ${state.otp})'),
+                backgroundColor: Colors.blue,
+                duration: const Duration(seconds: 3),
+              ),
+            );
+            
+            _pinController.clear();
+            
+            // Logika _startCooldown() dihapus
+          } else if (state is OtpRequestError) {
+            // Logika rollback attempt, timer cancel, dan cooldown reset Dihapus
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('❌ ${state.message}'),
+                backgroundColor: Colors.red,
+                duration: const Duration(seconds: 2),
+              ),
+            );
           }
         },
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text('Masukkan Kode OTP yang dikirim ke ${widget.phone}'),
-              const SizedBox(height: 20),
-              // Row kotak OTP
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: List.generate(otpLength, (i) => _buildOtpBox(i)),
-              ),
-              const SizedBox(height: 20),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: TextButton(
-                  onPressed: () {
-                    // Kirim Ulang Kode OTP
-                    context.read<AuthBloc>().add(RequestOtpEvent(widget.phone));
-                  },
-                  child: const Text('Kirim Ulang Kode'),
+              Text(
+                'Masukkan Kode OTP 6 digit yang dikirim ke\n${widget.phone}',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: AppColors.grayColor,
                 ),
               ),
-              const Spacer(),
-              BlocBuilder<AuthBloc, AuthState>(
-                builder: (context, state) {
-                  bool isLoading = state is AuthLoading;
-                  return ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: yellowColor,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+              const SizedBox(height: 30),
+
+              // AnimatedBuilder (Shake Animation) Dihapus
+              PinCodeTextField(
+                appContext: context,
+                length: 6,
+                animationType: AnimationType.fade,
+                controller: _pinController,
+                keyboardType: TextInputType.number,
+                autoFocus: true,
+                enableActiveFill: true,
+                animationDuration: const Duration(milliseconds: 200),
+                pinTheme: PinTheme(
+                  shape: PinCodeFieldShape.box,
+                  borderRadius: BorderRadius.circular(8),
+                  fieldHeight: 55,
+                  fieldWidth: 50,
+                  activeFillColor: Colors.white,
+                  selectedFillColor: Colors.white,
+                  inactiveFillColor: Colors.white,
+                  activeColor: const Color(0xFF2196F3),
+                  selectedColor: primaryColor,
+                  inactiveColor: AppColors.grayColor,
+                  errorBorderColor: Colors.red,
+                  borderWidth: 2,
+                ),
+                textStyle: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black,
+                ),
+                onChanged: (value) {},
+              ),
+
+              const SizedBox(height: 20),
+
+              // Bagian Kirim Ulang Kode (Resend OTP)
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Tidak menerima kode?',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: AppColors.grayColor,
+                      ),
                     ),
-                    onPressed: isLoading
+                    const SizedBox(height: 4),
+                    
+                    // Tombol Kirim Ulang Dihapus dan diganti dengan placeholder
+                    TextButton(
+                      // onPressed: _onResendOtp, // Dihapus
+                      onPressed: null, // Dinonaktifkan total
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                        minimumSize: const Size(0, 0),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      child: const Text(
+                        'Kirim Ulang Kode (Dinonaktifkan)',
+                        style: TextStyle(
+                          color: AppColors.grayColor, // Selalu abu-abu
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const Spacer(),
+
+              // Submit Button
+              BlocBuilder<AuthBloc, AuthState>(
+                buildWhen: (previous, current) {
+                  return (previous is! AuthLoading && current is AuthLoading) ||
+                              (previous is AuthLoading && current is! AuthLoading);
+                },
+                builder: (context, state) {
+                  final isLoading = state is AuthLoading;
+                  
+                  return ElevatedButton(
+                    onPressed: (isLoading || _isNavigating /*|| _isShaking*/)
                         ? null
                         : () {
-                            // ambil kode dari boxes
-                            final code = _currentOtp;
-                            if (code.length == otpLength) {
+                            final code = _pinController.text.trim();
+                            if (code.length == 6) {
                               context.read<AuthBloc>().add(
                                     VerifyOtpEvent(widget.phone, code),
                                   );
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
-                                  content: Text('Lengkapi kode OTP terlebih dahulu'),
+                                  content: Text(
+                                    'Lengkapi kode OTP 6 digit terlebih dahulu',
+                                  ),
+                                  backgroundColor: Colors.red,
                                 ),
                               );
                             }
                           },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: yellowColor,
+                      foregroundColor: Colors.black,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      minimumSize: const Size(double.infinity, 50),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
                     child: isLoading
                         ? const SizedBox(
                             width: 20,
                             height: 20,
-                            child: CircularProgressIndicator(color: Colors.black, strokeWidth: 2),
+                            child: CircularProgressIndicator(
+                              color: Colors.black,
+                              strokeWidth: 2,
+                            ),
                           )
                         : const Text(
-                            'Selanjutnya',
-                            style: TextStyle(color: Colors.black),
+                            'Verifikasi',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                            ),
                           ),
                   );
                 },
+              ),
+
+              const SizedBox(height: 16),
+
+              // Help Section
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    'Butuh bantuan? ',
+                    style: TextStyle(fontSize: 14),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Hubungi support: support@ekaplus.com'),
+                        ),
+                      );
+                    },
+                    child: const Text(
+                      'Kontak Kami',
+                      style: TextStyle(
+                        color: AppColors.primaryColor,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

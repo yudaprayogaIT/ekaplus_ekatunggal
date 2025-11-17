@@ -93,15 +93,20 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
       final List<dynamic> usersJson = jsonData['users'] ?? [];
       return usersJson.map((e) => UserModel.fromJson(e)).toList();
     } catch (e) {
-      // on error return empty
+      print('Error reading users from file: $e');
       return [];
     }
   }
 
   Future<void> _writeUsersToFile(List<UserModel> users) async {
-    final file = await _getUsersFile();
-    final jsonData = {'users': users.map((u) => u.toJson()).toList()};
-    await file.writeAsString(json.encode(jsonData));
+    try {
+      final file = await _getUsersFile();
+      final jsonData = {'users': users.map((u) => u.toJson()).toList()};
+      await file.writeAsString(json.encode(jsonData));
+    } catch (e) {
+      print('Error writing users to file: $e');
+      rethrow;
+    }
   }
 
   Future<List<OtpModel>> _readOtpsFromFile() async {
@@ -112,54 +117,89 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
       final List<dynamic> otpJson = jsonData['otp_sessions'] ?? [];
       return otpJson.map((e) => OtpModel.fromJson(e)).toList();
     } catch (e) {
+      print('Error reading OTPs from file: $e');
       return [];
     }
   }
 
   Future<void> _writeOtpsToFile(List<OtpModel> sessions) async {
-    final file = await _getOtpFile();
-    final jsonData = {'otp_sessions': sessions.map((o) => o.toJson()).toList()};
-    await file.writeAsString(json.encode(jsonData));
+    try {
+      final file = await _getOtpFile();
+      final jsonData = {
+        'otp_sessions': sessions.map((o) => o.toJson()).toList(),
+      };
+      await file.writeAsString(json.encode(jsonData));
+    } catch (e) {
+      print('Error writing OTPs to file: $e');
+      rethrow;
+    }
   }
 
   Future<List<UserModel>> _readUsersFromPrefs() async {
-    final prefs = await _prefs();
-    final raw = prefs.getString(_prefsUsersKey) ?? '{"users": []}';
-    final jsonData = json.decode(raw);
-    final List<dynamic> usersJson = jsonData['users'] ?? [];
-    return usersJson.map((e) => UserModel.fromJson(e)).toList();
+    try {
+      final prefs = await _prefs();
+      final raw = prefs.getString(_prefsUsersKey) ?? '{"users": []}';
+      final jsonData = json.decode(raw);
+      final List<dynamic> usersJson = jsonData['users'] ?? [];
+      return usersJson.map((e) => UserModel.fromJson(e)).toList();
+    } catch (e) {
+      print('Error reading users from prefs: $e');
+      return [];
+    }
   }
 
   Future<void> _writeUsersToPrefs(List<UserModel> users) async {
-    final prefs = await _prefs();
-    final jsonData = {'users': users.map((u) => u.toJson()).toList()};
-    await prefs.setString(_prefsUsersKey, json.encode(jsonData));
+    try {
+      final prefs = await _prefs();
+      final jsonData = {'users': users.map((u) => u.toJson()).toList()};
+      await prefs.setString(_prefsUsersKey, json.encode(jsonData));
+    } catch (e) {
+      print('Error writing users to prefs: $e');
+      rethrow;
+    }
   }
 
   Future<List<OtpModel>> _readOtpsFromPrefs() async {
-    final prefs = await _prefs();
-    final raw = prefs.getString(_prefsOtpKey) ?? '{"otp_sessions": []}';
-    final jsonData = json.decode(raw);
-    final List<dynamic> otpJson = jsonData['otp_sessions'] ?? [];
-    return otpJson.map((e) => OtpModel.fromJson(e)).toList();
+    try {
+      final prefs = await _prefs();
+      final raw = prefs.getString(_prefsOtpKey) ?? '{"otp_sessions": []}';
+      final jsonData = json.decode(raw);
+      final List<dynamic> otpJson = jsonData['otp_sessions'] ?? [];
+      return otpJson.map((e) => OtpModel.fromJson(e)).toList();
+    } catch (e) {
+      print('Error reading OTPs from prefs: $e');
+      return [];
+    }
   }
 
   Future<void> _writeOtpsToPrefs(List<OtpModel> sessions) async {
-    final prefs = await _prefs();
-    final jsonData = {'otp_sessions': sessions.map((o) => o.toJson()).toList()};
-    await prefs.setString(_prefsOtpKey, json.encode(jsonData));
+    try {
+      final prefs = await _prefs();
+      final jsonData = {
+        'otp_sessions': sessions.map((o) => o.toJson()).toList(),
+      };
+      await prefs.setString(_prefsOtpKey, json.encode(jsonData));
+    } catch (e) {
+      print('Error writing OTPs to prefs: $e');
+      rethrow;
+    }
   }
 
   // ---------- Public API implementations ----------
   @override
   Future<bool> checkPhoneExists(String phone) async {
-    await _ensureInit();
-    if (_usePrefs == true) {
-      final users = await _readUsersFromPrefs();
-      return users.any((u) => u.phone == phone);
-    } else {
-      final users = await _readUsersFromFile();
-      return users.any((u) => u.phone == phone);
+    try {
+      await _ensureInit();
+      if (_usePrefs == true) {
+        final users = await _readUsersFromPrefs();
+        return users.any((u) => u.phone == phone);
+      } else {
+        final users = await _readUsersFromFile();
+        return users.any((u) => u.phone == phone);
+      }
+    } catch (e) {
+      print('Error checking phone exists: $e');
+      return false;
     }
   }
 
@@ -167,6 +207,10 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   Future<String> generateOtp(String phone) async {
     await _ensureInit();
     final random = Random();
+
+    // ============================================
+    // GENERATE 6 DIGIT OTP (100000 - 999999)
+    // ============================================
     final otp = (100000 + random.nextInt(900000)).toString();
 
     if (_usePrefs == true) {
@@ -195,8 +239,8 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
       await _writeOtpsToFile(sessions);
     }
 
-    // For dev/debugging return otp
-    print('Generated OTP for $phone: $otp');
+    // For dev/debugging - log 6 digit OTP
+    print('✅ Generated 6-digit OTP for $phone: $otp');
     return otp;
   }
 
@@ -204,26 +248,39 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   Future<bool> verifyOtp(String phone, String otp) async {
     await _ensureInit();
 
-    // Accept development OTP
-    if (otp == '123456') return true;
+    // ============================================
+    // Accept development OTP - 6 DIGIT: 123456
+    // ============================================
+    if (otp == '123456') {
+      print('✅ Development OTP accepted: 123456');
+      return true;
+    }
 
     if (_usePrefs == true) {
       final sessions = await _readOtpsFromPrefs();
       final idx = sessions.indexWhere(
         (s) => s.phone == phone && s.otp == otp && s.isValid,
       );
-      if (idx == -1) return false;
+      if (idx == -1) {
+        print('❌ OTP verification failed for $phone with OTP: $otp');
+        return false;
+      }
       sessions[idx] = sessions[idx].copyWith(isUsed: true);
       await _writeOtpsToPrefs(sessions);
+      print('✅ OTP verified successfully for $phone');
       return true;
     } else {
       final sessions = await _readOtpsFromFile();
       final idx = sessions.indexWhere(
         (s) => s.phone == phone && s.otp == otp && s.isValid,
       );
-      if (idx == -1) return false;
+      if (idx == -1) {
+        print('❌ OTP verification failed for $phone with OTP: $otp');
+        return false;
+      }
       sessions[idx] = sessions[idx].copyWith(isUsed: true);
       await _writeOtpsToFile(sessions);
+      print('✅ OTP verified successfully for $phone');
       return true;
     }
   }
@@ -237,8 +294,10 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
       final existingIndex = users.indexWhere((u) => u.phone == user.phone);
       if (existingIndex != -1) {
         users[existingIndex] = user;
+        print('✅ User updated: ${user.phone}');
       } else {
         users.add(user);
+        print('✅ New user saved: ${user.phone}');
       }
       await _writeUsersToPrefs(users);
       return user;
@@ -247,8 +306,10 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
       final existingIndex = users.indexWhere((u) => u.phone == user.phone);
       if (existingIndex != -1) {
         users[existingIndex] = user;
+        print('✅ User updated: ${user.phone}');
       } else {
         users.add(user);
+        print('✅ New user saved: ${user.phone}');
       }
       await _writeUsersToFile(users);
       return user;
@@ -257,21 +318,26 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
 
   @override
   Future<UserModel?> getUserByPhone(String phone) async {
-    await _ensureInit();
-    if (_usePrefs == true) {
-      final users = await _readUsersFromPrefs();
-      try {
-        return users.firstWhere((u) => u.phone == phone);
-      } catch (e) {
-        return null;
+    try {
+      await _ensureInit();
+      if (_usePrefs == true) {
+        final users = await _readUsersFromPrefs();
+        try {
+          return users.firstWhere((u) => u.phone == phone);
+        } catch (e) {
+          return null;
+        }
+      } else {
+        final users = await _readUsersFromFile();
+        try {
+          return users.firstWhere((u) => u.phone == phone);
+        } catch (e) {
+          return null;
+        }
       }
-    } else {
-      final users = await _readUsersFromFile();
-      try {
-        return users.firstWhere((u) => u.phone == phone);
-      } catch (e) {
-        return null;
-      }
+    } catch (e) {
+      print('Error getting user by phone: $e');
+      return null;
     }
   }
 }

@@ -46,11 +46,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(AuthLoading());
 
+    print('🔄 Requesting OTP for: ${event.phone}');
+
     final result = await requestOtp(event.phone);
 
     result.fold(
-      (failure) => emit(OtpRequestError(failure.message ?? 'Unknown error')),
-      (otp) => emit(OtpRequestSuccess(otp: otp, phone: event.phone)),
+      (failure) {
+        print('❌ OTP Request Failed: ${failure.message}');
+        emit(OtpRequestError(failure.message ?? 'Unknown error'));
+      },
+      (otp) {
+        print('✅ OTP Request Success - 6 digit OTP: $otp');
+        emit(OtpRequestSuccess(otp: otp, phone: event.phone));
+      },
     );
   }
 
@@ -60,14 +68,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(AuthLoading());
 
+    print('🔄 Verifying OTP for: ${event.phone} with code: ${event.otp}');
+
     final result = await verifyOtp(event.phone, event.otp);
 
     result.fold(
-      (failure) => emit(OtpVerificationError(failure.message ?? 'Unknown error')),
+      (failure) {
+        print('❌ OTP Verification Failed: ${failure.message}');
+        emit(OtpVerificationError(failure.message ?? 'Unknown error'));
+      },
       (isValid) {
         if (isValid) {
+          print('✅ OTP Verification Success for: ${event.phone}');
           emit(OtpVerificationSuccess(event.phone));
         } else {
+          print('❌ OTP Invalid or Expired');
           emit(const OtpVerificationError(
               'OTP tidak valid atau sudah kadaluarsa'));
         }
@@ -81,6 +96,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(AuthLoading());
 
+    print('🔄 Registering user: ${event.phone}');
+
     final params = RegisterUserParams(
       phone: event.phone,
       name: event.name,
@@ -93,12 +110,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     final result = await registerUser(params);
 
     result.fold(
-      (failure) => emit(RegisterError(failure.message ?? 'Unknown error')),
-      (user) => emit(RegisterSuccess(user)),
+      (failure) {
+        print('❌ Registration Failed: ${failure.message}');
+        emit(RegisterError(failure.message ?? 'Unknown error'));
+      },
+      (user) {
+        print('✅ Registration Success: ${user.phone} - ${user.name}');
+        emit(RegisterSuccess(user));
+      },
     );
   }
 
   void _onResetAuth(ResetAuthEvent event, Emitter<AuthState> emit) {
+    print('🔄 Resetting Auth State');
     emit(AuthInitial());
   }
 }

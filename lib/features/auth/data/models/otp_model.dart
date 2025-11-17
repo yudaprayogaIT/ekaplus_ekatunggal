@@ -1,3 +1,4 @@
+// lib/features/auth/data/models/otp_model.dart
 import 'package:equatable/equatable.dart';
 
 class OtpModel extends Equatable {
@@ -17,6 +18,7 @@ class OtpModel extends Equatable {
 
   // Getter untuk memeriksa validitas OTP
   bool get isValid => !isUsed && expiresAt.isAfter(DateTime.now());
+  bool get isExpired => DateTime.now().isAfter(expiresAt);
 
   factory OtpModel.fromJson(Map<String, dynamic> json) {
     return OtpModel(

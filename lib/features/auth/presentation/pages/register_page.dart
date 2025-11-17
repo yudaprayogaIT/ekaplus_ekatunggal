@@ -19,6 +19,7 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _phoneController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  bool _isNavigating = false; // Prevent double navigation
 
   @override
   void dispose() {
@@ -51,6 +52,7 @@ class _RegisterPageState extends State<RegisterPage> {
   String _normalizePhone(String phone) {
     String cleaned = phone.replaceAll(RegExp(r'[^0-9]'), '');
 
+    // Normalize: 081234567890 -> 6281234567890
     if (cleaned.startsWith('0')) {
       cleaned = '62${cleaned.substring(1)}';
     }
@@ -61,6 +63,8 @@ class _RegisterPageState extends State<RegisterPage> {
   void _onNextPressed() {
     if (_formKey.currentState!.validate()) {
       final normalizedPhone = _normalizePhone(_phoneController.text);
+
+      // Request OTP (will generate 6 digit OTP)
       context.read<AuthBloc>().add(RequestOtpEvent(normalizedPhone));
     }
   }
@@ -80,7 +84,11 @@ class _RegisterPageState extends State<RegisterPage> {
             padding: const EdgeInsets.only(top: 20),
             child: IconButton(
               icon: const Icon(FontAwesomeIcons.arrowLeft, color: Colors.white),
-              onPressed: () => context.pop(),
+              onPressed: () {
+                if (!_isNavigating) {
+                  context.pop();
+                }
+              },
             ),
           ),
           flexibleSpace: SafeArea(
@@ -116,23 +124,32 @@ class _RegisterPageState extends State<RegisterPage> {
           ),
         ),
       ),
-
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is OtpRequestSuccess) {
+            if (_isNavigating) return; // Prevent double navigation
+            _isNavigating = true;
+
+            // Show OTP in SnackBar (development only - 6 DIGIT)
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('OTP dikirim: ${state.otp}'),
+                content: Text('OTP 6 digit dikirim: ${state.otp}'),
                 backgroundColor: Colors.green,
+                duration: const Duration(seconds: 3),
               ),
             );
 
-            context.push('/otp', extra: state.phone);
+            // Safe navigation dengan delay
+            Future.delayed(const Duration(milliseconds: 500), () {
+              if (!mounted) return;
+              _isNavigating = false;
+              context.push('/otp', extra: state.phone);
+            });
           } else if (state is OtpRequestError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
-                backgroundColor: AppColors.primaryColor,
+                backgroundColor: primaryColor,
               ),
             );
           }
@@ -148,6 +165,9 @@ class _RegisterPageState extends State<RegisterPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      const SizedBox(height: 10),
+
+                      // Phone Input Field
                       TextFormField(
                         controller: _phoneController,
                         keyboardType: TextInputType.phone,
@@ -157,30 +177,32 @@ class _RegisterPageState extends State<RegisterPage> {
                         ],
                         decoration: InputDecoration(
                           labelText: 'Nomor Hp',
-                          labelStyle: TextStyle(
+                          hintText: 'Contoh: 081234567890',
+                          labelStyle: const TextStyle(
                             color: AppColors.grayColor,
                             fontWeight: FontWeight.w500,
                             fontSize: 16,
                           ),
+                          prefixIcon: const Icon(
+                            Icons.phone_android,
+                            color: AppColors.grayColor,
+                          ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          // border saat tidak fokus
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                             borderSide: const BorderSide(
                               color: AppColors.grayColor,
                             ),
                           ),
-                          // border saat fokus
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                             borderSide: const BorderSide(
-                              color: Color.fromARGB(255, 33, 86, 243),
+                              color: Color(0xFF2196F3),
                               width: 2,
                             ),
                           ),
-                          // border saat error (tidak fokus)
                           errorBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                             borderSide: const BorderSide(
@@ -188,7 +210,6 @@ class _RegisterPageState extends State<RegisterPage> {
                               width: 2,
                             ),
                           ),
-                          // border saat fokus + error
                           focusedErrorBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                             borderSide: const BorderSide(
@@ -200,8 +221,18 @@ class _RegisterPageState extends State<RegisterPage> {
                         validator: _validatePhone,
                       ),
 
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 12),
+                      const Text(
+                        'Kami akan mengirimkan kode OTP 6 digit ke nomor ini',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.grayColor,
+                        ),
+                      ),
 
+                      const SizedBox(height: 24),
+
+                      // Divider
                       Row(
                         children: const [
                           Expanded(
@@ -228,16 +259,28 @@ class _RegisterPageState extends State<RegisterPage> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 16),
+
+                      const SizedBox(height: 24),
+
+                      // Google Sign In Button (Placeholder)
                       OutlinedButton.icon(
-                        onPressed: () {},
+                        onPressed: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Google Sign In belum tersedia'),
+                            ),
+                          );
+                        },
                         icon: Image.asset(
                           'assets/icons/google.png',
-                          width: 30,
-                          height: 30,
+                          width: 24,
+                          height: 24,
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Icon(Icons.g_mobiledata, size: 24);
+                          },
                         ),
                         label: const Text(
-                          'Google',
+                          'Daftar dengan Google',
                           style: TextStyle(
                             fontFamily: AppFonts.primaryFont,
                             color: AppColors.grayColor,
@@ -245,39 +288,45 @@ class _RegisterPageState extends State<RegisterPage> {
                           ),
                         ),
                         style: OutlinedButton.styleFrom(
-                          minimumSize: const Size(double.infinity, 60),
+                          minimumSize: const Size(double.infinity, 56),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          side: const BorderSide(color: Colors.grey),
+                          side: const BorderSide(
+                            color: AppColors.grayColor,
+                            width: 1.5,
+                          ),
                           foregroundColor: Colors.black,
                         ),
                       ),
 
                       const Spacer(),
+
+                      // Next Button
                       BlocBuilder<AuthBloc, AuthState>(
                         builder: (context, state) {
                           final isLoading = state is AuthLoading;
 
                           return ElevatedButton(
-                            onPressed: isLoading ? null : _onNextPressed,
+                            onPressed: (isLoading || _isNavigating)
+                                ? null
+                                : _onNextPressed,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: yellowColor,
                               foregroundColor: Colors.black,
-                              minimumSize: const Size(double.infinity, 50),
+                              minimumSize: const Size(double.infinity, 56),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
+                                borderRadius: BorderRadius.circular(10),
                               ),
+                              elevation: 0,
                             ),
                             child: isLoading
                                 ? const SizedBox(
                                     width: 24,
                                     height: 24,
-                                    child: Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                      ),
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2.5,
+                                      color: Colors.black,
                                     ),
                                   )
                                 : const Text(
@@ -290,23 +339,33 @@ class _RegisterPageState extends State<RegisterPage> {
                           );
                         },
                       ),
-                      const SizedBox(height: 8),
+
+                      const SizedBox(height: 16),
+
+                      // Login Link
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           const Text(
-                            'Sudah punya akun ?',
+                            'Sudah punya akun? ',
                             style: TextStyle(fontSize: 14),
                           ),
                           TextButton(
                             onPressed: () {
-                              context.push('/login');
+                              if (!_isNavigating) {
+                                context.push('/login');
+                              }
                             },
+                            style: TextButton.styleFrom(
+                              padding: EdgeInsets.zero,
+                              minimumSize: const Size(0, 0),
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
                             child: const Text(
-                              "Masuk Sekarang",
+                              'Masuk Sekarang',
                               style: TextStyle(
                                 color: AppColors.primaryColor,
-                                fontWeight: FontWeight.w500,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                           ),
