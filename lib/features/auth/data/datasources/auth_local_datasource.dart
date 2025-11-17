@@ -167,7 +167,7 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   Future<String> generateOtp(String phone) async {
     await _ensureInit();
     final random = Random();
-    final otp = (1000 + random.nextInt(9000)).toString();
+    final otp = (100000 + random.nextInt(900000)).toString();
 
     if (_usePrefs == true) {
       final sessions = await _readOtpsFromPrefs();
@@ -205,7 +205,7 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
     await _ensureInit();
 
     // Accept development OTP
-    if (otp == '1234') return true;
+    if (otp == '123456') return true;
 
     if (_usePrefs == true) {
       final sessions = await _readOtpsFromPrefs();
