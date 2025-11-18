@@ -26,7 +26,7 @@ import 'package:ekaplus_ekatunggal/core/shared_widgets/bottom_nav.dart';
 class MyRouter {
   GoRouter get router => GoRouter(
     // initialLocation: "/",
-    initialLocation: "/register",
+    initialLocation: "/otp",
     routes: [
       ShellRoute(
         builder: (context, state, child) {
@@ -62,14 +62,6 @@ class MyRouter {
         name: 'register',
         builder: (context, state) => const RegisterPage(),
       ),
-      // GoRoute(
-      //   path: '/otp',
-      //   name: 'otp',
-      //   builder: (context, state) {
-      //     final phone = state.extra as String? ?? '';
-      //     return OtpPage(phone: phone);
-      //   },
-      // ),
 
 GoRoute(
         path: '/otp',
