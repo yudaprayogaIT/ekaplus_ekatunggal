@@ -1,4 +1,5 @@
 // lib/injection.dart
+import 'package:ekaplus_ekatunggal/features/auth/presentation/bloc/otp_timer_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
 
@@ -120,4 +121,9 @@ Future<void> init() async {
       registerUser: myinjection(),
     ),
   );
+
+  // ============================================
+  // TAMBAHAN BARU: OtpTimerBloc
+  // ============================================
+  myinjection.registerFactory(() => OtpTimerBloc());
 }

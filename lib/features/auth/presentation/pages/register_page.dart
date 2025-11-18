@@ -64,6 +64,8 @@ class _RegisterPageState extends State<RegisterPage> {
     if (_formKey.currentState!.validate()) {
       final normalizedPhone = _normalizePhone(_phoneController.text);
 
+      print('🔄 Requesting OTP for: $normalizedPhone');
+
       // Request OTP (will generate 6 digit OTP)
       context.read<AuthBloc>().add(RequestOtpEvent(normalizedPhone));
     }
@@ -130,22 +132,32 @@ class _RegisterPageState extends State<RegisterPage> {
             if (_isNavigating) return; // Prevent double navigation
             _isNavigating = true;
 
+            print('✅ OTP Generated (6 digit): ${state.otp}');
+            print('📱 Phone: ${state.phone}');
+
             // Show OTP in SnackBar (development only - 6 DIGIT)
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('OTP 6 digit dikirim: ${state.otp}'),
+                content: Text('📱 Kode OTP 6 digit: ${state.otp}'),
                 backgroundColor: Colors.green,
-                duration: const Duration(seconds: 3),
+                duration: const Duration(seconds: 5),
               ),
             );
+
+            // TIDAK START TIMER di sini - timer hanya start saat resend
+            // Timer akan start hanya saat user klik "Kirim Ulang Kode"
 
             // Safe navigation dengan delay
             Future.delayed(const Duration(milliseconds: 500), () {
               if (!mounted) return;
               _isNavigating = false;
+              
+              // Navigate ke OTP page dengan extra data (phone number)
               context.push('/otp', extra: state.phone);
             });
           } else if (state is OtpRequestError) {
+            print('❌ OTP Request Error: ${state.message}');
+            
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
