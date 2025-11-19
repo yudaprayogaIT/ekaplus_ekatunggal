@@ -1,7 +1,6 @@
 // lib/core/routes/my_router.dart
 import 'package:ekaplus_ekatunggal/features/account/presentation/pages/about_page.dart';
 import 'package:ekaplus_ekatunggal/features/account/presentation/pages/account_page.dart';
-import 'package:ekaplus_ekatunggal/features/auth/presentation/pages/otp_page.dart';
 import 'package:ekaplus_ekatunggal/features/auth/presentation/pages/otp_verification_page.dart';
 import 'package:ekaplus_ekatunggal/features/auth/presentation/pages/register_form_page.dart';
 import 'package:ekaplus_ekatunggal/features/auth/presentation/pages/register_page.dart';
@@ -63,18 +62,15 @@ class MyRouter {
         builder: (context, state) => const RegisterPage(),
       ),
 
-GoRoute(
+      GoRoute(
         path: '/otp',
         name: 'otp',
         pageBuilder: (context, state) {
           // Get phone number from extra
           final phoneNumber = state.extra as String? ?? '';
-          
           return MaterialPage(
             key: state.pageKey,
-            child: OtpVerificationPage(
-              phoneNumber: phoneNumber,
-            ),
+            child: OtpVerificationPage(phoneNumber: phoneNumber),
           );
         },
       ),

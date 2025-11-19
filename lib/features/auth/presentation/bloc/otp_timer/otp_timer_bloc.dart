@@ -1,7 +1,7 @@
 // lib/features/auth/presentation/bloc/otp_timer/otp_timer_bloc.dart
 import 'dart:async';
-import 'package:ekaplus_ekatunggal/features/auth/presentation/bloc/otp_timer_event.dart';
-import 'package:ekaplus_ekatunggal/features/auth/presentation/bloc/otp_timer_state.dart';
+import 'package:ekaplus_ekatunggal/features/auth/presentation/bloc/otp_timer/otp_timer_event.dart';
+import 'package:ekaplus_ekatunggal/features/auth/presentation/bloc/otp_timer/otp_timer_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class OtpTimerBloc extends Bloc<OtpTimerEvent, OtpTimerState> {

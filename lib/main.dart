@@ -3,7 +3,7 @@ import 'package:bloc/bloc.dart';
 import 'package:ekaplus_ekatunggal/constant.dart';
 import 'package:ekaplus_ekatunggal/cubit/connection_status_cubit.dart';
 import 'package:ekaplus_ekatunggal/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:ekaplus_ekatunggal/features/auth/presentation/bloc/otp_timer_bloc.dart';
+import 'package:ekaplus_ekatunggal/features/auth/presentation/bloc/otp_timer/otp_timer_bloc.dart';
 import 'package:ekaplus_ekatunggal/features/category/presentation/bloc/category_bloc.dart';
 import 'package:ekaplus_ekatunggal/features/product/presentation/bloc/product_bloc.dart';
 import 'package:ekaplus_ekatunggal/features/type/presentation/bloc/type_bloc.dart';
@@ -36,7 +36,7 @@ class EkaplusApp extends StatelessWidget {
         BlocProvider(create: (context) => myinjection<CategoryBloc>()),
         BlocProvider(create: (context) => myinjection<ProductBloc>()),
         BlocProvider(create: (context) => myinjection<AuthBloc>()),
-        
+
         // ============================================
         // TAMBAHAN BARU: OtpTimerBloc Provider
         // ============================================
@@ -53,7 +53,9 @@ class EkaplusApp extends StatelessWidget {
             primaryColor: AppColors.primaryColor,
             scaffoldBackgroundColor: AppColors.background,
             fontFamily: AppFonts.primaryFont,
-            colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primaryColor),
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: AppColors.primaryColor,
+            ),
           ),
         ),
       ),
