@@ -25,7 +25,7 @@ import 'package:ekaplus_ekatunggal/core/shared_widgets/bottom_nav.dart';
 class MyRouter {
   GoRouter get router => GoRouter(
     // initialLocation: "/",
-    initialLocation: "/register",
+    initialLocation: "/registerForm",
     routes: [
       ShellRoute(
         builder: (context, state, child) {
@@ -82,8 +82,8 @@ class MyRouter {
 
       // Register Form route (setelah OTP verified)
       GoRoute(
-        path: '/register-form',
-        name: 'register-form',
+        path: '/registerForm',
+        name: 'registerForm',
         pageBuilder: (context, state) {
           final phoneNumber = state.extra as String? ?? '';
 

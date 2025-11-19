@@ -40,7 +40,7 @@ class RegisterUserEvent extends AuthEvent {
   final String phone;
   final String firstName;
   final String lastName;
-  final String? username;
+  final String username;
   final String email;
   final String password;
   final String gender;
@@ -51,7 +51,7 @@ class RegisterUserEvent extends AuthEvent {
     required this.phone,
     required this.firstName,
     required this.lastName,
-    this.username,
+    required this.username,
     required this.email,
     required this.password,
     required this.gender,
@@ -61,16 +61,16 @@ class RegisterUserEvent extends AuthEvent {
 
   @override
   List<Object?> get props => [
-        phone,
-        firstName,
-        lastName,
-        username,
-        email,
-        password,
-        gender,
-        dateOfBirth,
-        birthPlace,
-      ];
+    phone,
+    firstName,
+    lastName,
+    username,
+    email,
+    password,
+    gender,
+    dateOfBirth,
+    birthPlace,
+  ];
 }
 
 class ResetAuthEvent extends AuthEvent {}

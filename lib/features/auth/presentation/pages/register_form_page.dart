@@ -11,12 +11,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 
 class RegisterFormPage extends StatefulWidget {
   final String phoneNumber;
 
   const RegisterFormPage({Key? key, required this.phoneNumber})
-      : super(key: key);
+    : super(key: key);
 
   @override
   State<RegisterFormPage> createState() => _RegisterFormPageState();
@@ -44,12 +46,40 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
   bool _obscureConfirmPassword = true;
   bool _isNavigating = false;
 
+  Widget _buildResponsivePair(
+    Widget left,
+    Widget right, {
+    double spacing = 12,
+  }) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Anda bisa tweak breakpoint ini (600 = tablet-ish)
+        const double breakpoint = 440;
+        if (constraints.maxWidth >= breakpoint) {
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Left field
+              Expanded(child: left),
+              SizedBox(width: spacing),
+              // Right field
+              Expanded(child: right),
+            ],
+          );
+        } else {
+          // Narrow screen: tumpuk vertikal (mirip behavior sebelumnya)
+          return Column(children: [left, SizedBox(height: 12), right]);
+        }
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
     _firstNameController.addListener(_updateFullName);
     _lastNameController.addListener(_updateFullName);
-    
+
     // Add listener untuk real-time password validation UI
     _passwordController.addListener(() {
       setState(() {}); // Rebuild untuk update password requirements
@@ -59,7 +89,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
   void _updateFullName() {
     final firstName = _firstNameController.text.trim();
     final lastName = _lastNameController.text.trim();
-    
+
     // Auto-generate full name (real-time, tidak di-capitalize di UI)
     if (firstName.isNotEmpty || lastName.isNotEmpty) {
       _fullNameController.text = '$firstName $lastName'.trim();
@@ -71,10 +101,15 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
   // Helper: Capitalize each word (untuk save ke DB)
   String _capitalizeWords(String text) {
     if (text.isEmpty) return text;
-    
-    return text.trim().split(' ').where((word) => word.isNotEmpty).map((word) {
-      return word[0].toUpperCase() + word.substring(1).toLowerCase();
-    }).join(' ');
+
+    return text
+        .trim()
+        .split(' ')
+        .where((word) => word.isNotEmpty)
+        .map((word) {
+          return word[0].toUpperCase() + word.substring(1).toLowerCase();
+        })
+        .join(' ');
   }
 
   // Helper: Trim dan remove multiple spaces
@@ -152,15 +187,15 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
     if (value.length < 6) {
       return 'Kata sandi minimal 6 karakter';
     }
-    
+
     // Check if contains at least 1 digit OR 1 special character
     final hasDigit = value.contains(RegExp(r'[0-9]'));
     final hasSpecialChar = value.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
-    
+
     if (!hasDigit && !hasSpecialChar) {
       return 'Kata sandi harus mengandung minimal 1 angka atau simbol';
     }
-    
+
     return null;
   }
 
@@ -176,32 +211,67 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
 
   // Date Picker
   Future<void> _selectBirthDate() async {
-    final DateTime? picked = await showDatePicker(
+    final DateTime initial = _selectedDate ?? DateTime(2000);
+    DateTime tempPicked = initial;
+
+    await showCupertinoModalPopup(
       context: context,
-      initialDate: DateTime(2000),
-      firstDate: DateTime(1950),
-      lastDate: DateTime.now(),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
-              primary: AppColors.primaryColor,
-              onPrimary: Colors.white,
-              surface: Colors.white,
-              onSurface: Colors.black,
-            ),
+      builder: (context) {
+        return Container(
+          height: 320,
+          color: Colors.white,
+          child: Column(
+            children: [
+              // Toolbar dengan tombol "Batal" dan "Selesai"
+              SizedBox(
+                height: 44,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    CupertinoButton(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: const Text('Batal'),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                    CupertinoButton(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: const Text('Selesai'),
+                      onPressed: () {
+                        setState(() {
+                          _selectedDate = tempPicked;
+                          _birthDateController.text = DateFormat(
+                            'dd/MM/yyyy',
+                          ).format(_selectedDate!);
+                        });
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                ),
+              ),
+
+              // Divider tipis
+              const Divider(height: 1),
+
+              // CupertinoDatePicker
+              Expanded(
+                child: CupertinoDatePicker(
+                  mode: CupertinoDatePickerMode.date,
+                  initialDateTime: initial,
+                  minimumDate: DateTime(1950),
+                  maximumDate: DateTime.now(),
+                  use24hFormat: true,
+                  onDateTimeChanged: (DateTime picked) {
+                    // Simpan sementara; hanya dipakai saat user tekan "Selesai"
+                    tempPicked = picked;
+                  },
+                ),
+              ),
+            ],
           ),
-          child: child!,
         );
       },
     );
-
-    if (picked != null && picked != _selectedDate) {
-      setState(() {
-        _selectedDate = picked;
-        _birthDateController.text = DateFormat('dd/MM/yyyy').format(picked);
-      });
-    }
   }
 
   // Submit Form
@@ -221,7 +291,9 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
       final firstName = _capitalizeWords(_cleanText(_firstNameController.text));
       final lastName = _capitalizeWords(_cleanText(_lastNameController.text));
       final fullName = '$firstName $lastName'.trim();
-      final birthPlace = _capitalizeWords(_cleanText(_birthPlaceController.text));
+      final birthPlace = _capitalizeWords(
+        _cleanText(_birthPlaceController.text),
+      );
       final email = _cleanText(_emailController.text).toLowerCase();
       final username = _usernameController.text.trim().isEmpty
           ? null
@@ -240,18 +312,18 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
 
       // Register user
       context.read<AuthBloc>().add(
-            RegisterUserEvent(
-              phone: widget.phoneNumber,
-              firstName: firstName,
-              lastName: lastName,
-              username: username,
-              email: email,
-              dateOfBirth: _birthDateController.text,
-              birthPlace: birthPlace,
-              gender: _selectedGender!,
-              password: _passwordController.text,
-            ),
-          );
+        RegisterUserEvent(
+          phone: widget.phoneNumber,
+          firstName: firstName,
+          lastName: lastName,
+          username: username ?? '',
+          email: email,
+          dateOfBirth: _birthDateController.text,
+          birthPlace: birthPlace,
+          gender: _selectedGender!,
+          password: _passwordController.text,
+        ),
+      );
     }
   }
 
@@ -270,8 +342,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
           leading: Padding(
             padding: const EdgeInsets.only(top: 20),
             child: IconButton(
-              icon:
-                  const Icon(FontAwesomeIcons.arrowLeft, color: Colors.white),
+              icon: const Icon(FontAwesomeIcons.arrowLeft, color: Colors.white),
               onPressed: () {
                 if (!_isNavigating) {
                   context.pop();
@@ -357,14 +428,18 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                           children: const [
                             Row(
                               children: [
-                                Icon(Icons.check_circle_outline,
-                                    color: Colors.green, size: 20),
+                                Icon(
+                                  Icons.check_circle_outline,
+                                  color: Colors.green,
+                                  size: 20,
+                                ),
                                 SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
                                     'JSON otomatis tersalin ke clipboard',
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -372,14 +447,18 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                             SizedBox(height: 8),
                             Row(
                               children: [
-                                Icon(Icons.check_circle_outline,
-                                    color: Colors.green, size: 20),
+                                Icon(
+                                  Icons.check_circle_outline,
+                                  color: Colors.green,
+                                  size: 20,
+                                ),
                                 SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
                                     'Data tersimpan di assets/data/users.json',
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -449,7 +528,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                   child: Column(
                     children: [
                       const SizedBox(height: 10),
-                      
+
                       // Info Card
                       Container(
                         padding: const EdgeInsets.all(12),
@@ -460,33 +539,42 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                         ),
                         child: Row(
                           children: const [
-                            Icon(Icons.info_outline, color: Colors.blue, size: 20),
+                            Icon(
+                              Icons.info_outline,
+                              color: Colors.blue,
+                              size: 20,
+                            ),
                             SizedBox(width: 8),
                             Expanded(
                               child: Text(
                                 'Nama dan tempat lahir akan otomatis dikapitalkan saat disimpan',
-                                style: TextStyle(fontSize: 12, color: Colors.blue),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.blue,
+                                ),
                               ),
                             ),
                           ],
                         ),
                       ),
-                      
-                      const SizedBox(height: 16),
-                      
-                      _buildTextField(
-                        controller: _firstNameController,
-                        label: 'Nama Depan',
-                        hint: 'Masukkan nama depan',
-                        validator: _validateName,
+
+                      const SizedBox(height: 10),
+
+                      _buildResponsivePair(
+                        _buildTextField(
+                          controller: _firstNameController,
+                          label: 'Nama Depan',
+                          hint: 'Masukkan nama depan',
+                          validator: _validateName,
+                        ),
+                        _buildTextField(
+                          controller: _lastNameController,
+                          label: 'Nama Belakang',
+                          hint: 'Masukkan nama belakang',
+                          validator: _validateName,
+                        ),
                       ),
-                      _buildTextField(
-                        controller: _lastNameController,
-                        label: 'Nama Belakang',
-                        hint: 'Masukkan nama belakang',
-                        validator: _validateName,
-                      ),
-                      
+
                       // Full Name (Read Only - Auto Generated)
                       _buildTextField(
                         controller: _fullNameController,
@@ -495,25 +583,29 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                         readOnly: true,
                         enabled: false,
                       ),
-                      
+
                       _buildTextField(
                         controller: _usernameController,
-                        label: 'Username (Opsional)',
+                        label: 'Username',
                         hint: 'Masukkan username',
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 10),
                       _buildGenderDropdown(),
-                      const SizedBox(height: 16),
-                      _buildTextField(
-                        controller: _birthPlaceController,
-                        label: 'Tempat Lahir',
-                        hint: 'Masukkan tempat lahir',
-                        validator: (value) =>
-                            _validateRequired(value, 'Tempat lahir'),
+                      const SizedBox(height: 10),
+
+                      _buildResponsivePair(
+                        _buildTextField(
+                          controller: _birthPlaceController,
+                          label: 'Tempat Lahir',
+                          hint: 'Masukkan tempat lahir',
+                          validator: (value) =>
+                              _validateRequired(value, 'Tempat lahir'),
+                        ),
+                        // Gunakan _buildDateField() yang ada sekarang (readOnly + onTap ke date picker)
+                        _buildDateField(),
                       ),
-                      const SizedBox(height: 16),
-                      _buildDateField(),
-                      const SizedBox(height: 16),
+
+                      const SizedBox(height: 10),
                       _buildTextField(
                         controller: _emailController,
                         label: 'Email',
@@ -521,34 +613,37 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                         keyboardType: TextInputType.emailAddress,
                         validator: _validateEmail,
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 10),
                       _buildTextField(
-                        controller:
-                            TextEditingController(text: widget.phoneNumber),
+                        controller: TextEditingController(
+                          text: widget.phoneNumber,
+                        ),
                         label: 'Nomor Telepon',
                         readOnly: true,
                         enabled: false,
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 10),
                       _buildPasswordField(
                         controller: _passwordController,
                         label: 'Kata Sandi',
-                        hint: 'Min. 6 karakter + 1 angka/simbol',
+                        hint: 'Masukkan kata sandi',
                         obscureText: _obscurePassword,
                         onToggle: () {
                           setState(() => _obscurePassword = !_obscurePassword);
                         },
                         validator: _validatePassword,
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 10),
                       _buildPasswordField(
                         controller: _confirmPasswordController,
                         label: 'Konfirmasi Kata Sandi',
                         hint: 'Masukkan ulang kata sandi',
                         obscureText: _obscureConfirmPassword,
                         onToggle: () {
-                          setState(() =>
-                              _obscureConfirmPassword = !_obscureConfirmPassword);
+                          setState(
+                            () => _obscureConfirmPassword =
+                                !_obscureConfirmPassword,
+                          );
                         },
                         validator: _validateConfirmPassword,
                       ),
@@ -611,7 +706,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
     bool enabled = true,
   }) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.only(bottom: 10),
       child: TextFormField(
         controller: controller,
         keyboardType: keyboardType,
@@ -644,13 +739,17 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
           ),
           errorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
-            borderSide:
-                const BorderSide(color: AppColors.primaryColor, width: 2),
+            borderSide: const BorderSide(
+              color: AppColors.primaryColor,
+              width: 2,
+            ),
           ),
           focusedErrorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
-            borderSide:
-                const BorderSide(color: AppColors.primaryColor, width: 2),
+            borderSide: const BorderSide(
+              color: AppColors.primaryColor,
+              width: 2,
+            ),
           ),
         ),
       ),
@@ -680,7 +779,10 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
               fontWeight: FontWeight.w500,
               fontSize: 16,
             ),
-            hintStyle: const TextStyle(color: AppColors.grayColor, fontSize: 14),
+            hintStyle: const TextStyle(
+              color: AppColors.grayColor,
+              fontSize: 14,
+            ),
             suffixIcon: IconButton(
               icon: Icon(
                 obscureText ? Icons.visibility_off : Icons.visibility,
@@ -699,11 +801,17 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(color: AppColors.primaryColor, width: 2),
+              borderSide: const BorderSide(
+                color: AppColors.primaryColor,
+                width: 2,
+              ),
             ),
             focusedErrorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(color: AppColors.primaryColor, width: 2),
+              borderSide: const BorderSide(
+                color: AppColors.primaryColor,
+                width: 2,
+              ),
             ),
           ),
         ),
@@ -719,7 +827,9 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                 ),
                 _buildPasswordRequirement(
                   'Mengandung angka atau simbol',
-                  controller.text.contains(RegExp(r'[0-9!@#$%^&*(),.?":{}|<>]')),
+                  controller.text.contains(
+                    RegExp(r'[0-9!@#$%^&*(),.?":{}|<>]'),
+                  ),
                 ),
               ],
             ),
@@ -762,8 +872,10 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
           fontWeight: FontWeight.w500,
           fontSize: 16,
         ),
-        suffixIcon:
-            const Icon(Icons.calendar_today, color: AppColors.grayColor),
+        suffixIcon: const Icon(
+          Icons.calendar_today,
+          color: AppColors.grayColor,
+        ),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
@@ -782,8 +894,11 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
   }
 
   Widget _buildGenderDropdown() {
-    return DropdownButtonFormField<String>(
+    return DropdownButtonFormField2<String>(
       value: _selectedGender,
+      isExpanded: true,
+
+      // === styling form (tetap full) ===
       decoration: InputDecoration(
         labelText: 'Jenis Kelamin',
         labelStyle: const TextStyle(
@@ -802,16 +917,47 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: AppColors.primaryColor, width: 2),
+          borderSide: const BorderSide(color: Colors.red, width: 2),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: Colors.red, width: 2),
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 12,
+          vertical: 10,
         ),
       ),
+
+      // hint: const Text('Pilih jenis kelamin'),
       items: const [
         DropdownMenuItem(value: 'Laki-laki', child: Text('Laki-laki')),
         DropdownMenuItem(value: 'Perempuan', child: Text('Perempuan')),
       ],
-      onChanged: (value) => setState(() => _selectedGender = value),
-      validator: (value) =>
-          value == null ? 'Jenis kelamin tidak boleh kosong' : null,
+
+      onChanged: (value) {
+        setState(() {
+          _selectedGender = value;
+        });
+      },
+
+      validator: (value) {
+        if (value == null) return 'Jenis kelamin tidak boleh kosong';
+        return null;
+      },
+
+      // === bagian penting: atur ukuran popup dropdown ===
+      dropdownStyleData: DropdownStyleData(
+        // lebar popup (misal 260 px atau 70% layar)
+        width: 260,
+        // atau pakai maxWidth kalau mau adaptif:
+        // maxWidth: 280,
+        padding: const EdgeInsets.symmetric(vertical: 4),
+      ),
+
+      menuItemStyleData: const MenuItemStyleData(height: 48),
+
+      iconStyleData: const IconStyleData(icon: Icon(Icons.keyboard_arrow_down)),
     );
   }
 }

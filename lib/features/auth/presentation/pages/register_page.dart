@@ -189,7 +189,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         ],
                         decoration: InputDecoration(
                           labelText: 'Nomor Hp',
-                          hintText: 'Contoh: 081234567890',
+                          hintText: 'Contoh: 0812xxx atau 62812xxxx',
                           labelStyle: const TextStyle(
                             color: AppColors.grayColor,
                             fontWeight: FontWeight.w500,

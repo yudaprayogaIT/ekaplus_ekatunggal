@@ -18,7 +18,7 @@ class RegisterUserParams {
   final String phone;
   final String firstName;
   final String lastName;
-  final String? username;
+  final String username;
   final String email;
   final String password;
   final String gender;
@@ -29,7 +29,7 @@ class RegisterUserParams {
     required this.phone,
     required this.firstName,
     required this.lastName,
-    this.username,
+    required this.username,
     required this.email,
     required this.password,
     required this.gender,
