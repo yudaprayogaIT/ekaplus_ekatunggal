@@ -4,26 +4,24 @@ import 'package:equatable/equatable.dart';
 class User extends Equatable {
   final String id;
   final String phone;
-  final String? name;
-  final String? email;
-  final String? birthDate;
-  final String? birthPlace;
-  final String? password;
-  final String status; // 'pending', 'active', 'inactive'
+  final String name;
+  final String email;
+  final String birthDate;
+  final String birthPlace;
+  final String password;
+  final String status;
   final DateTime createdAt;
-  final DateTime? updatedAt;
 
   const User({
     required this.id,
     required this.phone,
-    this.name,
-    this.email,
-    this.birthDate,
-    this.birthPlace,
-    this.password,
+    required this.name,
+    required this.email,
+    required this.birthDate,
+    required this.birthPlace,
+    required this.password,
     required this.status,
     required this.createdAt,
-    this.updatedAt,
   });
 
   @override
@@ -37,6 +35,5 @@ class User extends Equatable {
         password,
         status,
         createdAt,
-        updatedAt,
       ];
 }

@@ -185,6 +185,39 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
     }
   }
 
+  // ============================================
+  // NEW: Save to assets/data/users.json
+  // Untuk development dan testing
+  // ============================================
+  Future<void> _saveToJsonFile(List<UserModel> users) async {
+    try {
+      // Path ke file JSON di project root (untuk development)
+      final projectPath = Directory.current.path;
+      final jsonFile = File('$projectPath/assets/data/users.json');
+
+      // Buat folder jika belum ada
+      await jsonFile.parent.create(recursive: true);
+
+      // Convert users to JSON dengan last_updated timestamp
+      final jsonData = {
+        'users': users.map((u) => u.toJson()).toList(),
+        'last_updated': DateTime.now().toIso8601String(),
+      };
+
+      // Write to file dengan pretty print (indented)
+      const encoder = JsonEncoder.withIndent('  ');
+      final prettyJson = encoder.convert(jsonData);
+      await jsonFile.writeAsString(prettyJson);
+
+      print('💾 Users saved to: ${jsonFile.path}');
+      print('📊 Total users: ${users.length}');
+    } catch (e) {
+      print('⚠️ Could not save to JSON file: $e');
+      // Tidak throw error karena ini optional untuk development
+      // App tetap jalan walau gagal save ke JSON file
+    }
+  }
+
   // ---------- Public API implementations ----------
   @override
   Future<bool> checkPhoneExists(String phone) async {
@@ -300,6 +333,12 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
         print('✅ New user saved: ${user.phone}');
       }
       await _writeUsersToPrefs(users);
+
+      // ============================================
+      // SAVE TO JSON FILE untuk development/testing
+      // ============================================
+      await _saveToJsonFile(users);
+
       return user;
     } else {
       final users = await _readUsersFromFile();
@@ -312,6 +351,12 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
         print('✅ New user saved: ${user.phone}');
       }
       await _writeUsersToFile(users);
+
+      // ============================================
+      // SAVE TO JSON FILE untuk development/testing
+      // ============================================
+      await _saveToJsonFile(users);
+
       return user;
     }
   }

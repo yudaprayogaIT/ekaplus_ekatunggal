@@ -194,12 +194,8 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
               if (!mounted) return;
               _isNavigating = false;
 
-              // TODO: Ganti dengan route yang sesuai
-              // Misalnya ke halaman form registrasi lengkap
-              // context.push('/register-form', extra: widget.phoneNumber);
-
-              // Atau langsung ke home jika sudah terdaftar
-              context.go('/home');
+              // Navigate ke Register Form
+              context.push('/register-form', extra: widget.phoneNumber);
             });
           } else if (state is OtpVerificationError) {
             print('❌ OTP Verification Failed: ${state.message}');

@@ -24,8 +24,8 @@ import 'package:ekaplus_ekatunggal/core/shared_widgets/bottom_nav.dart';
 
 class MyRouter {
   GoRouter get router => GoRouter(
-    // initialLocation: "/",
-    initialLocation: "/otp",
+    initialLocation: "/",
+    // initialLocation: "/register",
     routes: [
       ShellRoute(
         builder: (context, state, child) {
@@ -56,10 +56,14 @@ class MyRouter {
       ),
 
       // Routes tanpa bottom nav
+      // ============================================
+      // AUTH ROUTES
+      // ============================================
       GoRoute(
         path: '/register',
         name: 'register',
-        builder: (context, state) => const RegisterPage(),
+        pageBuilder: (context, state) =>
+            MaterialPage(key: state.pageKey, child: const RegisterPage()),
       ),
 
       GoRoute(
@@ -68,6 +72,7 @@ class MyRouter {
         pageBuilder: (context, state) {
           // Get phone number from extra
           final phoneNumber = state.extra as String? ?? '';
+
           return MaterialPage(
             key: state.pageKey,
             child: OtpVerificationPage(phoneNumber: phoneNumber),
@@ -75,12 +80,17 @@ class MyRouter {
         },
       ),
 
+      // Register Form route (setelah OTP verified)
       GoRoute(
         path: '/register-form',
         name: 'register-form',
-        builder: (context, state) {
-          final phone = state.extra as String?;
-          return RegisterFormPage(phone: phone);
+        pageBuilder: (context, state) {
+          final phoneNumber = state.extra as String? ?? '';
+
+          return MaterialPage(
+            key: state.pageKey,
+            child: RegisterFormPage(phoneNumber: phoneNumber),
+          );
         },
       ),
 

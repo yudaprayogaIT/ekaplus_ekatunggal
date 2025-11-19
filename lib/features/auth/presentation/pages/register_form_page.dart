@@ -1,15 +1,22 @@
 // lib/features/auth/presentation/pages/register_form_page.dart
+import 'package:ekaplus_ekatunggal/constant.dart';
 import 'package:ekaplus_ekatunggal/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:ekaplus_ekatunggal/features/auth/presentation/bloc/auth_event.dart';
 import 'package:ekaplus_ekatunggal/features/auth/presentation/bloc/auth_state.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 class RegisterFormPage extends StatefulWidget {
-  final String? phone;
+  final String phoneNumber;
 
-  const RegisterFormPage({super.key, this.phone});
+  const RegisterFormPage({
+    Key? key,
+    required this.phoneNumber,
+  }) : super(key: key);
 
   @override
   State<RegisterFormPage> createState() => _RegisterFormPageState();
@@ -17,60 +24,35 @@ class RegisterFormPage extends StatefulWidget {
 
 class _RegisterFormPageState extends State<RegisterFormPage> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _birthPlaceController = TextEditingController();
-  final _birthDateController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
 
+  // Controllers
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _birthPlaceController = TextEditingController();
+  final TextEditingController _birthDateController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
+
+  // State
+  String? _selectedGender;
+  DateTime? _selectedDate;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
-  String? _phone;
-
-  @override
-  void initState() {
-    super.initState();
-    _phone = widget.phone;
-  }
+  bool _isNavigating = false;
 
   @override
   void dispose() {
     _nameController.dispose();
-    _passwordController.dispose();
+    _emailController.dispose();
     _birthPlaceController.dispose();
     _birthDateController.dispose();
-    _emailController.dispose();
+    _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
   }
 
-  Future<void> _selectDate() async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now().subtract(const Duration(days: 365 * 17)),
-      firstDate: DateTime(1950),
-      lastDate: DateTime.now(),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: Color(0xFFB11F23),
-            ),
-          ),
-          child: child!,
-        );
-      },
-    );
-
-    if (picked != null) {
-      setState(() {
-        _birthDateController.text =
-            '${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}';
-      });
-    }
-  }
-
+  // Validators
   String? _validateName(String? value) {
     if (value == null || value.isEmpty) {
       return 'Nama tidak boleh kosong';
@@ -92,55 +74,88 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
     return null;
   }
 
-  String? _validateBirthPlace(String? value) {
+  String? _validateRequired(String? value, String fieldName) {
     if (value == null || value.isEmpty) {
-      return 'Tempat lahir tidak boleh kosong';
-    }
-    return null;
-  }
-
-  String? _validateBirthDate(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Tanggal lahir tidak boleh kosong';
+      return '$fieldName tidak boleh kosong';
     }
     return null;
   }
 
   String? _validatePassword(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Password tidak boleh kosong';
+      return 'Kata sandi tidak boleh kosong';
     }
     if (value.length < 6) {
-      return 'Password minimal 6 karakter';
+      return 'Kata sandi minimal 6 karakter';
     }
     return null;
   }
 
   String? _validateConfirmPassword(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Konfirmasi password tidak boleh kosong';
+      return 'Konfirmasi kata sandi tidak boleh kosong';
     }
     if (value != _passwordController.text) {
-      return 'Password tidak cocok';
+      return 'Kata sandi tidak sama';
     }
     return null;
   }
 
-  void _onSubmit() {
+  // Date Picker
+  Future<void> _selectBirthDate() async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime(2000),
+      firstDate: DateTime(1950),
+      lastDate: DateTime.now(),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary: AppColors.primaryColor,
+              onPrimary: Colors.white,
+              surface: Colors.white,
+              onSurface: Colors.black,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (picked != null && picked != _selectedDate) {
+      setState(() {
+        _selectedDate = picked;
+        _birthDateController.text = DateFormat('dd/MM/yyyy').format(picked);
+      });
+    }
+  }
+
+  // Submit Form
+  void _submitForm() {
     if (_formKey.currentState!.validate()) {
-      if (_phone == null || _phone!.isEmpty) {
+      if (_selectedGender == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Nomor telepon tidak tersedia'),
-            backgroundColor: Colors.red,
+            content: Text('Silakan pilih jenis kelamin'),
+            backgroundColor: AppColors.primaryColor,
           ),
         );
         return;
       }
 
+      print('📝 Registering user...');
+      print('Phone: ${widget.phoneNumber}');
+      print('Name: ${_nameController.text}');
+      print('Email: ${_emailController.text}');
+      print('Birth Place: ${_birthPlaceController.text}');
+      print('Birth Date: ${_birthDateController.text}');
+      print('Gender: $_selectedGender');
+
+      // Register user
       context.read<AuthBloc>().add(
             RegisterUserEvent(
-              phone: _phone!,
+              phone: widget.phoneNumber,
               name: _nameController.text.trim(),
               email: _emailController.text.trim(),
               birthDate: _birthDateController.text,
@@ -153,299 +168,235 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
 
   @override
   Widget build(BuildContext context) {
-    final primaryColor = const Color(0xFFB11F23);
+    final primaryColor = AppColors.primaryColor;
     final yellowColor = const Color(0xFFFDD100);
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: primaryColor,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => context.pop(),
+      backgroundColor: Colors.white,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(153),
+        child: AppBar(
+          backgroundColor: primaryColor,
+          elevation: 0,
+          leading: Padding(
+            padding: const EdgeInsets.only(top: 20),
+            child: IconButton(
+              icon: const Icon(
+                FontAwesomeIcons.arrowLeft,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                if (!_isNavigating) {
+                  context.pop();
+                }
+              },
+            ),
+          ),
+          flexibleSpace: SafeArea(
+            child: Align(
+              alignment: Alignment.bottomLeft,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 70, 20, 30),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const [
+                    Text(
+                      'Daftar',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      'Lengkapi Profil Anda',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
         ),
       ),
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is RegisterSuccess) {
-            showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (ctx) {
-                return Dialog(
-                  backgroundColor: Colors.transparent,
-                  child: Center(
-                    child: Card(
-                      elevation: 6,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 24.0,
-                          vertical: 28.0,
-                        ),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.check_circle,
-                              color: Color(0xFFB11F23),
-                              size: 64,
-                            ),
-                            SizedBox(height: 12),
-                            Text(
-                              'Akun Berhasil Dibuat',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                              textAlign: TextAlign.center,
-                            ),
-                            SizedBox(height: 8),
-                            Text(
-                              'Silakan login dengan akun Anda',
-                              style: TextStyle(fontSize: 12),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              },
+            if (_isNavigating) return;
+            _isNavigating = true;
+
+            print('✅ Registration Success!');
+
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('✅ Pendaftaran berhasil!'),
+                backgroundColor: Colors.green,
+              ),
             );
 
-            Future.delayed(const Duration(seconds: 2), () {
+            // Navigate to login or home
+            Future.delayed(const Duration(milliseconds: 500), () {
               if (!mounted) return;
-              Navigator.of(context, rootNavigator: true).pop();
-              context.go('/login');
+              _isNavigating = false;
+
+              // Navigate to login page
+              context.go('/home');
             });
           } else if (state is RegisterError) {
+            print('❌ Registration Error: ${state.message}');
+
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
-                backgroundColor: Colors.red,
+                backgroundColor: AppColors.primaryColor,
               ),
             );
           }
         },
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              width: double.infinity,
-              color: primaryColor,
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-              child: const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Lengkapi Profil Anda',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 4),
-                  Text(
-                    'Isi data diri untuk menyelesaikan pendaftaran',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w500,
-                      fontSize: 14,
-                    ),
-                  ),
-                  SizedBox(height: 15),
-                ],
-              ),
-            ),
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(20),
                 child: Form(
                   key: _formKey,
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Nama',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      TextFormField(
+                      const SizedBox(height: 10),
+
+                      // Nama
+                      _buildTextField(
                         controller: _nameController,
-                        decoration: InputDecoration(
-                          hintText: 'Masukkan nama lengkap',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
+                        label: 'Nama',
+                        hint: 'Masukkan nama lengkap',
                         validator: _validateName,
                       ),
+
                       const SizedBox(height: 16),
-                      const Text(
-                        'Email',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
+
+                      // Jenis Kelamin
+                      _buildGenderDropdown(),
+
+                      const SizedBox(height: 16),
+
+                      // Tempat Lahir
+                      _buildTextField(
+                        controller: _birthPlaceController,
+                        label: 'Tempat Lahir',
+                        hint: 'Masukkan tempat lahir',
+                        validator: (value) =>
+                            _validateRequired(value, 'Tempat lahir'),
                       ),
-                      const SizedBox(height: 8),
-                      TextFormField(
+
+                      const SizedBox(height: 16),
+
+                      // Tanggal Lahir
+                      _buildDateField(),
+
+                      const SizedBox(height: 16),
+
+                      // Email
+                      _buildTextField(
                         controller: _emailController,
+                        label: 'Email',
+                        hint: 'Masukkan email',
                         keyboardType: TextInputType.emailAddress,
-                        decoration: InputDecoration(
-                          hintText: 'contoh@email.com',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
                         validator: _validateEmail,
                       ),
+
                       const SizedBox(height: 16),
-                      const Text(
-                        'Tempat Lahir',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
+
+                      // Phone (Read Only)
+                      _buildTextField(
+                        controller: TextEditingController(
+                          text: widget.phoneNumber,
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      TextFormField(
-                        controller: _birthPlaceController,
-                        decoration: InputDecoration(
-                          hintText: 'Contoh: Jakarta',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        validator: _validateBirthPlace,
-                      ),
-                      const SizedBox(height: 16),
-                      const Text(
-                        'Tanggal Lahir',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      TextFormField(
-                        controller: _birthDateController,
+                        label: 'Nomor Telepon',
                         readOnly: true,
-                        onTap: _selectDate,
-                        decoration: InputDecoration(
-                          hintText: 'DD/MM/YYYY',
-                          suffixIcon: const Icon(Icons.calendar_today),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        validator: _validateBirthDate,
+                        enabled: false,
                       ),
+
                       const SizedBox(height: 16),
-                      const Text(
-                        'Kata Sandi',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      TextFormField(
+
+
+                      // Kata Sandi
+                      _buildPasswordField(
                         controller: _passwordController,
+                        label: 'Kata Sandi',
+                        hint: 'Masukkan kata sandi',
                         obscureText: _obscurePassword,
-                        decoration: InputDecoration(
-                          hintText: 'Minimal 6 karakter',
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _obscurePassword
-                                  ? Icons.visibility_off
-                                  : Icons.visibility,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _obscurePassword = !_obscurePassword;
-                              });
-                            },
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
+                        onToggle: () {
+                          setState(() {
+                            _obscurePassword = !_obscurePassword;
+                          });
+                        },
                         validator: _validatePassword,
                       ),
+
                       const SizedBox(height: 16),
-                      const Text(
-                        'Konfirmasi Kata Sandi',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      TextFormField(
+
+                      // Konfirmasi Kata Sandi
+                      _buildPasswordField(
                         controller: _confirmPasswordController,
+                        label: 'Konfirmasi Kata Sandi',
+                        hint: 'Masukkan ulang kata sandi',
                         obscureText: _obscureConfirmPassword,
-                        decoration: InputDecoration(
-                          hintText: 'Ulangi kata sandi',
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _obscureConfirmPassword
-                                  ? Icons.visibility_off
-                                  : Icons.visibility,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _obscureConfirmPassword =
-                                    !_obscureConfirmPassword;
-                              });
-                            },
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
+                        onToggle: () {
+                          setState(() {
+                            _obscureConfirmPassword = !_obscureConfirmPassword;
+                          });
+                        },
                         validator: _validateConfirmPassword,
                       ),
-                      const SizedBox(height: 24),
+
+                      const SizedBox(height: 32),
+
+                      // Submit Button
                       BlocBuilder<AuthBloc, AuthState>(
                         builder: (context, state) {
                           final isLoading = state is AuthLoading;
 
                           return ElevatedButton(
-                            onPressed: isLoading ? null : _onSubmit,
+                            onPressed: (isLoading || _isNavigating)
+                                ? null
+                                : _submitForm,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: yellowColor,
                               foregroundColor: Colors.black,
-                              minimumSize: const Size(double.infinity, 50),
+                              disabledBackgroundColor: Colors.grey[300],
+                              minimumSize: const Size(double.infinity, 56),
+                              elevation: 0,
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
+                                borderRadius: BorderRadius.circular(10),
                               ),
                             ),
                             child: isLoading
                                 ? const SizedBox(
-                                    width: 20,
-                                    height: 20,
+                                    height: 24,
+                                    width: 24,
                                     child: CircularProgressIndicator(
+                                      strokeWidth: 2.5,
                                       color: Colors.black,
-                                      strokeWidth: 2,
                                     ),
                                   )
                                 : const Text(
                                     'Simpan & Daftar',
                                     style: TextStyle(
-                                      fontWeight: FontWeight.w600,
                                       fontSize: 16,
+                                      fontWeight: FontWeight.w600,
                                     ),
                                   ),
                           );
                         },
                       ),
-                      const SizedBox(height: 16),
+
+                      const SizedBox(height: 20),
                     ],
                   ),
                 ),
@@ -454,6 +405,237 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
           ],
         ),
       ),
+    );
+  }
+
+  // Reusable TextField Widget
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    String? hint,
+    TextInputType? keyboardType,
+    String? Function(String?)? validator,
+    bool readOnly = false,
+    bool enabled = true,
+    Widget? suffixIcon,
+  }) {
+    return TextFormField(
+      controller: controller,
+      keyboardType: keyboardType,
+      validator: validator,
+      readOnly: readOnly,
+      enabled: enabled,
+      decoration: InputDecoration(
+        labelText: label,
+        hintText: hint,
+        labelStyle: const TextStyle(
+          color: AppColors.grayColor,
+          fontWeight: FontWeight.w500,
+          fontSize: 16,
+        ),
+        hintStyle: const TextStyle(
+          color: AppColors.grayColor,
+          fontSize: 14,
+        ),
+        suffixIcon: suffixIcon,
+        filled: true,
+        fillColor: enabled ? Colors.white : Colors.grey[200],
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: AppColors.grayColor),
+        ),
+        disabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(color: Colors.grey[300]!),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(
+            color: Color(0xFF2196F3),
+            width: 2,
+          ),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(
+            color: AppColors.primaryColor,
+            width: 2,
+          ),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(
+            color: AppColors.primaryColor,
+            width: 2,
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Password Field Widget
+  Widget _buildPasswordField({
+    required TextEditingController controller,
+    required String label,
+    required String hint,
+    required bool obscureText,
+    required VoidCallback onToggle,
+    String? Function(String?)? validator,
+  }) {
+    return TextFormField(
+      controller: controller,
+      obscureText: obscureText,
+      validator: validator,
+      decoration: InputDecoration(
+        labelText: label,
+        hintText: hint,
+        labelStyle: const TextStyle(
+          color: AppColors.grayColor,
+          fontWeight: FontWeight.w500,
+          fontSize: 16,
+        ),
+        hintStyle: const TextStyle(
+          color: AppColors.grayColor,
+          fontSize: 14,
+        ),
+        suffixIcon: IconButton(
+          icon: Icon(
+            obscureText ? Icons.visibility_off : Icons.visibility,
+            color: AppColors.grayColor,
+          ),
+          onPressed: onToggle,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: AppColors.grayColor),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(
+            color: Color(0xFF2196F3),
+            width: 2,
+          ),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(
+            color: AppColors.primaryColor,
+            width: 2,
+          ),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(
+            color: AppColors.primaryColor,
+            width: 2,
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Date Field Widget
+  Widget _buildDateField() {
+    return TextFormField(
+      controller: _birthDateController,
+      readOnly: true,
+      onTap: _selectBirthDate,
+      validator: (value) => _validateRequired(value, 'Tanggal lahir'),
+      decoration: InputDecoration(
+        labelText: 'Tanggal Lahir',
+        hintText: 'Pilih tanggal lahir',
+        labelStyle: const TextStyle(
+          color: AppColors.grayColor,
+          fontWeight: FontWeight.w500,
+          fontSize: 16,
+        ),
+        hintStyle: const TextStyle(
+          color: AppColors.grayColor,
+          fontSize: 14,
+        ),
+        suffixIcon: const Icon(
+          Icons.calendar_today,
+          color: AppColors.grayColor,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: AppColors.grayColor),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(
+            color: Color(0xFF2196F3),
+            width: 2,
+          ),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(
+            color: AppColors.primaryColor,
+            width: 2,
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Gender Dropdown Widget
+  Widget _buildGenderDropdown() {
+    return DropdownButtonFormField<String>(
+      value: _selectedGender,
+      decoration: InputDecoration(
+        labelText: 'Jenis Kelamin',
+        labelStyle: const TextStyle(
+          color: AppColors.grayColor,
+          fontWeight: FontWeight.w500,
+          fontSize: 16,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: AppColors.grayColor),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(
+            color: Color(0xFF2196F3),
+            width: 2,
+          ),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(
+            color: AppColors.primaryColor,
+            width: 2,
+          ),
+        ),
+      ),
+      items: const [
+        DropdownMenuItem(value: 'Laki-laki', child: Text('Laki-laki')),
+        DropdownMenuItem(value: 'Perempuan', child: Text('Perempuan')),
+      ],
+      onChanged: (value) {
+        setState(() {
+          _selectedGender = value;
+        });
+      },
+      validator: (value) {
+        if (value == null) {
+          return 'Jenis kelamin tidak boleh kosong';
+        }
+        return null;
+      },
     );
   }
 }
