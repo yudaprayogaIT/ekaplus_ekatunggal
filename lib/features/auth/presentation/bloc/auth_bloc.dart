@@ -100,11 +100,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     final params = RegisterUserParams(
       phone: event.phone,
-      name: event.name,
+      firstName: event.firstName,
+      lastName: event.lastName,
+      username: event.username,
       email: event.email,
-      birthDate: event.birthDate,
-      birthPlace: event.birthPlace,
       password: event.password,
+      gender: event.gender,
+      dateOfBirth: event.dateOfBirth,
+      birthPlace: event.birthPlace,
     );
 
     final result = await registerUser(params);
@@ -115,7 +118,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(RegisterError(failure.message ?? 'Unknown error'));
       },
       (user) {
-        print('✅ Registration Success: ${user.phone} - ${user.name}');
+        print('✅ Registration Success: ${user.phone} - ${user.fullName}');
         emit(RegisterSuccess(user));
       },
     );

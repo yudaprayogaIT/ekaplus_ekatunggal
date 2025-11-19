@@ -24,8 +24,8 @@ import 'package:ekaplus_ekatunggal/core/shared_widgets/bottom_nav.dart';
 
 class MyRouter {
   GoRouter get router => GoRouter(
-    initialLocation: "/",
-    // initialLocation: "/register",
+    // initialLocation: "/",
+    initialLocation: "/register",
     routes: [
       ShellRoute(
         builder: (context, state, child) {

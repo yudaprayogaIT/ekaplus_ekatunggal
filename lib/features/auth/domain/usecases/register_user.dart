@@ -1,8 +1,8 @@
+// lib/features/auth/domain/usecases/register_user.dart
 import 'package:dartz/dartz.dart';
 import 'package:ekaplus_ekatunggal/core/error/failure.dart';
 import 'package:ekaplus_ekatunggal/features/auth/domain/entities/user.dart';
 import 'package:ekaplus_ekatunggal/features/auth/domain/repositories/auth_repository.dart';
-import 'package:equatable/equatable.dart';
 
 class RegisterUser {
   final AuthRepository repository;
@@ -10,34 +10,30 @@ class RegisterUser {
   RegisterUser(this.repository);
 
   Future<Either<Failure, User>> call(RegisterUserParams params) {
-    return repository.registerUser(
-      phone: params.phone,
-      name: params.name,
-      email: params.email,
-      birthDate: params.birthDate,
-      birthPlace: params.birthPlace,
-      password: params.password,
-    );
+    return repository.registerUser(params);
   }
 }
 
-class RegisterUserParams extends Equatable {
+class RegisterUserParams {
   final String phone;
-  final String name;
+  final String firstName;
+  final String lastName;
+  final String? username;
   final String email;
-  final String birthDate;
-  final String birthPlace;
   final String password;
+  final String gender;
+  final String dateOfBirth;
+  final String birthPlace;
 
-  const RegisterUserParams({
+  RegisterUserParams({
     required this.phone,
-    required this.name,
+    required this.firstName,
+    required this.lastName,
+    this.username,
     required this.email,
-    required this.birthDate,
-    required this.birthPlace,
     required this.password,
+    required this.gender,
+    required this.dateOfBirth,
+    required this.birthPlace,
   });
-
-  @override
-  List<Object> get props => [phone, name, email, birthDate, birthPlace, password];
 }

@@ -1,14 +1,6 @@
 // lib/features/auth/data/datasources/auth_local_datasource.dart
-import 'dart:convert';
-import 'dart:io';
 import 'dart:math';
-
-import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:flutter/services.dart' show MissingPluginException;
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart' as p;
-
+import 'package:ekaplus_ekatunggal/core/services/storage_service.dart';
 import 'package:ekaplus_ekatunggal/features/auth/data/models/otp_model.dart';
 import 'package:ekaplus_ekatunggal/features/auth/data/models/user_model.dart';
 
@@ -21,368 +13,175 @@ abstract class AuthLocalDataSource {
 }
 
 class AuthLocalDataSourceImpl implements AuthLocalDataSource {
-  final String usersFileName = 'users.json';
-  final String otpFileName = 'otp_sessions.json';
+  final StorageService _storageService = StorageService();
 
-  // key untuk SharedPreferences (fallback)
-  final String _prefsUsersKey = 'ekaplus_users_json';
-  final String _prefsOtpKey = 'ekaplus_otp_json';
+  Future<String> exportUsersAsJson() async {
+  return await _storageService.exportUsersAsJson();
+}
 
-  // Determine storage mode at runtime
-  bool? _usePrefs; // null = not initialized yet
-
-  Future<void> _ensureInit() async {
-    if (_usePrefs != null) return;
-    // If running on web, prefer SharedPreferences
-    if (kIsWeb) {
-      _usePrefs = true;
-      return;
-    }
-    try {
-      // Try to resolve application documents directory
-      final dir = await getApplicationDocumentsDirectory();
-      // if we get here without exception, use file storage
-      _usePrefs = false;
-    } on MissingPluginException catch (_) {
-      // plugin not registered (e.g., running tests or plugin not available)
-      _usePrefs = true;
-    } catch (_) {
-      // any other error -> fallback to prefs
-      _usePrefs = true;
-    }
-  }
-
-  // ---------- File helpers ----------
-  Future<Directory> _getAppDocDir() async {
-    return await getApplicationDocumentsDirectory();
-  }
-
-  Future<File> _getUsersFile() async {
-    final dir = await _getAppDocDir();
-    final path = p.join(dir.path, usersFileName);
-    final file = File(path);
-    if (!await file.exists()) {
-      await file.create(recursive: true);
-      await file.writeAsString(json.encode({'users': []}));
-    }
-    return file;
-  }
-
-  Future<File> _getOtpFile() async {
-    final dir = await _getAppDocDir();
-    final path = p.join(dir.path, otpFileName);
-    final file = File(path);
-    if (!await file.exists()) {
-      await file.create(recursive: true);
-      await file.writeAsString(json.encode({'otp_sessions': []}));
-    }
-    return file;
-  }
-
-  // ---------- SharedPreferences helpers ----------
-  Future<SharedPreferences> _prefs() async {
-    return await SharedPreferences.getInstance();
-  }
-
-  // ---------- Read / Write wrappers ----------
-  Future<List<UserModel>> _readUsersFromFile() async {
-    try {
-      final file = await _getUsersFile();
-      final contents = await file.readAsString();
-      final jsonData = json.decode(contents);
-      final List<dynamic> usersJson = jsonData['users'] ?? [];
-      return usersJson.map((e) => UserModel.fromJson(e)).toList();
-    } catch (e) {
-      print('Error reading users from file: $e');
-      return [];
-    }
-  }
-
-  Future<void> _writeUsersToFile(List<UserModel> users) async {
-    try {
-      final file = await _getUsersFile();
-      final jsonData = {'users': users.map((u) => u.toJson()).toList()};
-      await file.writeAsString(json.encode(jsonData));
-    } catch (e) {
-      print('Error writing users to file: $e');
-      rethrow;
-    }
-  }
-
-  Future<List<OtpModel>> _readOtpsFromFile() async {
-    try {
-      final file = await _getOtpFile();
-      final contents = await file.readAsString();
-      final jsonData = json.decode(contents);
-      final List<dynamic> otpJson = jsonData['otp_sessions'] ?? [];
-      return otpJson.map((e) => OtpModel.fromJson(e)).toList();
-    } catch (e) {
-      print('Error reading OTPs from file: $e');
-      return [];
-    }
-  }
-
-  Future<void> _writeOtpsToFile(List<OtpModel> sessions) async {
-    try {
-      final file = await _getOtpFile();
-      final jsonData = {
-        'otp_sessions': sessions.map((o) => o.toJson()).toList(),
-      };
-      await file.writeAsString(json.encode(jsonData));
-    } catch (e) {
-      print('Error writing OTPs to file: $e');
-      rethrow;
-    }
-  }
-
-  Future<List<UserModel>> _readUsersFromPrefs() async {
-    try {
-      final prefs = await _prefs();
-      final raw = prefs.getString(_prefsUsersKey) ?? '{"users": []}';
-      final jsonData = json.decode(raw);
-      final List<dynamic> usersJson = jsonData['users'] ?? [];
-      return usersJson.map((e) => UserModel.fromJson(e)).toList();
-    } catch (e) {
-      print('Error reading users from prefs: $e');
-      return [];
-    }
-  }
-
-  Future<void> _writeUsersToPrefs(List<UserModel> users) async {
-    try {
-      final prefs = await _prefs();
-      final jsonData = {'users': users.map((u) => u.toJson()).toList()};
-      await prefs.setString(_prefsUsersKey, json.encode(jsonData));
-    } catch (e) {
-      print('Error writing users to prefs: $e');
-      rethrow;
-    }
-  }
-
-  Future<List<OtpModel>> _readOtpsFromPrefs() async {
-    try {
-      final prefs = await _prefs();
-      final raw = prefs.getString(_prefsOtpKey) ?? '{"otp_sessions": []}';
-      final jsonData = json.decode(raw);
-      final List<dynamic> otpJson = jsonData['otp_sessions'] ?? [];
-      return otpJson.map((e) => OtpModel.fromJson(e)).toList();
-    } catch (e) {
-      print('Error reading OTPs from prefs: $e');
-      return [];
-    }
-  }
-
-  Future<void> _writeOtpsToPrefs(List<OtpModel> sessions) async {
-    try {
-      final prefs = await _prefs();
-      final jsonData = {
-        'otp_sessions': sessions.map((o) => o.toJson()).toList(),
-      };
-      await prefs.setString(_prefsOtpKey, json.encode(jsonData));
-    } catch (e) {
-      print('Error writing OTPs to prefs: $e');
-      rethrow;
-    }
-  }
-
-  // ============================================
-  // NEW: Save to assets/data/users.json
-  // Untuk development dan testing
-  // ============================================
-  Future<void> _saveToJsonFile(List<UserModel> users) async {
-    try {
-      // Path ke file JSON di project root (untuk development)
-      final projectPath = Directory.current.path;
-      final jsonFile = File('$projectPath/assets/data/users.json');
-
-      // Buat folder jika belum ada
-      await jsonFile.parent.create(recursive: true);
-
-      // Convert users to JSON dengan last_updated timestamp
-      final jsonData = {
-        'users': users.map((u) => u.toJson()).toList(),
-        'last_updated': DateTime.now().toIso8601String(),
-      };
-
-      // Write to file dengan pretty print (indented)
-      const encoder = JsonEncoder.withIndent('  ');
-      final prettyJson = encoder.convert(jsonData);
-      await jsonFile.writeAsString(prettyJson);
-
-      print('💾 Users saved to: ${jsonFile.path}');
-      print('📊 Total users: ${users.length}');
-    } catch (e) {
-      print('⚠️ Could not save to JSON file: $e');
-      // Tidak throw error karena ini optional untuk development
-      // App tetap jalan walau gagal save ke JSON file
-    }
-  }
-
-  // ---------- Public API implementations ----------
   @override
   Future<bool> checkPhoneExists(String phone) async {
     try {
-      await _ensureInit();
-      if (_usePrefs == true) {
-        final users = await _readUsersFromPrefs();
-        return users.any((u) => u.phone == phone);
-      } else {
-        final users = await _readUsersFromFile();
-        return users.any((u) => u.phone == phone);
-      }
+      final users = await _storageService.loadUsers();
+      return users.any((u) => u['phone'] == phone);
     } catch (e) {
-      print('Error checking phone exists: $e');
+      print('❌ Error checking phone exists: $e');
       return false;
     }
   }
 
   @override
   Future<String> generateOtp(String phone) async {
-    await _ensureInit();
     final random = Random();
 
-    // ============================================
-    // GENERATE 6 DIGIT OTP (100000 - 999999)
-    // ============================================
+    // Generate 6 digit OTP (100000 - 999999)
     final otp = (100000 + random.nextInt(900000)).toString();
 
-    if (_usePrefs == true) {
-      final sessions = await _readOtpsFromPrefs();
-      sessions.removeWhere((s) => s.phone == phone);
-      final newSession = OtpModel(
-        phone: phone,
-        otp: otp,
-        createdAt: DateTime.now(),
-        expiresAt: DateTime.now().add(const Duration(minutes: 5)),
-        isUsed: false,
-      );
-      sessions.add(newSession);
-      await _writeOtpsToPrefs(sessions);
-    } else {
-      final sessions = await _readOtpsFromFile();
-      sessions.removeWhere((s) => s.phone == phone);
-      final newSession = OtpModel(
-        phone: phone,
-        otp: otp,
-        createdAt: DateTime.now(),
-        expiresAt: DateTime.now().add(const Duration(minutes: 5)),
-        isUsed: false,
-      );
-      sessions.add(newSession);
-      await _writeOtpsToFile(sessions);
-    }
+    // Save OTP session
+    final otpSession = {
+      'phone': phone,
+      'otp': otp,
+      'created_at': DateTime.now().toIso8601String(),
+      'expires_at': DateTime.now()
+          .add(const Duration(minutes: 5))
+          .toIso8601String(),
+      'is_used': false,
+    };
 
-    // For dev/debugging - log 6 digit OTP
+    await _storageService.saveOtpSession(otpSession);
+
     print('✅ Generated 6-digit OTP for $phone: $otp');
     return otp;
   }
 
   @override
   Future<bool> verifyOtp(String phone, String otp) async {
-    await _ensureInit();
-
-    // ============================================
-    // Accept development OTP - 6 DIGIT: 123456
-    // ============================================
+    // Development OTP - always valid
     if (otp == '123456') {
       print('✅ Development OTP accepted: 123456');
       return true;
     }
 
-    if (_usePrefs == true) {
-      final sessions = await _readOtpsFromPrefs();
-      final idx = sessions.indexWhere(
-        (s) => s.phone == phone && s.otp == otp && s.isValid,
+    try {
+      final sessions = await _storageService.loadOtpSessions();
+      
+      final session = sessions.firstWhere(
+        (s) => s['phone'] == phone && s['otp'] == otp,
+        orElse: () => {},
       );
-      if (idx == -1) {
-        print('❌ OTP verification failed for $phone with OTP: $otp');
+
+      if (session.isEmpty) {
+        print('❌ OTP not found for $phone');
         return false;
       }
-      sessions[idx] = sessions[idx].copyWith(isUsed: true);
-      await _writeOtpsToPrefs(sessions);
-      print('✅ OTP verified successfully for $phone');
-      return true;
-    } else {
-      final sessions = await _readOtpsFromFile();
-      final idx = sessions.indexWhere(
-        (s) => s.phone == phone && s.otp == otp && s.isValid,
-      );
-      if (idx == -1) {
-        print('❌ OTP verification failed for $phone with OTP: $otp');
+
+      // Check if expired
+      final expiresAt = DateTime.parse(session['expires_at'] as String);
+      if (DateTime.now().isAfter(expiresAt)) {
+        print('❌ OTP expired for $phone');
         return false;
       }
-      sessions[idx] = sessions[idx].copyWith(isUsed: true);
-      await _writeOtpsToFile(sessions);
+
+      // Check if already used
+      if (session['is_used'] == true) {
+        print('❌ OTP already used for $phone');
+        return false;
+      }
+
+      // Mark as used
+      session['is_used'] = true;
+      await _storageService.saveOtpSession(session);
+
       print('✅ OTP verified successfully for $phone');
       return true;
+    } catch (e) {
+      print('❌ Error verifying OTP: $e');
+      return false;
     }
   }
 
   @override
   Future<UserModel> saveUser(UserModel user) async {
-    await _ensureInit();
+    try {
+      print('💾 Saving user to storage...');
+      print('📱 Phone: ${user.phone}');
+      print('👤 Name: ${user.fullName}');
+      print('📧 Email: ${user.email}');
 
-    if (_usePrefs == true) {
-      final users = await _readUsersFromPrefs();
-      final existingIndex = users.indexWhere((u) => u.phone == user.phone);
-      if (existingIndex != -1) {
-        users[existingIndex] = user;
-        print('✅ User updated: ${user.phone}');
-      } else {
-        users.add(user);
-        print('✅ New user saved: ${user.phone}');
-      }
-      await _writeUsersToPrefs(users);
+      // Convert UserModel to Map
+      final userMap = user.toJson();
 
-      // ============================================
-      // SAVE TO JSON FILE untuk development/testing
-      // ============================================
-      await _saveToJsonFile(users);
+      // Save using StorageService
+      await _storageService.saveUser(userMap);
 
+      print('✅ User saved successfully!');
       return user;
-    } else {
-      final users = await _readUsersFromFile();
-      final existingIndex = users.indexWhere((u) => u.phone == user.phone);
-      if (existingIndex != -1) {
-        users[existingIndex] = user;
-        print('✅ User updated: ${user.phone}');
-      } else {
-        users.add(user);
-        print('✅ New user saved: ${user.phone}');
-      }
-      await _writeUsersToFile(users);
-
-      // ============================================
-      // SAVE TO JSON FILE untuk development/testing
-      // ============================================
-      await _saveToJsonFile(users);
-
-      return user;
+    } catch (e) {
+      print('❌ Error saving user: $e');
+      rethrow;
     }
   }
 
   @override
   Future<UserModel?> getUserByPhone(String phone) async {
     try {
-      await _ensureInit();
-      if (_usePrefs == true) {
-        final users = await _readUsersFromPrefs();
-        try {
-          return users.firstWhere((u) => u.phone == phone);
-        } catch (e) {
-          return null;
-        }
-      } else {
-        final users = await _readUsersFromFile();
-        try {
-          return users.firstWhere((u) => u.phone == phone);
-        } catch (e) {
-          return null;
-        }
+      final userMap = await _storageService.getUserByPhone(phone);
+      
+      if (userMap == null || userMap.isEmpty) {
+        print('⚠️ User not found: $phone');
+        return null;
       }
+
+      return UserModel.fromJson(userMap);
     } catch (e) {
-      print('Error getting user by phone: $e');
+      print('❌ Error getting user by phone: $e');
       return null;
     }
+  }
+
+  // Additional methods using StorageService
+
+  Future<UserModel?> getUserByUsername(String username) async {
+    try {
+      final userMap = await _storageService.getUserByUsername(username);
+      
+      if (userMap == null || userMap.isEmpty) {
+        return null;
+      }
+
+      return UserModel.fromJson(userMap);
+    } catch (e) {
+      print('❌ Error getting user by username: $e');
+      return null;
+    }
+  }
+
+  Future<UserModel?> getUserByEmail(String email) async {
+    try {
+      final userMap = await _storageService.getUserByEmail(email);
+      
+      if (userMap == null || userMap.isEmpty) {
+        return null;
+      }
+
+      return UserModel.fromJson(userMap);
+    } catch (e) {
+      print('❌ Error getting user by email: $e');
+      return null;
+    }
+  }
+
+  Future<void> updateUser(UserModel user) async {
+    try {
+      final updates = user.toJson();
+      await _storageService.updateUser(user.phone, updates);
+    } catch (e) {
+      print('❌ Error updating user: $e');
+      rethrow;
+    }
+  }
+
+  Future<String> getStorageFilePath() async {
+    return await _storageService.getUsersFilePath();
   }
 }
