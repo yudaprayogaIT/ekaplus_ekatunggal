@@ -25,7 +25,7 @@ import 'package:ekaplus_ekatunggal/core/shared_widgets/bottom_nav.dart';
 class MyRouter {
   GoRouter get router => GoRouter(
     // initialLocation: "/",
-    initialLocation: "/registerForm",
+    initialLocation: "/register",
     routes: [
       ShellRoute(
         builder: (context, state, child) {
@@ -47,11 +47,6 @@ class MyRouter {
             path: '/wishlist',
             builder: (context, state) => const WishlistPage(),
           ),
-          // GoRoute(
-          //   name: 'account',
-          //   path: '/account',
-          //   builder: (context, state) => const AccountPage(),
-          // ),
         ],
       ),
 
@@ -98,7 +93,6 @@ class MyRouter {
         name: 'account',
         path: '/account',
         builder: (context, state) {
-          // final extra = state.extra as Category?;
           return AccountPage();
         },
       ),
@@ -112,7 +106,7 @@ class MyRouter {
       ),
 
       GoRoute(
-        name: 'search', // ✅ TAMBAHKAN ROUTE SEARCH
+        name: 'search',
         path: '/search',
         builder: (context, state) {
           return BlocProvider(
@@ -196,12 +190,10 @@ class AppShell extends StatelessWidget {
     'account',
   ];
 
-  /// Method untuk refresh page berdasarkan index
   void _refreshPage(BuildContext context, int index) {
     switch (index) {
       case 0: // Home
         // Jika HomePage juga pakai BLoC, trigger event di sini
-        // context.read<HomeBloc>().add(HomeEventRefresh());
         break;
 
       case 1: // Category
@@ -213,12 +205,10 @@ class AppShell extends StatelessWidget {
 
       case 2: // Wishlist
         // Jika Wishlist pakai BLoC, trigger event di sini
-        // context.read<WishlistBloc>().add(WishlistEventRefresh());
         break;
 
       case 3: // account
         // Jika Account pakai BLoC, trigger event di sini
-        // context.read<AccountBloc>().add(AccountEventRefresh());
         break;
     }
   }
@@ -235,19 +225,15 @@ class AppShell extends StatelessWidget {
           final name = _routeNames[i];
 
           if (i == currentIndex) {
-            // 1) navigasi ke root route tab itu
-            // Use GoRouter.of(context).go to ensure we call the router directly
+            // navigasi ke root route tab
             GoRouter.of(context).goNamed(name);
 
-            // 2) setelah navigasi selesai (post-frame) trigger refresh jika perlu
-            // gunakan microtask/post frame supaya event diproses setelah route berubah
+            // trigger refresh jika perlu
             WidgetsBinding.instance.addPostFrameCallback((_) {
               try {
                 _refreshPage(context, i);
               } catch (e) {
-                // kalau bloc tidak tersedia di level ini, jangan crash — hanya cetak
-                // atau bisa kirim notification agar page sendiri yang menangani refresh
-                // debugPrint('Refresh event failed: $e');
+                // Ignore errors jika bloc tidak tersedia
               }
             });
 

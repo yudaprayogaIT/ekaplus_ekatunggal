@@ -16,18 +16,51 @@ class RegisterPage extends StatefulWidget {
   State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _RegisterPageState extends State<RegisterPage> {
+class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderStateMixin {
   final TextEditingController _phoneController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  bool _isNavigating = false; // Prevent double navigation
+  bool _isNavigating = false;
+  String? _phoneErrorMessage; // Custom error message
+  late AnimationController _shakeController;
+  late Animation<double> _shakeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    
+    // Setup shake animation
+    _shakeController = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    );
+    
+    _shakeAnimation = Tween<double>(begin: 0, end: 10).animate(
+      CurvedAnimation(
+        parent: _shakeController,
+        curve: Curves.elasticIn,
+      ),
+    );
+  }
 
   @override
   void dispose() {
     _phoneController.dispose();
+    _shakeController.dispose();
     super.dispose();
   }
 
+  void _triggerShake() {
+    _shakeController.forward(from: 0).then((_) {
+      _shakeController.reverse();
+    });
+  }
+
   String? _validatePhone(String? value) {
+    // Return custom error if exists
+    if (_phoneErrorMessage != null) {
+      return _phoneErrorMessage;
+    }
+
     if (value == null || value.isEmpty) {
       return 'Nomor telepon tidak boleh kosong';
     }
@@ -52,7 +85,6 @@ class _RegisterPageState extends State<RegisterPage> {
   String _normalizePhone(String phone) {
     String cleaned = phone.replaceAll(RegExp(r'[^0-9]'), '');
 
-    // Normalize: 081234567890 -> 6281234567890
     if (cleaned.startsWith('0')) {
       cleaned = '62${cleaned.substring(1)}';
     }
@@ -61,13 +93,15 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   void _onNextPressed() {
+    // Clear previous error
+    setState(() {
+      _phoneErrorMessage = null;
+    });
+
     if (_formKey.currentState!.validate()) {
       final normalizedPhone = _normalizePhone(_phoneController.text);
-
-      print('🔄 Requesting OTP for: $normalizedPhone');
-
-      // Request OTP (will generate 6 digit OTP)
-      context.read<AuthBloc>().add(RequestOtpEvent(normalizedPhone));
+      print('🔄 Checking phone: $normalizedPhone');
+      context.read<AuthBloc>().add(CheckPhoneEvent(normalizedPhone));
     }
   }
 
@@ -128,14 +162,35 @@ class _RegisterPageState extends State<RegisterPage> {
       ),
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
-          if (state is OtpRequestSuccess) {
-            if (_isNavigating) return; // Prevent double navigation
+          if (state is PhoneCheckSuccess) {
+            if (state.exists) {
+              // Phone already registered - show error
+              print('⚠️ Phone already registered');
+              setState(() {
+                _phoneErrorMessage = 'Nomor ini sudah terdaftar. Silakan login atau gunakan nomor lain.';
+              });
+              _formKey.currentState!.validate(); // Trigger validation
+              _triggerShake(); // Trigger shake animation
+            } else {
+              // Phone available - proceed to OTP
+              final normalizedPhone = _normalizePhone(_phoneController.text);
+              print('✅ Phone available, requesting OTP');
+              context.read<AuthBloc>().add(RequestOtpEvent(normalizedPhone));
+            }
+          } else if (state is PhoneCheckError) {
+            print('❌ Phone Check Error: ${state.message}');
+            setState(() {
+              _phoneErrorMessage = state.message;
+            });
+            _formKey.currentState!.validate();
+            _triggerShake();
+          } else if (state is OtpRequestSuccess) {
+            if (_isNavigating) return;
             _isNavigating = true;
 
             print('✅ OTP Generated (6 digit): ${state.otp}');
             print('📱 Phone: ${state.phone}');
 
-            // Show OTP in SnackBar (development only - 6 DIGIT)
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text('📱 Kode OTP 6 digit: ${state.otp}'),
@@ -144,26 +199,18 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
             );
 
-            // TIDAK START TIMER di sini - timer hanya start saat resend
-            // Timer akan start hanya saat user klik "Kirim Ulang Kode"
-
-            // Safe navigation dengan delay
             Future.delayed(const Duration(milliseconds: 500), () {
               if (!mounted) return;
               _isNavigating = false;
-              
-              // Navigate ke OTP page dengan extra data (phone number)
               context.push('/otp', extra: state.phone);
             });
           } else if (state is OtpRequestError) {
             print('❌ OTP Request Error: ${state.message}');
-            
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: primaryColor,
-              ),
-            );
+            setState(() {
+              _phoneErrorMessage = state.message;
+            });
+            _formKey.currentState!.validate();
+            _triggerShake();
           }
         },
         child: Column(
@@ -179,68 +226,117 @@ class _RegisterPageState extends State<RegisterPage> {
                     children: [
                       const SizedBox(height: 10),
 
-                      // Phone Input Field
-                      TextFormField(
-                        controller: _phoneController,
-                        keyboardType: TextInputType.phone,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                          LengthLimitingTextInputFormatter(13),
-                        ],
-                        decoration: InputDecoration(
-                          labelText: 'Nomor Hp',
-                          hintText: 'Contoh: 0812xxx atau 62812xxxx',
-                          labelStyle: const TextStyle(
-                            color: AppColors.grayColor,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 16,
-                          ),
-                          prefixIcon: const Icon(
-                            Icons.phone_android,
-                            color: AppColors.grayColor,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: const BorderSide(
-                              color: AppColors.grayColor,
+                      // Phone Input Field with Shake Animation
+                      AnimatedBuilder(
+                        animation: _shakeAnimation,
+                        builder: (context, child) {
+                          return Transform.translate(
+                            offset: Offset(_shakeAnimation.value, 0),
+                            child: child,
+                          );
+                        },
+                        child: TextFormField(
+                          controller: _phoneController,
+                          keyboardType: TextInputType.phone,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                            LengthLimitingTextInputFormatter(13),
+                          ],
+                          decoration: InputDecoration(
+                            labelText: 'Nomor Hp',
+                            hintText: 'Contoh: 0812xxx atau 62812xxxx',
+                            labelStyle: TextStyle(
+                              color: _phoneErrorMessage != null 
+                                  ? AppColors.primaryColor 
+                                  : AppColors.grayColor,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 16,
                             ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: const BorderSide(
-                              color: Color(0xFF2196F3),
-                              width: 2,
+                            prefixIcon: Icon(
+                              Icons.phone_android,
+                              color: _phoneErrorMessage != null 
+                                  ? AppColors.primaryColor 
+                                  : AppColors.grayColor,
                             ),
-                          ),
-                          errorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: const BorderSide(
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(
+                                color: _phoneErrorMessage != null 
+                                    ? AppColors.primaryColor 
+                                    : AppColors.grayColor,
+                                width: _phoneErrorMessage != null ? 2 : 1,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(
+                                color: _phoneErrorMessage != null 
+                                    ? AppColors.primaryColor 
+                                    : const Color(0xFF2196F3),
+                                width: 2,
+                              ),
+                            ),
+                            errorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: const BorderSide(
+                                color: AppColors.primaryColor,
+                                width: 2,
+                              ),
+                            ),
+                            focusedErrorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: const BorderSide(
+                                color: AppColors.primaryColor,
+                                width: 2,
+                              ),
+                            ),
+                            errorStyle: const TextStyle(
                               color: AppColors.primaryColor,
-                              width: 2,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
-                          focusedErrorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: const BorderSide(
-                              color: AppColors.primaryColor,
-                              width: 2,
-                            ),
-                          ),
+                          validator: _validatePhone,
+                          onChanged: (value) {
+                            // Clear error when user types or deletes
+                            if (_phoneErrorMessage != null) {
+                              setState(() {
+                                _phoneErrorMessage = null;
+                              });
+                              // Revalidate to clear error border
+                              _formKey.currentState?.validate();
+                            }
+                          },
                         ),
-                        validator: _validatePhone,
                       ),
 
                       const SizedBox(height: 12),
-                      const Text(
-                        'Kami akan mengirimkan kode OTP 6 digit ke nomor ini',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: AppColors.grayColor,
-                        ),
-                      ),
+
+                      // // Info text or error message
+                      // AnimatedSwitcher(
+                      //   duration: const Duration(milliseconds: 300),
+                      //   child: _phoneErrorMessage == null
+                      //       ? const Text(
+                      //           'Kami akan mengirimkan kode OTP 6 digit ke nomor ini',
+                      //           key: ValueKey('info'),
+                      //           style: TextStyle(
+                      //             fontSize: 12,
+                      //             color: AppColors.grayColor,
+                      //           ),
+                      //         )
+                      //       : Text(
+                      //           _phoneErrorMessage!,
+                      //           key: ValueKey('error'),
+                      //           style: const TextStyle(
+                      //             fontSize: 12,
+                      //             color: AppColors.primaryColor,
+                      //             fontWeight: FontWeight.w500,
+                      //           ),
+                      //         ),
+                      // ),
 
                       const SizedBox(height: 24),
 
@@ -274,7 +370,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
                       const SizedBox(height: 24),
 
-                      // Google Sign In Button (Placeholder)
+                      // Google Sign In Button
                       OutlinedButton.icon(
                         onPressed: () {
                           ScaffoldMessenger.of(context).showSnackBar(
