@@ -1,7 +1,4 @@
 // lib/injection.dart
-import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/login_user.dart';
-import 'package:ekaplus_ekatunggal/features/auth/presentation/bloc/otp_timer/otp_timer_bloc.dart';
-import 'package:ekaplus_ekatunggal/features/auth/presentation/cubit/auth_session_cubit.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
 
@@ -10,10 +7,13 @@ import 'package:ekaplus_ekatunggal/features/auth/data/datasources/auth_local_dat
 import 'package:ekaplus_ekatunggal/features/auth/data/repositories/auth_repository_implementation.dart';
 import 'package:ekaplus_ekatunggal/features/auth/domain/repositories/auth_repository.dart';
 import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/check_phone_exists.dart';
+import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/login_user.dart';
 import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/register_user.dart';
 import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/request_otp.dart';
 import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/verify_otp.dart';
 import 'package:ekaplus_ekatunggal/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:ekaplus_ekatunggal/features/auth/presentation/bloc/otp_timer/otp_timer_bloc.dart';
+import 'package:ekaplus_ekatunggal/features/auth/presentation/cubit/auth_session_cubit.dart';
 
 // CATEGORY
 import 'package:ekaplus_ekatunggal/features/category/data/datasources/category_remote_datasource.dart';
@@ -41,18 +41,37 @@ import 'package:ekaplus_ekatunggal/features/type/domain/usecases/get_all_type.da
 import 'package:ekaplus_ekatunggal/features/type/domain/usecases/get_type.dart';
 import 'package:ekaplus_ekatunggal/features/type/presentation/bloc/type_bloc.dart';
 
-var myinjection = GetIt.instance;
+// 🔥 WISHLIST - CRITICAL: Import semua file wishlist
+import 'package:ekaplus_ekatunggal/features/wishlist/data/datasources/wishlist_local_datasource.dart';
+import 'package:ekaplus_ekatunggal/features/wishlist/data/repositories/wishlist_repository_implementation.dart';
+import 'package:ekaplus_ekatunggal/features/wishlist/domain/repositories/wishlist_repository.dart';
+import 'package:ekaplus_ekatunggal/features/wishlist/domain/usecases/check_wishlist.dart';
+import 'package:ekaplus_ekatunggal/features/wishlist/domain/usecases/get_wishlist.dart';
+import 'package:ekaplus_ekatunggal/features/wishlist/domain/usecases/toggle_wishlist.dart';
+import 'package:ekaplus_ekatunggal/features/wishlist/presentation/bloc/wishlist_bloc.dart';
+
+final myinjection = GetIt.instance;
 
 Future<void> init() async {
-  // Cubit - NEW: Auth Session Management
+  print('🚀 Initializing GetIt dependencies...');
+
+  // ============================================
+  // CUBIT - Singleton (Global State)
+  // ============================================
   myinjection.registerLazySingleton<AuthSessionCubit>(
     () => AuthSessionCubit(),
   );
+  print('✅ AuthSessionCubit registered');
 
-  /// --- General deps
+  // ============================================
+  // GENERAL DEPENDENCIES
+  // ============================================
   myinjection.registerLazySingleton(() => http.Client());
+  print('✅ HTTP Client registered');
 
-  /// --- Data sources (low level) - daftar dulu supaya repositori bisa resolve
+  // ============================================
+  // DATA SOURCES
+  // ============================================
   myinjection.registerLazySingleton<AuthLocalDataSource>(
     () => AuthLocalDataSourceImpl(),
   );
@@ -69,7 +88,15 @@ Future<void> init() async {
     () => ProductRemoteDatasourceImplementation(client: myinjection()),
   );
 
-  /// --- Repositories
+  // 🔥 WISHLIST DataSource
+  myinjection.registerLazySingleton<WishlistLocalDataSource>(
+    () => WishlistLocalDataSourceImpl(),
+  );
+  print('✅ WishlistLocalDataSource registered');
+
+  // ============================================
+  // REPOSITORIES
+  // ============================================
   myinjection.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImplementation(localDataSource: myinjection()),
   );
@@ -88,23 +115,59 @@ Future<void> init() async {
     () => ProductRepositoryImplementation(productRemoteDatasource: myinjection()),
   );
 
-  /// --- Usecases
-  myinjection.registerLazySingleton(() => GetAllType(myinjection()));
-  myinjection.registerLazySingleton(() => GetType(myinjection()));
-  myinjection.registerLazySingleton(() => GetAllCategory(myinjection()));
-  myinjection.registerLazySingleton(() => GetCategory(myinjection()));
-  myinjection.registerLazySingleton(() => GetAllProduct(myinjection()));
-  myinjection.registerLazySingleton(() => GetProduct(myinjection()));
-  myinjection.registerLazySingleton(() => GetVariant(myinjection()));
-  myinjection.registerLazySingleton(() => GetHotDeals(myinjection()));
+  // 🔥 WISHLIST Repository
+  myinjection.registerLazySingleton<WishlistRepository>(
+    () => WishlistRepositoryImpl(localDataSource: myinjection()),
+  );
+  print('✅ WishlistRepository registered');
+
+  // ============================================
+  // USE CASES
+  // ============================================
+  
+  // Auth UseCases
   myinjection.registerLazySingleton(() => CheckPhoneExists(myinjection()));
   myinjection.registerLazySingleton(() => RequestOtp(myinjection()));
   myinjection.registerLazySingleton(() => VerifyOtp(myinjection()));
   myinjection.registerLazySingleton(() => RegisterUser(myinjection()));
   myinjection.registerLazySingleton(() => LoginUser(myinjection()));
 
+  // Type UseCases
+  myinjection.registerLazySingleton(() => GetAllType(myinjection()));
+  myinjection.registerLazySingleton(() => GetType(myinjection()));
 
-  /// --- Blocs / Factories (UI level)
+  // Category UseCases
+  myinjection.registerLazySingleton(() => GetAllCategory(myinjection()));
+  myinjection.registerLazySingleton(() => GetCategory(myinjection()));
+
+  // Product UseCases
+  myinjection.registerLazySingleton(() => GetAllProduct(myinjection()));
+  myinjection.registerLazySingleton(() => GetProduct(myinjection()));
+  myinjection.registerLazySingleton(() => GetVariant(myinjection()));
+  myinjection.registerLazySingleton(() => GetHotDeals(myinjection()));
+
+  // 🔥 WISHLIST UseCases
+  myinjection.registerLazySingleton(() => GetWishlist(myinjection()));
+  myinjection.registerLazySingleton(() => ToggleWishlist(myinjection()));
+  myinjection.registerLazySingleton(() => CheckWishlist(myinjection()));
+  print('✅ Wishlist UseCases registered');
+
+  // ============================================
+  // BLOCS (Factory - Created per widget)
+  // ============================================
+  
+  myinjection.registerFactory(
+    () => AuthBloc(
+      checkPhoneExists: myinjection(),
+      requestOtp: myinjection(),
+      verifyOtp: myinjection(),
+      registerUser: myinjection(),
+      loginUser: myinjection(),
+    ),
+  );
+
+  myinjection.registerFactory(() => OtpTimerBloc());
+
   myinjection.registerFactory(
     () => TypeBloc(getAllType: myinjection(), getType: myinjection()),
   );
@@ -122,15 +185,15 @@ Future<void> init() async {
     ),
   );
 
+  // 🔥 CRITICAL: WISHLIST BLOC
   myinjection.registerFactory(
-    () => AuthBloc(
-      checkPhoneExists: myinjection(),
-      requestOtp: myinjection(),
-      verifyOtp: myinjection(),
-      registerUser: myinjection(),
-      loginUser: myinjection(),
+    () => WishlistBloc(
+      getWishlist: myinjection(),
+      toggleWishlist: myinjection(),
+      checkWishlist: myinjection(),
     ),
   );
+  print('✅ WishlistBloc registered');
 
-  myinjection.registerFactory(() => OtpTimerBloc());
+  print('🎉 All dependencies registered successfully!');
 }

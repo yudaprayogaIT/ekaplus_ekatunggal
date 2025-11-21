@@ -8,7 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart'; // ✅ TAMBAHKAN
+import 'package:go_router/go_router.dart';
 import 'package:ekaplus_ekatunggal/features/product/domain/entities/product.dart';
 import 'package:ekaplus_ekatunggal/features/product/presentation/bloc/product_bloc.dart';
 import 'package:ekaplus_ekatunggal/features/product/presentation/widgets/filter_product.dart';
@@ -366,13 +366,15 @@ class _ProductPageState extends State<ProductPage> {
           Expanded(
             child: BlocBuilder<ProductBloc, ProductState>(
               builder: (context, state) {
-                if (state is ProductStateLoading) {
+                // ✅ PERUBAHAN: ProductLoading (bukan ProductStateLoading)
+                if (state is ProductLoading) {
                   return const Center(
                     child: CircularProgressIndicator(color: Color(0xFFB71C1C)),
                   );
                 }
 
-                if (state is ProductStateError) {
+                // ✅ PERUBAHAN: ProductError (bukan ProductStateError)
+                if (state is ProductError) {
                   return Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -404,8 +406,10 @@ class _ProductPageState extends State<ProductPage> {
                   );
                 }
 
-                if (state is ProductStateLoadedAllProduct) {
-                  final filteredProducts = _filterProducts(state.allProduct);
+                // ✅ PERUBAHAN: ProductLoaded (bukan ProductStateLoadedAllProduct)
+                // ✅ PERUBAHAN: state.products (bukan state.allProduct)
+                if (state is ProductLoaded) {
+                  final filteredProducts = _filterProducts(state.products);
 
                   if (filteredProducts.isEmpty) {
                     return Center(
@@ -457,7 +461,6 @@ class _ProductPageState extends State<ProductPage> {
                       return ProductCard(
                         product: product,
                         onTap: () {
-                          // ✅ PERBAIKAN: Gunakan GoRouter
                           context.pushNamed(
                             'productDetail',
                             pathParameters: {'id': product.id.toString()},

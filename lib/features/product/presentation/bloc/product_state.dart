@@ -1,61 +1,55 @@
+// lib/features/product/presentation/bloc/product_state.dart
 part of 'product_bloc.dart';
 
-// PASTIKAN TIDAK ADA DEFINISI VariantEntity di file ini!
+abstract class ProductState extends Equatable {
+  const ProductState();
 
-abstract class ProductState extends Equatable {}
-
-class ProductStateEmpty extends ProductState {
   @override
   List<Object?> get props => [];
 }
 
-class ProductStateLoading extends ProductState {
-  @override
-  List<Object?> get props => [];
-}
+// Initial State
+class ProductInitial extends ProductState {}
 
-class ProductStateError extends ProductState {
+// Loading State
+class ProductLoading extends ProductState {}
+
+// Error State
+class ProductError extends ProductState {
   final String message;
 
-  ProductStateError(this.message);
-  
+  const ProductError(this.message);
+
   @override
   List<Object?> get props => [message];
 }
 
-class ProductStateLoadedAllProduct extends ProductState {
-  final List<Product> allProduct;
+// Loaded All Products State
+class ProductLoaded extends ProductState {
+  final List<Product> products;
 
-  ProductStateLoadedAllProduct(this.allProduct);
-  
+  const ProductLoaded(this.products);
+
   @override
-  List<Object?> get props => [allProduct];
+  List<Object?> get props => [products];
 }
 
-class ProductStateLoadedProduct extends ProductState {
-  final Product detailProduct;
+// Loaded Product Detail State
+class ProductDetailLoaded extends ProductState {
+  final Product product;
 
-  ProductStateLoadedProduct(this.detailProduct);
-  
+  const ProductDetailLoaded(this.product);
+
   @override
-  List<Object?> get props => [detailProduct];
+  List<Object?> get props => [product];
 }
 
-// State untuk loaded variant (VariantEntity sudah diimpor di product_bloc.dart)
-class ProductStateLoadedVariant extends ProductState {
+// Loaded Variant State
+class ProductVariantLoaded extends ProductState {
   final VariantEntity variant;
 
-  ProductStateLoadedVariant(this.variant);
-  
+  const ProductVariantLoaded(this.variant);
+
   @override
   List<Object?> get props => [variant];
-}
-
-class ProductStateLoadedHotDeals extends ProductState {
-  final List<Product> hotDeals;
-
-  ProductStateLoadedHotDeals(this.hotDeals);
-
-  @override
-  List<Object?> get props => [hotDeals];
 }

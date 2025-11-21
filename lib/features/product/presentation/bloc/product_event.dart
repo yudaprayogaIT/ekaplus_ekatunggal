@@ -1,3 +1,4 @@
+// lib/features/product/presentation/bloc/product_event.dart
 part of 'product_bloc.dart';
 
 abstract class ProductEvent extends Equatable {
@@ -7,15 +8,17 @@ abstract class ProductEvent extends Equatable {
   List<Object> get props => [];
 }
 
+// Get All Products
 class ProductEventGetAllProducts extends ProductEvent {
   final int page;
 
-  const ProductEventGetAllProducts(this.page);
+  const ProductEventGetAllProducts([this.page = 1]); // 🔥 Default value = 1
 
   @override
-  List<Object> get props => [page]; // ✅ PERBAIKI: page ditambahkan ke props
+  List<Object> get props => [page];
 }
 
+// Get Product Detail
 class ProductEventGetDetailProduct extends ProductEvent {
   final String productId;
 
@@ -25,7 +28,7 @@ class ProductEventGetDetailProduct extends ProductEvent {
   List<Object> get props => [productId];
 }
 
-// ✅ TAMBAH: Event baru untuk get variant
+// Get Variant
 class ProductEventGetVariant extends ProductEvent {
   final String variantId;
 
@@ -35,4 +38,7 @@ class ProductEventGetVariant extends ProductEvent {
   List<Object> get props => [variantId];
 }
 
-class ProductEventGetHotDeals extends ProductEvent {}
+// Get Hot Deals
+class ProductEventGetHotDeals extends ProductEvent {
+  const ProductEventGetHotDeals();
+}

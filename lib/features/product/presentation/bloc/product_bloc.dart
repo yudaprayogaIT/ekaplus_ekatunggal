@@ -1,6 +1,7 @@
+// lib/features/product/presentation/bloc/product_bloc.dart
 import 'package:bloc/bloc.dart';
-import 'package:dartz/dartz.dart';
-import 'package:ekaplus_ekatunggal/core/error/failure.dart';
+// import 'package:dartz/dartz.dart';
+// import 'package:ekaplus_ekatunggal/core/error/failure.dart';
 import 'package:ekaplus_ekatunggal/features/product/domain/entities/product.dart';
 import 'package:ekaplus_ekatunggal/features/product/domain/usecases/get_all_product.dart';
 import 'package:ekaplus_ekatunggal/features/product/domain/usecases/get_hot_deals.dart';
@@ -14,7 +15,7 @@ part 'product_state.dart';
 class ProductBloc extends Bloc<ProductEvent, ProductState> {
   final GetAllProduct getAllProduct;
   final GetProduct getProduct;
-  final GetVariant getVariant; 
+  final GetVariant getVariant;
   final GetHotDeals getHotDeals;
 
   ProductBloc({
@@ -22,58 +23,61 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     required this.getProduct,
     required this.getVariant,
     required this.getHotDeals,
-  }) : super(ProductStateEmpty()) {
+  }) : super(ProductInitial()) {
+    
+    // Get All Products
     on<ProductEventGetAllProducts>((event, emit) async {
       if (event.page == 1) {
-        emit(ProductStateLoading());
+        emit(ProductLoading());
       }
-      
-      Either<Failure, List<Product>> resultGetAllProduct = 
-          await getAllProduct.execute(event.page);
 
-      resultGetAllProduct.fold(
-        (failure) => emit(ProductStateError(failure.message ?? 'Cannot get all Products')), 
-        (products) => emit(ProductStateLoadedAllProduct(products)),
+      final result = await getAllProduct.execute(event.page);
+
+      result.fold(
+        (failure) => emit(ProductError(failure.message ?? 'Cannot get products')),
+        (products) => emit(ProductLoaded(products)),
       );
     });
 
+    // Get Product Detail
     on<ProductEventGetDetailProduct>((event, emit) async {
-      emit(ProductStateLoading());
+      emit(ProductLoading());
 
-      Either<Failure, Product> productResult = 
-          await getProduct.execute(event.productId);
+      final result = await getProduct.execute(event.productId);
 
-      productResult.fold(
-        (failure) => emit(ProductStateError(failure.message ?? 'Cannot get Product details')), 
-        (product) => emit(ProductStateLoadedProduct(product)),
+      result.fold(
+        (failure) => emit(ProductError(failure.message ?? 'Cannot get product details')),
+        (product) => emit(ProductDetailLoaded(product)),
       );
     });
 
+    // Get Variant
     on<ProductEventGetVariant>((event, emit) async {
-      emit(ProductStateLoading());
+      emit(ProductLoading());
 
-      // Tipe yang benar: VariantEntity?
-      final Either<Failure, VariantEntity?> variantResult = 
-          await getVariant.execute(event.variantId);
+      final result = await getVariant.execute(event.variantId);
 
-      variantResult.fold(
-        (failure) => emit(ProductStateError(failure.message ?? 'Cannot get Variant details')),
+      result.fold(
+        (failure) => emit(ProductError(failure.message ?? 'Cannot get variant')),
         (variant) {
           if (variant != null) {
-            emit(ProductStateLoadedVariant(variant));
+            emit(ProductVariantLoaded(variant));
           } else {
-            emit(ProductStateError('Variant not found'));
+            emit(const ProductError('Variant not found'));
           }
         },
       );
     });
 
+    // Get Hot Deals
     on<ProductEventGetHotDeals>((event, emit) async {
-      emit(ProductStateLoading());
+      emit(ProductLoading());
+
       final result = await getHotDeals.execute();
+
       result.fold(
-        (failure) => emit(ProductStateError(failure.message ?? 'Cannot get Hot Deals details')),
-        (hotDeals) => emit(ProductStateLoadedHotDeals(hotDeals)),
+        (failure) => emit(ProductError(failure.message ?? 'Cannot get hot deals')),
+        (hotDeals) => emit(ProductLoaded(hotDeals)),
       );
     });
   }

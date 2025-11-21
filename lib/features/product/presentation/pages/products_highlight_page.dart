@@ -2,7 +2,7 @@
 import 'package:ekaplus_ekatunggal/core/shared_widgets/app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart'; // ✅ TAMBAHKAN
+import 'package:go_router/go_router.dart';
 import 'package:ekaplus_ekatunggal/constant.dart';
 import 'package:ekaplus_ekatunggal/features/product/presentation/bloc/product_bloc.dart';
 import 'package:ekaplus_ekatunggal/features/product/domain/entities/product.dart';
@@ -189,30 +189,35 @@ class _ProductsHighlightState extends State<ProductsHighlight> {
         body: SafeArea(
           child: BlocConsumer<ProductBloc, ProductState>(
             listener: (context, state) {
-              if (state is ProductStateLoadedHotDeals) {
+              // ✅ PERUBAHAN: Tidak ada ProductStateLoadedHotDeals
+              // ✅ Gunakan ProductLoaded untuk semua kasus
+              if (state is ProductLoaded) {
                 setState(() {
-                  _allProducts = state.hotDeals;
-                  _hasMoreData = false;
-                  _buildCategoriesFromProducts();
-                  _applyCategoryFilter();
-                });
-              } else if (state is ProductStateLoadedAllProduct) {
-                setState(() {
-                  if (_currentPage == 1) {
-                    _allProducts = state.allProduct;
+                  // Jika hot deals atau page 1, replace semua data
+                  if (widget.hotDealsOnly || _currentPage == 1) {
+                    _allProducts = state.products;
+                    
+                    // Jika hot deals, filter hanya yang isHotDeals == true
+                    if (widget.hotDealsOnly) {
+                      _allProducts = _allProducts.where((p) => p.isHotDeals == true).toList();
+                      _hasMoreData = false;
+                    } else {
+                      _hasMoreData = state.products.length == _pageSize;
+                    }
                   } else {
-                    _allProducts.addAll(state.allProduct);
+                    // Append data untuk pagination
+                    _allProducts.addAll(state.products);
+                    _hasMoreData = state.products.length == _pageSize;
                   }
 
-                  _hasMoreData = state.allProduct.length == _pageSize;
                   _isLoadingMore = false;
-
                   _buildCategoriesFromProducts();
                   _applyCategoryFilter();
                 });
               }
 
-              if (state is ProductStateError && _isLoadingMore) {
+              // ✅ PERUBAHAN: ProductError (bukan ProductStateError)
+              if (state is ProductError && _isLoadingMore) {
                 setState(() {
                   _isLoadingMore = false;
                   _currentPage--;
@@ -220,13 +225,15 @@ class _ProductsHighlightState extends State<ProductsHighlight> {
               }
             },
             builder: (context, state) {
-              if ((state is ProductStateLoading ||
-                      state is ProductStateEmpty) &&
+              // ✅ PERUBAHAN: ProductLoading (bukan ProductStateLoading)
+              // ✅ PERUBAHAN: ProductInitial (bukan ProductStateEmpty)
+              if ((state is ProductLoading || state is ProductInitial) &&
                   _currentPage == 1) {
                 return const Center(child: CircularProgressIndicator());
               }
 
-              if (state is ProductStateError &&
+              // ✅ PERUBAHAN: ProductError (bukan ProductStateError)
+              if (state is ProductError &&
                   _currentPage == 1 &&
                   _allProducts.isEmpty) {
                 return RefreshIndicator(
@@ -336,7 +343,6 @@ class _ProductsHighlightState extends State<ProductsHighlight> {
                                       product: p,
                                       width: double.infinity,
                                       onTap: () {
-                                        // ✅ PERBAIKAN: Gunakan GoRouter
                                         context.pushNamed(
                                           'productDetail',
                                           pathParameters: {'id': p.id.toString()},

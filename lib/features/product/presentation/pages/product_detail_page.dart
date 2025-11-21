@@ -146,11 +146,13 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       appBar: CustomAppBar(title: 'Lihat Detail'),
       body: BlocBuilder<ProductBloc, ProductState>(
         builder: (context, state) {
-          if (state is ProductStateLoading) {
+          // ✅ PERUBAHAN: ProductLoading (bukan ProductStateLoading)
+          if (state is ProductLoading) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          if (state is ProductStateError) {
+          // ✅ PERUBAHAN: ProductError (bukan ProductStateError)
+          if (state is ProductError) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -172,8 +174,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             );
           }
 
-          if (state is ProductStateLoadedProduct) {
-            final product = state.detailProduct;
+          // ✅ PERUBAHAN: ProductDetailLoaded (bukan ProductStateLoadedProduct)
+          if (state is ProductDetailLoaded) {
+            final product = state.product; // ✅ PERUBAHAN: state.product (bukan state.detailProduct)
 
             if (product.variants.isEmpty) {
               return const Center(child: Text('Tidak ada varian tersedia'));
@@ -497,24 +500,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                             color: Colors.black87,
                           ),
                         ),
-                        // const SizedBox(height: 8),
-                        // Container(
-                        //   width: double.infinity,
-                        //   padding: const EdgeInsets.all(12),
-                        //   // decoration: BoxDecoration(
-                        //   //   color: Colors.grey[100],
-                        //   //   borderRadius: BorderRadius.circular(8),
-                        //   //   border: Border.all(color: Colors.grey[300]!),
-                        //   // ),
-                        //   child: Text(
-                        //     selectedVariant.name,
-                        //     style: const TextStyle(
-                        //       fontSize: 14,
-                        //       fontWeight: FontWeight.w600,
-                        //       color: Colors.black87,
-                        //     ),
-                        //   ),
-                        // ),
                       ],
                     ),
                   ),

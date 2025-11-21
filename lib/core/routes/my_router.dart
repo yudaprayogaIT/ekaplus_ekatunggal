@@ -7,7 +7,7 @@ import 'package:ekaplus_ekatunggal/features/auth/presentation/pages/register_for
 import 'package:ekaplus_ekatunggal/features/auth/presentation/pages/register_page.dart';
 import 'package:ekaplus_ekatunggal/features/search/presentation/bloc/search_bloc.dart';
 import 'package:ekaplus_ekatunggal/features/search/presentation/pages/search_page.dart';
-import 'package:ekaplus_ekatunggal/features/wishlist/presentation/pages/wishlist.dart';
+import 'package:ekaplus_ekatunggal/features/wishlist/presentation/pages/wishlist_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -25,8 +25,8 @@ import 'package:ekaplus_ekatunggal/core/shared_widgets/bottom_nav.dart';
 
 class MyRouter {
   GoRouter get router => GoRouter(
-    // initialLocation: "/",
-    initialLocation: "/login",
+    initialLocation: "/",
+    // initialLocation: "/login",
     routes: [
       ShellRoute(
         builder: (context, state, child) {

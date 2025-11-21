@@ -274,11 +274,11 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
   Widget _buildProductsGrid() {
     return BlocBuilder<ProductBloc, ProductState>(
       builder: (context, state) {
-        if (state is ProductStateLoading) {
+        if (state is ProductLoading) {
           return const SliverFillRemaining(child: Center(child: CircularProgressIndicator()));
         }
 
-        if (state is ProductStateError) {
+        if (state is ProductError) {
           return SliverFillRemaining(
             child: Center(
               child: Column(
@@ -295,8 +295,8 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
           );
         }
 
-        if (state is ProductStateLoadedAllProduct) {
-          final products = state.allProduct;
+        if (state is ProductLoaded) {
+          final products = state.products;
           final resolvedName = _resolvedCategoryName();
 
           final filteredProducts = products.where((p) {

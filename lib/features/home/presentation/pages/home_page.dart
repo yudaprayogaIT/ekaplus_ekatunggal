@@ -1,21 +1,21 @@
+// lib/features/home/presentation/pages/home_page.dart
+import 'package:ekaplus_ekatunggal/features/auth/presentation/cubit/auth_session_cubit.dart';
+import 'package:ekaplus_ekatunggal/features/auth/presentation/cubit/auth_session_state.dart';
 import 'package:ekaplus_ekatunggal/features/home/presentation/widgets/home_slider_widget.dart';
 import 'package:ekaplus_ekatunggal/features/product/presentation/widgets/products_section.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/shared_widgets/profile_header.dart';
-// import '../../../../core/shared_widgets/bottom_nav.dart'; // tidak dipakai di sini, tapi tetap disertakan untuk struktur
 import '../widgets/search_bar.dart';
 import '../widgets/location_card.dart';
 import '../widgets/typeCategory_list.dart';
 import '../../../banner/domain/entities/bannerslider.dart';
-// import 'package:ekaplus_ekatunggal/features/type/presentation/widgets/type_category_list.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final bool isMember = true;
-
     final List<BannerSlider> banners = [
       BannerSlider(
         name: 'Banner ',
@@ -54,89 +54,94 @@ class HomePage extends StatelessWidget {
 
     return Scaffold(
       body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header profil
-            Container(
-              margin: const EdgeInsets.only(left: 16, right: 16, top: 12),
-              child: ProfileHeader(name: isMember ? 'Development' : null),
-            ),
+        child: BlocBuilder<AuthSessionCubit, AuthSessionState>(
+          builder: (context, authState) {
+            // Determine if user is logged in
+            final bool isLoggedIn = authState is AuthSessionAuthenticated;
+            final bool isMember = authState is AuthSessionAuthenticated &&
+                authState.status == UserStatus.member;
 
-            // Konten utama
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // -------------------------
-                    // Bagian banner + overlay searchbar
-                    // -------------------------
-                    // Gunakan SizedBox dengan tinggi yang sesuai banner/slider-mu.
-                    // Sesuaikan height dan bottom untuk menyesuaikan tampilan.
-                    SizedBox(
-                      height: 240, // sesuaikan tinggi banner jika diperlukan
-                      child: Stack(
-                        clipBehavior:
-                            Clip.none, // biarkan child yang overflow terlihat
-                        children: [
-                          // Layer banner/slider (mengisi seluruh area)
-                          Positioned.fill(
-                            child: HomeSliderWidget(
-                              banners: banners,
-                              enableTap: isMember,
-                            ),
-                          ),
-
-                          // Layer overlay: searchbar dan location card
-                          // bottom negatif agar "melayang" keluar dari batas banner
-                          Positioned(
-                            left: 16,
-                            right: 16,
-                            bottom:
-                                -78, // atur nilai ini (negatif) untuk efek menonjol
-                            child: Column(
-                              children: const [
-                                HomeSearchBar(),
-                                SizedBox(height: 8),
-                                LocationCard(),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    // Beri ruang kompensasi agar konten selanjutnya tidak tertutup oleh overlay
-                    const SizedBox(height: 85),
-
-                    // -------------------------
-                    // Sisa konten halaman
-                    // -------------------------
-                    // const SizedBox(height: 10),
-                    TypeCategoryList(),
-                    Container(
-                      height: 10,
-                      color: const Color.fromARGB(255, 233, 233, 233),
-                    ),
-                    ProductsSection(
-                      title: 'Yang Baru Dari Kami 🔥',
-                      subtitle: 'Yang baru - baru, dijamin menarik !!!',
-                      hotDealsOnly: false, showCount: 6
-                    ),
-                    Container(
-                      height: 10,
-                      color: const Color.fromARGB(255, 233, 233, 233),
-                    ),
-                    ProductsSection(
-                      title: 'Jangan Kehabisan Produk Terlaris 🤩',
-                      subtitle: 'Siapa cepat, dia dapat, sikaaat ...',
-                      hotDealsOnly: true, showCount: 6),
-                  ],
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header profil
+                Container(
+                  margin: const EdgeInsets.only(left: 16, right: 16, top: 12),
+                  child: const ProfileHeader(),
                 ),
-              ),
-            ),
-          ],
+
+                // Konten utama
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Banner + overlay searchbar
+                        SizedBox(
+                          height: 240,
+                          child: Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              Positioned.fill(
+                                child: HomeSliderWidget(
+                                  banners: banners,
+                                  enableTap: isLoggedIn, // Enable tap jika sudah login
+                                ),
+                              ),
+                              Positioned(
+                                left: 16,
+                                right: 16,
+                                bottom: -78,
+                                child: Column(
+                                  children: const [
+                                    HomeSearchBar(),
+                                    SizedBox(height: 8),
+                                    LocationCard(),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        const SizedBox(height: 85),
+
+                        // Type Categories
+                        TypeCategoryList(),
+                        
+                        Container(
+                          height: 10,
+                          color: const Color.fromARGB(255, 233, 233, 233),
+                        ),
+
+                        // Products Section - Pass isLoggedIn
+                        ProductsSection(
+                          title: 'Yang Baru Dari Kami 🔥',
+                          subtitle: 'Yang baru - baru, dijamin menarik !!!',
+                          hotDealsOnly: false,
+                          showCount: 6,
+                          isLoggedIn: isLoggedIn, // 🔥 NEW
+                        ),
+                        
+                        Container(
+                          height: 10,
+                          color: const Color.fromARGB(255, 233, 233, 233),
+                        ),
+
+                        ProductsSection(
+                          title: 'Jangan Kehabisan Produk Terlaris 🤩',
+                          subtitle: 'Siapa cepat, dia dapat, sikaaat ...',
+                          hotDealsOnly: true,
+                          showCount: 6,
+                          isLoggedIn: isLoggedIn, // 🔥 NEW
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
