@@ -1,6 +1,7 @@
 // lib/core/routes/my_router.dart
 import 'package:ekaplus_ekatunggal/features/account/presentation/pages/about_page.dart';
 import 'package:ekaplus_ekatunggal/features/account/presentation/pages/account_page.dart';
+import 'package:ekaplus_ekatunggal/features/auth/presentation/pages/login_page.dart';
 import 'package:ekaplus_ekatunggal/features/auth/presentation/pages/otp_verification_page.dart';
 import 'package:ekaplus_ekatunggal/features/auth/presentation/pages/register_form_page.dart';
 import 'package:ekaplus_ekatunggal/features/auth/presentation/pages/register_page.dart';
@@ -25,7 +26,7 @@ import 'package:ekaplus_ekatunggal/core/shared_widgets/bottom_nav.dart';
 class MyRouter {
   GoRouter get router => GoRouter(
     // initialLocation: "/",
-    initialLocation: "/register",
+    initialLocation: "/login",
     routes: [
       ShellRoute(
         builder: (context, state, child) {
@@ -86,6 +87,14 @@ class MyRouter {
             key: state.pageKey,
             child: RegisterFormPage(phoneNumber: phoneNumber),
           );
+        },
+      ),
+
+       GoRoute(
+        name: 'login',
+        path: '/login',
+        builder: (context, state) {
+          return LoginPage();
         },
       ),
 

@@ -45,11 +45,8 @@ class AuthRepositoryImplementation implements AuthRepository {
   @override
   Future<Either<Failure, User>> registerUser(RegisterUserParams params) async {
     try {
-      // Generate unique ID
       final id = 'user_${DateTime.now().millisecondsSinceEpoch}';
       final now = DateTime.now();
-
-      // Generate full name
       final fullName = '${params.firstName} ${params.lastName}';
 
       final userModel = UserModel(
@@ -62,7 +59,7 @@ class AuthRepositoryImplementation implements AuthRepository {
         phone: params.phone,
         password: params.password,
         isEmailVerified: false,
-        isPhoneVerified: true, // true karena sudah lewat OTP
+        isPhoneVerified: true,
         gender: params.gender,
         dateOfBirth: params.dateOfBirth,
         birthPlace: params.birthPlace,
@@ -108,6 +105,56 @@ class AuthRepositoryImplementation implements AuthRepository {
       return Right(user);
     } catch (e) {
       return Left(CacheFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, User>> loginUser(String identifier, String password) async {
+    try {
+      print('🔍 Attempting login with: $identifier');
+
+      UserModel? user;
+
+      // Check if identifier is phone or username
+      if (identifier.startsWith('0') || identifier.startsWith('62') || identifier.contains(RegExp(r'^\d+$'))) {
+        // Normalize phone number
+        String normalizedPhone = identifier.replaceAll(RegExp(r'[^0-9]'), '');
+        if (normalizedPhone.startsWith('0')) {
+          normalizedPhone = '62${normalizedPhone.substring(1)}';
+        }
+        
+        print('🔍 Searching by phone: $normalizedPhone');
+        user = await localDataSource.getUserByPhone(normalizedPhone);
+      } else {
+        // Search by username
+        print('🔍 Searching by username: $identifier');
+        user = await localDataSource.getUserByUsername(identifier);
+      }
+
+      if (user == null) {
+        print('❌ User not found: $identifier');
+        return const Left(CacheFailure(message: 'Username atau nomor HP tidak ditemukan'));
+      }
+
+      // Verify password
+      if (user.password != password) {
+        print('❌ Invalid password for user: $identifier');
+        return const Left(CacheFailure(message: 'Password yang Anda masukkan salah'));
+      }
+
+      print('✅ Login successful: ${user.username}');
+      
+      // Update last login
+      final updatedUser = user.copyWith(
+        lastLogin: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
+      await localDataSource.updateUser(updatedUser);
+
+      return Right(updatedUser);
+    } catch (e) {
+      print('❌ Login error: $e');
+      return Left(CacheFailure(message: 'Terjadi kesalahan saat login'));
     }
   }
 }

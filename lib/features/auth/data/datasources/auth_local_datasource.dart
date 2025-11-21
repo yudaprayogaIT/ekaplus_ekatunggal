@@ -10,14 +10,17 @@ abstract class AuthLocalDataSource {
   Future<bool> verifyOtp(String phone, String otp);
   Future<UserModel> saveUser(UserModel user);
   Future<UserModel?> getUserByPhone(String phone);
+  Future<UserModel?> getUserByUsername(String username);
+  Future<UserModel?> getUserByEmail(String email);
+  Future<void> updateUser(UserModel user);
 }
 
 class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   final StorageService _storageService = StorageService();
 
   Future<String> exportUsersAsJson() async {
-  return await _storageService.exportUsersAsJson();
-}
+    return await _storageService.exportUsersAsJson();
+  }
 
   @override
   Future<bool> checkPhoneExists(String phone) async {
@@ -139,13 +142,13 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
     }
   }
 
-  // Additional methods using StorageService
-
+  @override
   Future<UserModel?> getUserByUsername(String username) async {
     try {
       final userMap = await _storageService.getUserByUsername(username);
       
       if (userMap == null || userMap.isEmpty) {
+        print('⚠️ User not found by username: $username');
         return null;
       }
 
@@ -156,11 +159,13 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
     }
   }
 
+  @override
   Future<UserModel?> getUserByEmail(String email) async {
     try {
       final userMap = await _storageService.getUserByEmail(email);
       
       if (userMap == null || userMap.isEmpty) {
+        print('⚠️ User not found by email: $email');
         return null;
       }
 
@@ -171,10 +176,13 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
     }
   }
 
+  @override
   Future<void> updateUser(UserModel user) async {
     try {
+      print('🔄 Updating user: ${user.phone}');
       final updates = user.toJson();
       await _storageService.updateUser(user.phone, updates);
+      print('✅ User updated successfully!');
     } catch (e) {
       print('❌ Error updating user: $e');
       rethrow;

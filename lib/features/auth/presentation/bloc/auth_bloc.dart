@@ -1,5 +1,6 @@
 // lib/features/auth/presentation/bloc/auth_bloc.dart
 import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/check_phone_exists.dart';
+import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/login_user.dart';
 import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/register_user.dart';
 import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/request_otp.dart';
 import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/verify_otp.dart';
@@ -12,17 +13,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final RequestOtp requestOtp;
   final VerifyOtp verifyOtp;
   final RegisterUser registerUser;
+  final LoginUser loginUser;
 
   AuthBloc({
     required this.checkPhoneExists,
     required this.requestOtp,
     required this.verifyOtp,
     required this.registerUser,
+    required this.loginUser,
   }) : super(AuthInitial()) {
     on<CheckPhoneEvent>(_onCheckPhone);
     on<RequestOtpEvent>(_onRequestOtp);
     on<VerifyOtpEvent>(_onVerifyOtp);
     on<RegisterUserEvent>(_onRegisterUser);
+    on<LoginUserEvent>(_onLoginUser);
     on<ResetAuthEvent>(_onResetAuth);
   }
 
@@ -120,6 +124,28 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       (user) {
         print('✅ Registration Success: ${user.phone} - ${user.fullName}');
         emit(RegisterSuccess(user));
+      },
+    );
+  }
+
+  Future<void> _onLoginUser(
+    LoginUserEvent event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(AuthLoading());
+
+    print('🔄 Login attempt: ${event.identifier}');
+
+    final result = await loginUser(event.identifier, event.password);
+
+    result.fold(
+      (failure) {
+        print('❌ Login Failed: ${failure.message}');
+        emit(LoginError(failure.message ?? 'Login gagal'));
+      },
+      (user) {
+        print('✅ Login Success: ${user.username} - ${user.fullName}');
+        emit(LoginSuccess(user));
       },
     );
   }

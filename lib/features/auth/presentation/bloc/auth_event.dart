@@ -73,4 +73,17 @@ class RegisterUserEvent extends AuthEvent {
   ];
 }
 
+class LoginUserEvent extends AuthEvent {
+  final String identifier; // phone or username
+  final String password;
+
+  const LoginUserEvent({
+    required this.identifier,
+    required this.password,
+  });
+
+  @override
+  List<Object> get props => [identifier, password];
+}
+
 class ResetAuthEvent extends AuthEvent {}

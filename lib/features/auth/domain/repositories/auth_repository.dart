@@ -19,4 +19,7 @@ abstract class AuthRepository {
 
   /// Get user by phone
   Future<Either<Failure, User>> getUserByPhone(String phone);
+
+  // Login user with phone/username and password
+  Future<Either<Failure, User>> loginUser(String identifier, String password);
 }

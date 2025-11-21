@@ -1,3 +1,4 @@
+// lib/features/auth/presentation/bloc/auth_state.dart
 import 'package:equatable/equatable.dart';
 import 'package:ekaplus_ekatunggal/features/auth/domain/entities/user.dart';
 
@@ -14,7 +15,7 @@ class AuthLoading extends AuthState {}
 
 // --- Phone Check States ---
 class PhoneCheckSuccess extends AuthState {
-  final bool exists; // true jika nomor sudah terdaftar, false jika belum
+  final bool exists;
   const PhoneCheckSuccess(this.exists);
   @override
   List<Object> get props => [exists];
@@ -29,7 +30,7 @@ class PhoneCheckError extends AuthState {
 
 // --- OTP Request States ---
 class OtpRequestSuccess extends AuthState {
-  final String otp; // Kirimkan OTP (untuk debug/dev)
+  final String otp;
   final String phone;
   const OtpRequestSuccess({required this.otp, required this.phone});
   @override
@@ -69,6 +70,21 @@ class RegisterSuccess extends AuthState {
 class RegisterError extends AuthState {
   final String message;
   const RegisterError(this.message);
+  @override
+  List<Object> get props => [message];
+}
+
+// --- Login States ---
+class LoginSuccess extends AuthState {
+  final User user;
+  const LoginSuccess(this.user);
+  @override
+  List<Object> get props => [user];
+}
+
+class LoginError extends AuthState {
+  final String message;
+  const LoginError(this.message);
   @override
   List<Object> get props => [message];
 }

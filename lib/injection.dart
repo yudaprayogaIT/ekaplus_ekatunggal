@@ -1,4 +1,5 @@
 // lib/injection.dart
+import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/login_user.dart';
 import 'package:ekaplus_ekatunggal/features/auth/presentation/bloc/otp_timer/otp_timer_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
@@ -94,6 +95,8 @@ Future<void> init() async {
   myinjection.registerLazySingleton(() => RequestOtp(myinjection()));
   myinjection.registerLazySingleton(() => VerifyOtp(myinjection()));
   myinjection.registerLazySingleton(() => RegisterUser(myinjection()));
+  myinjection.registerLazySingleton(() => LoginUser(myinjection()));
+
 
   /// --- Blocs / Factories (UI level)
   myinjection.registerFactory(
@@ -119,6 +122,7 @@ Future<void> init() async {
       requestOtp: myinjection(),
       verifyOtp: myinjection(),
       registerUser: myinjection(),
+      loginUser: myinjection(),
     ),
   );
 

@@ -242,7 +242,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                 _isNavigating = false;
 
                 // Navigate ke Register Form
-                context.push('/register-form', extra: widget.phoneNumber);
+                context.push('/registerForm', extra: widget.phoneNumber);
               });
             } else if (state is OtpVerificationError) {
               print('❌ OTP Verification Failed: ${state.message}');

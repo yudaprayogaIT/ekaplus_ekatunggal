@@ -4,7 +4,6 @@ import 'package:ekaplus_ekatunggal/core/services/storage_service.dart';
 import 'package:ekaplus_ekatunggal/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:ekaplus_ekatunggal/features/auth/presentation/bloc/auth_event.dart';
 import 'package:ekaplus_ekatunggal/features/auth/presentation/bloc/auth_state.dart';
-import 'package:ekaplus_ekatunggal/features/dev_tools/dev_tools.page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,7 +17,7 @@ class RegisterFormPage extends StatefulWidget {
   final String phoneNumber;
 
   const RegisterFormPage({Key? key, required this.phoneNumber})
-    : super(key: key);
+      : super(key: key);
 
   @override
   State<RegisterFormPage> createState() => _RegisterFormPageState();
@@ -39,62 +38,49 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
   final TextEditingController _confirmPasswordController =
       TextEditingController();
 
+  // phone controller dibuat di state
+  late final TextEditingController _phoneController;
+
   // State
   String? _selectedGender;
   DateTime? _selectedDate;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _isNavigating = false;
-
-  Widget _buildResponsivePair(
-    Widget left,
-    Widget right, {
-    double spacing = 12,
-  }) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        // Anda bisa tweak breakpoint ini (600 = tablet-ish)
-        const double breakpoint = 440;
-        if (constraints.maxWidth >= breakpoint) {
-          return Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Left field
-              Expanded(child: left),
-              SizedBox(width: spacing),
-              // Right field
-              Expanded(child: right),
-            ],
-          );
-        } else {
-          // Narrow screen: tumpuk vertikal (mirip behavior sebelumnya)
-          return Column(children: [left, SizedBox(height: 12), right]);
-        }
-      },
-    );
-  }
+  bool _isDisposed = false;
 
   @override
   void initState() {
     super.initState();
-    _firstNameController.addListener(_updateFullName);
-    _lastNameController.addListener(_updateFullName);
+    _firstNameController.addListener(_updateFullNameSafe);
+    _lastNameController.addListener(_updateFullNameSafe);
 
-    // Add listener untuk real-time password validation UI
-    _passwordController.addListener(() {
-      setState(() {}); // Rebuild untuk update password requirements
-    });
+    _phoneController = TextEditingController(text: widget.phoneNumber);
+
+    _passwordController.addListener(_onPasswordChanged);
   }
 
-  void _updateFullName() {
+  void _onPasswordChanged() {
+    if (!mounted || _isDisposed) return;
+    setState(() {});
+  }
+
+  // safe update full name (avoid writing to controller after dispose)
+  void _updateFullNameSafe() {
+    if (_isDisposed) return;
+
     final firstName = _firstNameController.text.trim();
     final lastName = _lastNameController.text.trim();
+    final combined = '$firstName $lastName'.trim();
 
-    // Auto-generate full name (real-time, tidak di-capitalize di UI)
-    if (firstName.isNotEmpty || lastName.isNotEmpty) {
-      _fullNameController.text = '$firstName $lastName'.trim();
-    } else {
-      _fullNameController.text = '';
+    if (!mounted || _isDisposed) return;
+
+    try {
+      if (_fullNameController.text != combined) {
+        _fullNameController.text = combined;
+      }
+    } catch (e) {
+      debugPrint('⚠️ Could not update fullNameController: $e');
     }
   }
 
@@ -119,35 +105,40 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
 
   @override
   void dispose() {
-    _firstNameController.dispose();
-    _lastNameController.dispose();
-    _fullNameController.dispose();
-    _usernameController.dispose();
-    _emailController.dispose();
-    _birthPlaceController.dispose();
-    _birthDateController.dispose();
-    _passwordController.dispose();
-    _confirmPasswordController.dispose();
+    _isDisposed = true;
+
+    try {
+      _firstNameController.removeListener(_updateFullNameSafe);
+      _lastNameController.removeListener(_updateFullNameSafe);
+      _passwordController.removeListener(_onPasswordChanged);
+    } catch (_) {}
+
+    try {
+      _firstNameController.dispose();
+      _lastNameController.dispose();
+      _fullNameController.dispose();
+      _usernameController.dispose();
+      _emailController.dispose();
+      _birthPlaceController.dispose();
+      _birthDateController.dispose();
+      _passwordController.dispose();
+      _confirmPasswordController.dispose();
+      _phoneController.dispose();
+    } catch (_) {}
+
     super.dispose();
   }
 
-  // Auto-copy JSON to clipboard
-  Future<void> _autoCopyJsonToClipboard(BuildContext context) async {
+  // Auto-copy JSON to clipboard (fire-and-forget ok)
+  Future<void> _autoCopyJsonToClipboard() async {
     try {
       final storageService = StorageService();
       final jsonString = await storageService.exportUsersAsJson();
-
-      // Copy to clipboard
       await Clipboard.setData(ClipboardData(text: jsonString));
-
-      print('');
-      print('✅ JSON AUTO-COPIED TO CLIPBOARD!');
-      print('📋 You can now paste it anywhere');
-      print('');
-      print('📁 Also saved to: ${storageService.getAssetsFilePath()}');
-      print('');
+      debugPrint('✅ JSON AUTO-COPIED TO CLIPBOARD!');
+      debugPrint('📁 Also saved to: ${storageService.getAssetsFilePath()}');
     } catch (e) {
-      print('⚠️ Could not copy to clipboard: $e');
+      debugPrint('⚠️ Could not copy to clipboard: $e');
     }
   }
 
@@ -188,7 +179,6 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
       return 'Kata sandi minimal 6 karakter';
     }
 
-    // Check if contains at least 1 digit OR 1 special character
     final hasDigit = value.contains(RegExp(r'[0-9]'));
     final hasSpecialChar = value.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
 
@@ -222,7 +212,6 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
           color: Colors.white,
           child: Column(
             children: [
-              // Toolbar dengan tombol "Batal" dan "Selesai"
               SizedBox(
                 height: 44,
                 child: Row(
@@ -237,11 +226,11 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: const Text('Selesai'),
                       onPressed: () {
+                        if (!mounted || _isDisposed) return;
                         setState(() {
                           _selectedDate = tempPicked;
-                          _birthDateController.text = DateFormat(
-                            'dd/MM/yyyy',
-                          ).format(_selectedDate!);
+                          _birthDateController.text =
+                              DateFormat('dd/MM/yyyy').format(_selectedDate!);
                         });
                         Navigator.of(context).pop();
                       },
@@ -249,11 +238,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                   ],
                 ),
               ),
-
-              // Divider tipis
               const Divider(height: 1),
-
-              // CupertinoDatePicker
               Expanded(
                 child: CupertinoDatePicker(
                   mode: CupertinoDatePickerMode.date,
@@ -262,7 +247,6 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                   maximumDate: DateTime.now(),
                   use24hFormat: true,
                   onDateTimeChanged: (DateTime picked) {
-                    // Simpan sementara; hanya dipakai saat user tekan "Selesai"
                     tempPicked = picked;
                   },
                 ),
@@ -276,55 +260,55 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
 
   // Submit Form
   void _submitForm() {
-    if (_formKey.currentState!.validate()) {
-      if (_selectedGender == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Silakan pilih jenis kelamin'),
-            backgroundColor: AppColors.primaryColor,
-          ),
-        );
-        return;
-      }
+    if (_formKey.currentState == null) return;
+    if (!_formKey.currentState!.validate()) return;
 
-      // Clean and capitalize data before saving
-      final firstName = _capitalizeWords(_cleanText(_firstNameController.text));
-      final lastName = _capitalizeWords(_cleanText(_lastNameController.text));
-      final fullName = '$firstName $lastName'.trim();
-      final birthPlace = _capitalizeWords(
-        _cleanText(_birthPlaceController.text),
-      );
-      final email = _cleanText(_emailController.text).toLowerCase();
-      final username = _usernameController.text.trim().isEmpty
-          ? null
-          : _cleanText(_usernameController.text).toLowerCase();
-
-      print('📝 Registering user...');
-      print('Phone: ${widget.phoneNumber}');
-      print('First Name: $firstName (capitalized)');
-      print('Last Name: $lastName (capitalized)');
-      print('Full Name: $fullName (auto-generated)');
-      print('Email: $email (lowercase)');
-      print('Username: $username');
-      print('Birth Place: $birthPlace (capitalized)');
-      print('Birth Date: ${_birthDateController.text}');
-      print('Gender: $_selectedGender');
-
-      // Register user
-      context.read<AuthBloc>().add(
-        RegisterUserEvent(
-          phone: widget.phoneNumber,
-          firstName: firstName,
-          lastName: lastName,
-          username: username ?? '',
-          email: email,
-          dateOfBirth: _birthDateController.text,
-          birthPlace: birthPlace,
-          gender: _selectedGender!,
-          password: _passwordController.text,
+    if (_selectedGender == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Silakan pilih jenis kelamin'),
+          backgroundColor: AppColors.primaryColor,
         ),
       );
+      return;
     }
+
+    // Guard: set navigating immediately to prevent double taps
+    if (_isNavigating) return;
+    setState(() => _isNavigating = true);
+
+    // Clean and capitalize data before saving
+    final firstName = _capitalizeWords(_cleanText(_firstNameController.text));
+    final lastName = _capitalizeWords(_cleanText(_lastNameController.text));
+    final fullName = '$firstName $lastName'.trim();
+    final birthPlace = _capitalizeWords(
+      _cleanText(_birthPlaceController.text),
+    );
+    final email = _cleanText(_emailController.text).toLowerCase();
+    final username = _usernameController.text.trim().isEmpty
+        ? null
+        : _cleanText(_usernameController.text).toLowerCase();
+
+    debugPrint('📝 Registering user...');
+    debugPrint('Phone: ${widget.phoneNumber}');
+    debugPrint('Full Name: $fullName');
+    debugPrint('Email: $email');
+    debugPrint('Gender: $_selectedGender');
+
+    // Dispatch event (bloc will handle saving)
+    context.read<AuthBloc>().add(
+          RegisterUserEvent(
+            phone: widget.phoneNumber,
+            firstName: firstName,
+            lastName: lastName,
+            username: username ?? '',
+            email: email,
+            dateOfBirth: _birthDateController.text,
+            birthPlace: birthPlace,
+            gender: _selectedGender!,
+            password: _passwordController.text,
+          ),
+        );
   }
 
   @override
@@ -384,138 +368,50 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
         ),
       ),
       body: BlocListener<AuthBloc, AuthState>(
-        listener: (context, state) {
+        listener: (context, state) async {
+          if (!mounted || _isDisposed) return;
+
           if (state is RegisterSuccess) {
-            if (_isNavigating) return;
-            _isNavigating = true;
+            debugPrint('✅ RegisterSuccess (listener)');
 
-            print('✅ Registration Success!');
+            // Keep copy-to-clipboard as fire-and-forget
+            _autoCopyJsonToClipboard();
 
-            // Auto-copy JSON to clipboard
-            _autoCopyJsonToClipboard(context);
-
-            // Show success dialog (tidak hilang otomatis)
-            showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (dialogContext) => AlertDialog(
-                title: Row(
-                  children: const [
-                    Icon(Icons.check_circle, color: Colors.green, size: 32),
-                    SizedBox(width: 12),
-                    Text('Registrasi Berhasil!'),
-                  ],
+            // Show quick snack as feedback (optional)
+            if (mounted && !_isDisposed) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Registrasi berhasil — mengarahkan ke login'),
+                  backgroundColor: Colors.green,
+                  duration: Duration(milliseconds: 900),
                 ),
-                content: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'User berhasil didaftarkan: ${state.user.fullName}',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 16),
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.green[50],
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.green[200]!),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.check_circle_outline,
-                                  color: Colors.green,
-                                  size: 20,
-                                ),
-                                SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    'JSON otomatis tersalin ke clipboard',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 8),
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.check_circle_outline,
-                                  color: Colors.green,
-                                  size: 20,
-                                ),
-                                SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    'Data tersimpan di assets/data/users.json',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      const Text(
-                        'Anda bisa:',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 8),
-                      const Text('• Paste JSON ke editor (sudah di clipboard)'),
-                      const Text('• Lihat file di assets/data/users.json'),
-                      const Text('• Export ulang via Dev Tools'),
-                    ],
-                  ),
-                ),
-                actions: [
-                  TextButton.icon(
-                    onPressed: () {
-                      Navigator.pop(dialogContext);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const DevToolsPage(),
-                        ),
-                      );
-                    },
-                    icon: const Icon(Icons.file_download),
-                    label: const Text('Lihat Dev Tools'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(dialogContext);
-                      _isNavigating = false;
-                      context.go('/login');
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primaryColor,
-                      foregroundColor: Colors.white,
-                    ),
-                    child: const Text('OK, Lanjutkan'),
-                  ),
-                ],
-              ),
-            );
-          } else if (state is RegisterError) {
-            print('❌ Registration Error: ${state.message}');
+              );
+            }
 
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: AppColors.primaryColor,
-              ),
-            );
+            // Delay navigation to next frame to avoid using context while disposing
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (!mounted || _isDisposed) return;
+              // Reset navigating guard (page will be disposed by router)
+              setState(() => _isNavigating = false);
+              context.go('/login');
+            });
+
+            return;
+          }
+
+          if (state is RegisterError) {
+            debugPrint('❌ Registration Error: ${state.message}');
+            // Re-enable button so user can retry
+            if (mounted && !_isDisposed) {
+              setState(() => _isNavigating = false);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.message),
+                  backgroundColor: AppColors.primaryColor,
+                ),
+              );
+            }
+            return;
           }
         },
         child: Column(
@@ -601,7 +497,6 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                           validator: (value) =>
                               _validateRequired(value, 'Tempat lahir'),
                         ),
-                        // Gunakan _buildDateField() yang ada sekarang (readOnly + onTap ke date picker)
                         _buildDateField(),
                       ),
 
@@ -615,9 +510,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                       ),
                       const SizedBox(height: 10),
                       _buildTextField(
-                        controller: TextEditingController(
-                          text: widget.phoneNumber,
-                        ),
+                        controller: _phoneController,
                         label: 'Nomor Telepon',
                         readOnly: true,
                         enabled: false,
@@ -694,6 +587,26 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
         ),
       ),
     );
+  }
+
+  // UI helpers (same as before)
+  Widget _buildResponsivePair(Widget left, Widget right,
+      {double spacing = 12}) {
+    return LayoutBuilder(builder: (context, constraints) {
+      const double breakpoint = 440;
+      if (constraints.maxWidth >= breakpoint) {
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(child: left),
+            SizedBox(width: spacing),
+            Expanded(child: right),
+          ],
+        );
+      } else {
+        return Column(children: [left, SizedBox(height: 12), right]);
+      }
+    });
   }
 
   Widget _buildTextField({
@@ -897,8 +810,6 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
     return DropdownButtonFormField2<String>(
       value: _selectedGender,
       isExpanded: true,
-
-      // === styling form (tetap full) ===
       decoration: InputDecoration(
         labelText: 'Jenis Kelamin',
         labelStyle: const TextStyle(
@@ -928,35 +839,24 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
           vertical: 10,
         ),
       ),
-
-      // hint: const Text('Pilih jenis kelamin'),
       items: const [
         DropdownMenuItem(value: 'Laki-laki', child: Text('Laki-laki')),
         DropdownMenuItem(value: 'Perempuan', child: Text('Perempuan')),
       ],
-
       onChanged: (value) {
         setState(() {
           _selectedGender = value;
         });
       },
-
       validator: (value) {
         if (value == null) return 'Jenis kelamin tidak boleh kosong';
         return null;
       },
-
-      // === bagian penting: atur ukuran popup dropdown ===
       dropdownStyleData: DropdownStyleData(
-        // lebar popup (misal 260 px atau 70% layar)
-        width: 260,
-        // atau pakai maxWidth kalau mau adaptif:
-        // maxWidth: 280,
+        width: 280,
         padding: const EdgeInsets.symmetric(vertical: 4),
       ),
-
       menuItemStyleData: const MenuItemStyleData(height: 48),
-
       iconStyleData: const IconStyleData(icon: Icon(Icons.keyboard_arrow_down)),
     );
   }
