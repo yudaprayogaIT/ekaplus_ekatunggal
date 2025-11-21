@@ -373,11 +373,14 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
 
           if (state is RegisterSuccess) {
             debugPrint('✅ RegisterSuccess (listener)');
-
-            // Keep copy-to-clipboard as fire-and-forget
+            
+            // --- PERBAIKAN UTAMA DI SINI ---
+            // 1. Tutup keyboard/hapus fokus secara paksa sebelum navigasi
+            // Ini mencegah TextField mengakses controller yang akan di-dispose
+            FocusScope.of(context).unfocus(); 
+            
             _autoCopyJsonToClipboard();
 
-            // Show quick snack as feedback (optional)
             if (mounted && !_isDisposed) {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
@@ -388,11 +391,15 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
               );
             }
 
-            // Delay navigation to next frame to avoid using context while disposing
-            WidgetsBinding.instance.addPostFrameCallback((_) {
+            // 2. Beri sedikit jeda agar proses unfocus selesai, baru navigasi
+            WidgetsBinding.instance.addPostFrameCallback((_) async {
               if (!mounted || _isDisposed) return;
-              // Reset navigating guard (page will be disposed by router)
-              setState(() => _isNavigating = false);
+              
+              // HAPUS setState di sini. Tidak perlu update UI (_isNavigating) 
+              // karena halaman ini akan segera dihancurkan (context.go).
+              // setState(() => _isNavigating = false); <--- INI DIHAPUS SAJA
+              
+              // Navigasi
               context.go('/login');
             });
 

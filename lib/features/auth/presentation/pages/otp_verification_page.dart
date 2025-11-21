@@ -57,15 +57,32 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
 
   @override
   void dispose() {
+    // 1. Set flag mati agar logic lain berhenti
     _isDisposed = true;
 
-    // Dispose controllers safely
-    _otpController?.dispose();
-    _pinFocusNode?.dispose();
+    // 2. Close Stream (Aman karena bukan UI)
     _errorController?.close();
 
-    _otpController = null;
+    // 3. Dispose FocusNode
+    // HAPUS baris _pinFocusNode?.unfocus(); <--- INI PENYEBAB ERROR "Deactivated Widget"
+    // Alasannya: unfocus() memicu pencarian context saat widget sudah mati.
+    try {
+      _pinFocusNode?.dispose();
+    } catch (e) {
+      debugPrint('⚠️ FocusNode error on dispose: $e');
+    }
+
+    // 4. Dispose Controller
+    // Tetap gunakan try-catch untuk menangani "used after disposed"
+    try {
+      _otpController?.dispose();
+    } catch (e) {
+      debugPrint('⚠️ OTP Controller error on dispose: $e');
+    }
+
+    // 5. Nullify untuk mencegah akses liar
     _pinFocusNode = null;
+    _otpController = null;
     _errorController = null;
 
     super.dispose();
@@ -274,6 +291,8 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 50),
                         child: PinCodeTextField(
+                          enabled: !_isNavigating && !_isDisposed,
+
                           appContext: context,
                           length: 6,
                           controller: _otpController!,
