@@ -3,6 +3,7 @@ import 'package:ekaplus_ekatunggal/constant.dart';
 import 'package:ekaplus_ekatunggal/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:ekaplus_ekatunggal/features/auth/presentation/bloc/auth_event.dart';
 import 'package:ekaplus_ekatunggal/features/auth/presentation/bloc/auth_state.dart';
+import 'package:ekaplus_ekatunggal/features/auth/presentation/cubit/auth_session_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -22,6 +23,7 @@ class _LoginPageState extends State<LoginPage>
   final _formKey = GlobalKey<FormState>();
   bool _isPasswordVisible = false;
   bool _isNavigating = false;
+  bool _isDisposed = false;
   String? _identifierError;
   String? _passwordError;
 
@@ -44,6 +46,7 @@ class _LoginPageState extends State<LoginPage>
 
   @override
   void dispose() {
+    _isDisposed = true;
     _identifierController.dispose();
     _passwordController.dispose();
     _shakeController.dispose();
@@ -51,8 +54,11 @@ class _LoginPageState extends State<LoginPage>
   }
 
   void _triggerShake() {
+    if (!mounted || _isDisposed) return;
     _shakeController.forward(from: 0).then((_) {
-      _shakeController.reverse();
+      if (mounted && !_isDisposed) {
+        _shakeController.reverse();
+      }
     });
   }
 
@@ -81,6 +87,8 @@ class _LoginPageState extends State<LoginPage>
   }
 
   void _onLoginPressed() {
+    if (!mounted || _isDisposed) return;
+
     setState(() {
       _identifierError = null;
       _passwordError = null;
@@ -91,8 +99,8 @@ class _LoginPageState extends State<LoginPage>
       final password = _passwordController.text;
 
       context.read<AuthBloc>().add(
-        LoginUserEvent(identifier: identifier, password: password),
-      );
+            LoginUserEvent(identifier: identifier, password: password),
+          );
     }
   }
 
@@ -113,7 +121,7 @@ class _LoginPageState extends State<LoginPage>
             child: IconButton(
               icon: const Icon(FontAwesomeIcons.arrowLeft, color: Colors.white),
               onPressed: () {
-                if (!_isNavigating) {
+                if (!_isNavigating && !_isDisposed) {
                   context.pop();
                 }
               },
@@ -152,9 +160,10 @@ class _LoginPageState extends State<LoginPage>
           ),
         ),
       ),
-      // backgroundColor: primaryColor,
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
+          if (!mounted || _isDisposed) return;
+
           if (state is LoginError) {
             print('❌ Login Error: ${state.message}');
 
@@ -179,19 +188,26 @@ class _LoginPageState extends State<LoginPage>
 
             print('✅ Login Success: ${state.user.fullName}');
 
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Selamat datang, ${state.user.fullName}! 👋'),
-                backgroundColor: Colors.green,
-                duration: const Duration(seconds: 2),
-              ),
-            );
+            // 🔥 PENTING: Unfocus keyboard dulu
+            FocusScope.of(context).unfocus();
 
-            Future.delayed(const Duration(milliseconds: 500), () {
-              if (!mounted) return;
-              _isNavigating = false;
-              // TODO: Navigate to home page
-              context.go('/home');
+            // 🔥 NEW: Save session via AuthSessionCubit
+            context.read<AuthSessionCubit>().login(state.user);
+
+            if (mounted && !_isDisposed) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Selamat datang, ${state.user.fullName}! 👋'),
+                  backgroundColor: Colors.green,
+                  duration: const Duration(seconds: 2),
+                ),
+              );
+            }
+
+            // Navigate after frame completion
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (!mounted || _isDisposed) return;
+              context.go('/');
             });
           }
         },
@@ -199,7 +215,6 @@ class _LoginPageState extends State<LoginPage>
           child: SingleChildScrollView(
             child: Column(
               children: [
-                // White Content Section
                 Container(
                   width: double.infinity,
                   decoration: const BoxDecoration(
@@ -217,11 +232,10 @@ class _LoginPageState extends State<LoginPage>
                         key: _formKey,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          // mainAxisSize: MainAxisSize.min,
                           children: [
                             const SizedBox(height: 10),
 
-                            // Identifier Input (Phone/Username)
+                            // Identifier Input
                             AnimatedBuilder(
                               animation: _shakeAnimation,
                               builder: (context, child) {
@@ -257,9 +271,7 @@ class _LoginPageState extends State<LoginPage>
                                     borderSide: BorderSide(
                                       color: _identifierError != null
                                           ? AppColors.primaryColor
-                                          : AppColors.grayColor.withOpacity(
-                                              0.5,
-                                            ),
+                                          : AppColors.grayColor.withOpacity(0.5),
                                       width: _identifierError != null ? 2 : 1,
                                     ),
                                   ),
@@ -294,7 +306,7 @@ class _LoginPageState extends State<LoginPage>
                                 ),
                                 validator: _validateIdentifier,
                                 onChanged: (value) {
-                                  if (_identifierError != null) {
+                                  if (_identifierError != null && mounted && !_isDisposed) {
                                     setState(() {
                                       _identifierError = null;
                                     });
@@ -342,10 +354,11 @@ class _LoginPageState extends State<LoginPage>
                                       color: AppColors.grayColor,
                                     ),
                                     onPressed: () {
-                                      setState(() {
-                                        _isPasswordVisible =
-                                            !_isPasswordVisible;
-                                      });
+                                      if (mounted && !_isDisposed) {
+                                        setState(() {
+                                          _isPasswordVisible = !_isPasswordVisible;
+                                        });
+                                      }
                                     },
                                   ),
                                   border: OutlineInputBorder(
@@ -356,9 +369,7 @@ class _LoginPageState extends State<LoginPage>
                                     borderSide: BorderSide(
                                       color: _passwordError != null
                                           ? AppColors.primaryColor
-                                          : AppColors.grayColor.withOpacity(
-                                              0.5,
-                                            ),
+                                          : AppColors.grayColor.withOpacity(0.5),
                                       width: _passwordError != null ? 2 : 1,
                                     ),
                                   ),
@@ -393,7 +404,7 @@ class _LoginPageState extends State<LoginPage>
                                 ),
                                 validator: _validatePassword,
                                 onChanged: (value) {
-                                  if (_passwordError != null) {
+                                  if (_passwordError != null && mounted && !_isDisposed) {
                                     setState(() {
                                       _passwordError = null;
                                     });
@@ -405,7 +416,7 @@ class _LoginPageState extends State<LoginPage>
 
                             const SizedBox(height: 8),
 
-                            // Forgot Password
+                            // Forgot Password Section (same as before)
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -413,17 +424,14 @@ class _LoginPageState extends State<LoginPage>
                                   onPressed: () {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
-                                        content: Text(
-                                          'Fitur Lupa Password segera hadir',
-                                        ),
+                                        content: Text('Fitur Lupa Password segera hadir'),
                                       ),
                                     );
                                   },
                                   style: TextButton.styleFrom(
                                     padding: EdgeInsets.zero,
                                     minimumSize: const Size(0, 0),
-                                    tapTargetSize:
-                                        MaterialTapTargetSize.shrinkWrap,
+                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                   ),
                                   child: const Text(
                                     'Lupa password ?',
@@ -437,17 +445,14 @@ class _LoginPageState extends State<LoginPage>
                                   onPressed: () {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
-                                        content: Text(
-                                          'Fitur Lupa Password segera hadir',
-                                        ),
+                                        content: Text('Fitur Lupa Password segera hadir'),
                                       ),
                                     );
                                   },
                                   style: TextButton.styleFrom(
                                     padding: EdgeInsets.zero,
                                     minimumSize: const Size(0, 0),
-                                    tapTargetSize:
-                                        MaterialTapTargetSize.shrinkWrap,
+                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                   ),
                                   child: const Text(
                                     'Lupa Password',
@@ -467,10 +472,7 @@ class _LoginPageState extends State<LoginPage>
                             Row(
                               children: const [
                                 Expanded(
-                                  child: Divider(
-                                    thickness: 0.8,
-                                    color: Colors.black26,
-                                  ),
+                                  child: Divider(thickness: 0.8, color: Colors.black26),
                                 ),
                                 Padding(
                                   padding: EdgeInsets.symmetric(horizontal: 8),
@@ -483,10 +485,7 @@ class _LoginPageState extends State<LoginPage>
                                   ),
                                 ),
                                 Expanded(
-                                  child: Divider(
-                                    thickness: 0.8,
-                                    color: Colors.black26,
-                                  ),
+                                  child: Divider(thickness: 0.8, color: Colors.black26),
                                 ),
                               ],
                             ),
@@ -498,9 +497,7 @@ class _LoginPageState extends State<LoginPage>
                               onPressed: () {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                    content: Text(
-                                      'Google Sign In belum tersedia',
-                                    ),
+                                    content: Text('Google Sign In belum tersedia'),
                                   ),
                                 );
                               },
@@ -509,10 +506,7 @@ class _LoginPageState extends State<LoginPage>
                                 width: 24,
                                 height: 24,
                                 errorBuilder: (context, error, stackTrace) {
-                                  return const Icon(
-                                    Icons.g_mobiledata,
-                                    size: 24,
-                                  );
+                                  return const Icon(Icons.g_mobiledata, size: 24);
                                 },
                               ),
                               label: const Text(
@@ -544,16 +538,13 @@ class _LoginPageState extends State<LoginPage>
                                 final isLoading = state is AuthLoading;
 
                                 return ElevatedButton(
-                                  onPressed: (isLoading || _isNavigating)
+                                  onPressed: (isLoading || _isNavigating || _isDisposed)
                                       ? null
                                       : _onLoginPressed,
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: yellowColor,
                                     foregroundColor: Colors.black,
-                                    minimumSize: const Size(
-                                      double.infinity,
-                                      56,
-                                    ),
+                                    minimumSize: const Size(double.infinity, 56),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(10),
                                     ),
@@ -591,15 +582,14 @@ class _LoginPageState extends State<LoginPage>
                                 ),
                                 TextButton(
                                   onPressed: () {
-                                    if (!_isNavigating) {
+                                    if (!_isNavigating && !_isDisposed) {
                                       context.push('/register');
                                     }
                                   },
                                   style: TextButton.styleFrom(
                                     padding: EdgeInsets.zero,
                                     minimumSize: const Size(0, 0),
-                                    tapTargetSize:
-                                        MaterialTapTargetSize.shrinkWrap,
+                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                   ),
                                   child: const Text(
                                     'Daftar Sekarang',

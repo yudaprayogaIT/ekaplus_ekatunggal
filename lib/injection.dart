@@ -1,6 +1,7 @@
 // lib/injection.dart
 import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/login_user.dart';
 import 'package:ekaplus_ekatunggal/features/auth/presentation/bloc/otp_timer/otp_timer_bloc.dart';
+import 'package:ekaplus_ekatunggal/features/auth/presentation/cubit/auth_session_cubit.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
 
@@ -43,6 +44,11 @@ import 'package:ekaplus_ekatunggal/features/type/presentation/bloc/type_bloc.dar
 var myinjection = GetIt.instance;
 
 Future<void> init() async {
+  // Cubit - NEW: Auth Session Management
+  myinjection.registerLazySingleton<AuthSessionCubit>(
+    () => AuthSessionCubit(),
+  );
+
   /// --- General deps
   myinjection.registerLazySingleton(() => http.Client());
 
