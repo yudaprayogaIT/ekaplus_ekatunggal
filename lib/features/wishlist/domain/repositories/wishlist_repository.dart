@@ -9,4 +9,6 @@ abstract class WishlistRepository {
   Future<Either<Failure, void>> removeFromWishlist(String userId, String productId);
   Future<Either<Failure, bool>> isInWishlist(String userId, String productId);
   Future<Either<Failure, void>> clearWishlist(String userId);
+
+  Future<Either<Failure, int>> bulkDeleteWishlist(String userId, List<String> productIds);
 }

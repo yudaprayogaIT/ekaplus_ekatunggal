@@ -59,4 +59,14 @@ class WishlistRepositoryImpl implements WishlistRepository {
       return Left(CacheFailure(message: e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, int>> bulkDeleteWishlist(String userId, List<String> productIds) async {
+    try {
+      final deletedCount = await localDataSource.bulkDeleteWishlist(userId, productIds);
+      return Right(deletedCount);
+    } catch (e) {
+      return Left(CacheFailure(message: e.toString()));
+    }
+  }
 }

@@ -9,6 +9,8 @@ abstract class WishlistLocalDataSource {
   Future<void> removeFromWishlist(String userId, String productId);
   Future<bool> isInWishlist(String userId, String productId);
   Future<void> clearWishlist(String userId);
+
+  Future<int> bulkDeleteWishlist(String userId, List<String> productIds);
 }
 
 class WishlistLocalDataSourceImpl implements WishlistLocalDataSource {
@@ -99,6 +101,28 @@ class WishlistLocalDataSourceImpl implements WishlistLocalDataSource {
       print('✅ Wishlist cleared for user: $userId');
     } catch (e) {
       print('❌ Error clearing wishlist: $e');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<int> bulkDeleteWishlist(String userId, List<String> productIds) async {
+    try {
+      final wishlist = await getWishlist(userId);
+      final initialCount = wishlist.length;
+
+      // Remove all items yang ada di productIds
+      wishlist.removeWhere((item) => productIds.contains(item.productId));
+
+      final deletedCount = initialCount - wishlist.length;
+
+      // Save updated wishlist
+      await _saveWishlist(userId, wishlist);
+
+      print('✅ Bulk deleted $deletedCount items from wishlist');
+      return deletedCount;
+    } catch (e) {
+      print('❌ Error bulk deleting wishlist: $e');
       rethrow;
     }
   }

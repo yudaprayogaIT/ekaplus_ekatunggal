@@ -5,7 +5,7 @@ abstract class WishlistEvent extends Equatable {
   const WishlistEvent();
 
   @override
-  List<Object?> get props => [];
+  List<Object> get props => [];
 }
 
 class LoadWishlist extends WishlistEvent {
@@ -14,7 +14,7 @@ class LoadWishlist extends WishlistEvent {
   const LoadWishlist(this.userId);
 
   @override
-  List<Object?> get props => [userId];
+  List<Object> get props => [userId];
 }
 
 class ToggleWishlistItem extends WishlistEvent {
@@ -27,7 +27,7 @@ class ToggleWishlistItem extends WishlistEvent {
   });
 
   @override
-  List<Object?> get props => [userId, productId];
+  List<Object> get props => [userId, productId];
 }
 
 class CheckWishlistStatus extends WishlistEvent {
@@ -40,5 +40,18 @@ class CheckWishlistStatus extends WishlistEvent {
   });
 
   @override
-  List<Object?> get props => [userId, productId];
+  List<Object> get props => [userId, productId];
+}
+
+class BulkDeleteWishlistItems extends WishlistEvent {
+  final String userId;
+  final List<String> productIds;
+
+  const BulkDeleteWishlistItems({
+    required this.userId,
+    required this.productIds,
+  });
+
+  @override
+  List<Object> get props => [userId, productIds];
 }

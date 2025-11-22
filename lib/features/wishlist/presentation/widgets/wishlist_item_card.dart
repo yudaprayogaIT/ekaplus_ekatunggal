@@ -12,6 +12,9 @@ class WishlistItemCard extends StatelessWidget {
   final String productId;
   final String productName;
   final String imagePath;
+  final bool isSelectionMode;
+  final bool isSelected;
+  final ValueChanged<bool>? onSelectionChanged;
 
   const WishlistItemCard({
     Key? key,
@@ -19,50 +22,73 @@ class WishlistItemCard extends StatelessWidget {
     required this.productId,
     required this.productName,
     required this.imagePath,
+    this.isSelectionMode = false,
+    this.isSelected = false,
+    this.onSelectionChanged,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: AppColors.whiteColor,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        children: [
-          _buildProductImage(context),
-          const SizedBox(width: 15),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  productName,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    fontFamily: AppFonts.primaryFont,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 8),
-                _buildActionButtons(context),
-              ],
-            ),
+    return GestureDetector(
+      onTap: isSelectionMode
+          ? () => onSelectionChanged?.call(!isSelected)
+          : null,
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? AppColors.primaryColor.withOpacity(0.1)
+              : AppColors.whiteColor,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected ? AppColors.primaryColor : Colors.transparent,
+            width: 2,
           ),
-        ],
+        ),
+        child: Row(
+          children: [
+            // 🔥 Checkbox saat selection mode
+            if (isSelectionMode) ...[
+              Checkbox(
+                value: isSelected,
+                onChanged: (value) => onSelectionChanged?.call(value ?? false),
+                activeColor: AppColors.primaryColor,
+              ),
+              const SizedBox(width: 8),
+            ],
+
+            _buildProductImage(context),
+            const SizedBox(width: 15),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    productName,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: AppFonts.primaryFont,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 8),
+
+                  // 🔥 Sembunyikan tombol action saat selection mode
+                  if (!isSelectionMode) _buildActionButtons(context),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildProductImage(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        // 🔥 Navigasi ke halaman Product Detail
-        context.push('/product/$productId');
-      },
+      onTap: isSelectionMode ? null : () => context.push('/product/$productId'),
       child: Container(
         width: 105,
         height: 105,

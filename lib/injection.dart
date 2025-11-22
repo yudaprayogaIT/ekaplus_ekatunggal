@@ -1,4 +1,5 @@
 // lib/injection.dart
+import 'package:ekaplus_ekatunggal/features/wishlist/domain/usecases/bulk_delete_wishlist.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
 
@@ -41,7 +42,7 @@ import 'package:ekaplus_ekatunggal/features/type/domain/usecases/get_all_type.da
 import 'package:ekaplus_ekatunggal/features/type/domain/usecases/get_type.dart';
 import 'package:ekaplus_ekatunggal/features/type/presentation/bloc/type_bloc.dart';
 
-// 🔥 WISHLIST - CRITICAL: Import semua file wishlist
+// WISHLIST
 import 'package:ekaplus_ekatunggal/features/wishlist/data/datasources/wishlist_local_datasource.dart';
 import 'package:ekaplus_ekatunggal/features/wishlist/data/repositories/wishlist_repository_implementation.dart';
 import 'package:ekaplus_ekatunggal/features/wishlist/domain/repositories/wishlist_repository.dart';
@@ -150,6 +151,7 @@ Future<void> init() async {
   myinjection.registerLazySingleton(() => GetWishlist(myinjection()));
   myinjection.registerLazySingleton(() => ToggleWishlist(myinjection()));
   myinjection.registerLazySingleton(() => CheckWishlist(myinjection()));
+  myinjection.registerLazySingleton(() => BulkDeleteWishlist(myinjection()));
   print('✅ Wishlist UseCases registered');
 
   // ============================================
@@ -185,12 +187,12 @@ Future<void> init() async {
     ),
   );
 
-  // 🔥 CRITICAL: WISHLIST BLOC
   myinjection.registerFactory(
     () => WishlistBloc(
       getWishlist: myinjection(),
       toggleWishlist: myinjection(),
       checkWishlist: myinjection(),
+      bulkDeleteWishlist: myinjection(),
     ),
   );
   print('✅ WishlistBloc registered');

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ekaplus_ekatunggal/features/wishlist/domain/usecases/check_wishlist.dart';
 import 'package:ekaplus_ekatunggal/features/wishlist/domain/usecases/get_wishlist.dart';
 import 'package:ekaplus_ekatunggal/features/wishlist/domain/usecases/toggle_wishlist.dart';
+import 'package:ekaplus_ekatunggal/features/wishlist/domain/usecases/bulk_delete_wishlist.dart';
 import 'wishlist_event.dart';
 import 'wishlist_state.dart';
 
@@ -10,15 +11,18 @@ class WishlistBloc extends Bloc<WishlistEvent, WishlistState> {
   final GetWishlist getWishlist;
   final ToggleWishlist toggleWishlist;
   final CheckWishlist checkWishlist;
+  final BulkDeleteWishlist bulkDeleteWishlist;
 
   WishlistBloc({
     required this.getWishlist,
     required this.toggleWishlist,
     required this.checkWishlist,
+    required this.bulkDeleteWishlist,
   }) : super(WishlistInitial()) {
     on<LoadWishlist>(_onLoadWishlist);
     on<ToggleWishlistItem>(_onToggleWishlistItem);
     on<CheckWishlistStatus>(_onCheckWishlistStatus);
+    on<BulkDeleteWishlistItems>(_onBulkDeleteWishlistItems);
   }
 
   Future<void> _onLoadWishlist(
@@ -32,7 +36,6 @@ class WishlistBloc extends Bloc<WishlistEvent, WishlistState> {
     result.fold(
       (failure) => emit(WishlistError(failure.message ?? '')),
       (items) {
-        // Build status map
         final statusMap = <String, bool>{};
         for (var item in items) {
           statusMap[item.productId] = true;
@@ -53,21 +56,17 @@ class WishlistBloc extends Bloc<WishlistEvent, WishlistState> {
     result.fold(
       (failure) => emit(WishlistError(failure.message ?? '')),
       (isInWishlist) {
-        // Update status map
         if (currentState is WishlistLoaded) {
           final newStatusMap = Map<String, bool>.from(currentState.statusMap);
           newStatusMap[event.productId] = isInWishlist;
-
           emit(currentState.copyWith(statusMap: newStatusMap));
         }
 
-        // Emit toggled state for UI feedback
         emit(WishlistToggled(
           isInWishlist: isInWishlist,
           productId: event.productId,
         ));
 
-        // Reload wishlist
         add(LoadWishlist(event.userId));
       },
     );
@@ -81,7 +80,6 @@ class WishlistBloc extends Bloc<WishlistEvent, WishlistState> {
 
     result.fold(
       (failure) {
-        // Silent fail for check status
         print('⚠️ Error checking wishlist status: ${failure.message}');
       },
       (isInWishlist) {
@@ -91,6 +89,33 @@ class WishlistBloc extends Bloc<WishlistEvent, WishlistState> {
           newStatusMap[event.productId] = isInWishlist;
           emit(currentState.copyWith(statusMap: newStatusMap));
         }
+      },
+    );
+  }
+
+  Future<void> _onBulkDeleteWishlistItems(
+    BulkDeleteWishlistItems event,
+    Emitter<WishlistState> emit,
+  ) async {
+    // Validasi: jika tidak ada item yang dipilih
+    if (event.productIds.isEmpty) {
+      emit(const WishlistError('Tidak ada item yang dipilih'));
+      return;
+    }
+
+    emit(WishlistLoading());
+
+    final result = await bulkDeleteWishlist(event.userId, event.productIds);
+
+    result.fold(
+      (failure) {
+        emit(WishlistError(failure.message ?? 'Gagal menghapus item'));
+      },
+      (deletedCount) {
+        print('✅ Successfully deleted $deletedCount items');
+        
+        // Reload wishlist
+        add(LoadWishlist(event.userId));
       },
     );
   }
