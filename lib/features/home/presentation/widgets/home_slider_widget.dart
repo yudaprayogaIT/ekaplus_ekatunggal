@@ -1,5 +1,6 @@
 // lib/features/home/presentation/widgets/home_slider_widget.dart
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:ekaplus_ekatunggal/constant.dart';
 import 'package:ekaplus_ekatunggal/features/banner/domain/entities/bannerslider.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -159,7 +160,7 @@ class HomeSliderWidget extends StatelessWidget {
                             color: Colors.black.withOpacity(0.35),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: const Text('Tamu', style: TextStyle(color: Colors.white, fontSize: 12)),
+                          child: const Text('Tamu', style: TextStyle(color: AppColors.whiteColor, fontSize: 12)),
                         ),
                       ),
                   ],

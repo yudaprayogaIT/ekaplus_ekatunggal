@@ -17,7 +17,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           fontFamily: AppFonts.primaryFont,
           fontSize: 18,
           fontWeight: FontWeight.bold,
-          color: Color(0xffffffff),
+          color: AppColors.whiteColor,
         ),
       ),
       backgroundColor: AppColors.primaryColor,
@@ -26,7 +26,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
         icon: const Icon(
           FontAwesomeIcons.arrowLeft,
-          color: Colors.white,
+          color: AppColors.whiteColor,
           size: 20,
         ),
         onPressed: onLeadingPressed ?? () => Navigator.pop(context),

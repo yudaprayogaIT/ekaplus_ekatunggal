@@ -139,7 +139,7 @@ class _LoginPageState extends State<LoginPage>
                     Text(
                       'Masuk',
                       style: TextStyle(
-                        color: Colors.white,
+                        color: AppColors.whiteColor,
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
@@ -148,7 +148,7 @@ class _LoginPageState extends State<LoginPage>
                     Text(
                       'Masukkan nomor handphone/username dan password Anda',
                       style: TextStyle(
-                        color: Colors.white,
+                        color: AppColors.whiteColor,
                         fontWeight: FontWeight.w500,
                         fontSize: 14,
                       ),
@@ -218,7 +218,7 @@ class _LoginPageState extends State<LoginPage>
                 Container(
                   width: double.infinity,
                   decoration: const BoxDecoration(
-                    color: Colors.white,
+                    color: AppColors.whiteColor,
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(24),
                       topRight: Radius.circular(24),
@@ -526,7 +526,7 @@ class _LoginPageState extends State<LoginPage>
                                   color: AppColors.grayColor,
                                   width: 1.5,
                                 ),
-                                foregroundColor: Colors.black,
+                                foregroundColor: AppColors.blackColor,
                               ),
                             ),
 
@@ -543,7 +543,7 @@ class _LoginPageState extends State<LoginPage>
                                       : _onLoginPressed,
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: yellowColor,
-                                    foregroundColor: Colors.black,
+                                    foregroundColor: AppColors.blackColor,
                                     minimumSize: const Size(double.infinity, 56),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(10),
@@ -556,7 +556,7 @@ class _LoginPageState extends State<LoginPage>
                                           height: 24,
                                           child: CircularProgressIndicator(
                                             strokeWidth: 2.5,
-                                            color: Colors.black,
+                                            color: AppColors.blackColor,
                                           ),
                                         )
                                       : const Text(

@@ -186,7 +186,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
         return false; // Prevent default back behavior
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.whiteColor,
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(153),
           child: AppBar(
@@ -197,7 +197,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
               child: IconButton(
                 icon: const Icon(
                   FontAwesomeIcons.arrowLeft,
-                  color: Colors.white,
+                  color: AppColors.whiteColor,
                 ),
                 onPressed: _handleBack,
               ),
@@ -214,7 +214,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                       Text(
                         'Verifikasi Akun',
                         style: TextStyle(
-                          color: Colors.white,
+                          color: AppColors.whiteColor,
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
@@ -223,7 +223,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                       Text(
                         'Masukkan kode OTP',
                         style: TextStyle(
-                          color: Colors.white,
+                          color: AppColors.whiteColor,
                           fontWeight: FontWeight.w500,
                           fontSize: 14,
                         ),
@@ -324,12 +324,12 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                             ),
 
                             // Active state (currently typing)
-                            activeFillColor: Colors.white,
+                            activeFillColor: AppColors.whiteColor,
                             activeColor: const Color(0xFF2196F3),
                             activeBorderWidth: 2,
 
                             // Selected state (focused but empty)
-                            selectedFillColor: Colors.white,
+                            selectedFillColor: AppColors.whiteColor,
                             selectedColor: const Color(0xFF2196F3),
                             selectedBorderWidth: 2,
 
@@ -426,7 +426,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                           : _verifyOtp,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.secondaryColor,
-                        foregroundColor: Colors.black,
+                        foregroundColor: AppColors.blackColor,
                         disabledBackgroundColor: Colors.grey[300],
                         minimumSize: const Size(double.infinity, 56),
                         elevation: 0,
@@ -440,7 +440,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                               width: 24,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2.5,
-                                color: Colors.black,
+                                color: AppColors.blackColor,
                               ),
                             )
                           : const Text(

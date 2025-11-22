@@ -55,7 +55,7 @@ class _SearchPageState extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.whiteColor,
       body: SafeArea(
         child: Column(
           children: [
@@ -63,7 +63,7 @@ class _SearchPageState extends State<SearchPage> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               // decoration: BoxDecoration(
-              //   color: Colors.white,
+              //   color: AppColors.whiteColor,
               //   boxShadow: [
               //     BoxShadow(
               //       color: Colors.black.withOpacity(0.05),
@@ -92,7 +92,7 @@ class _SearchPageState extends State<SearchPage> {
                     child: Container(
                       height: 42,
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: AppColors.whiteColor,
                         border: Border.all(
                           color: const Color.fromARGB(28, 0, 0, 0),
                         ),
@@ -277,7 +277,7 @@ class _SearchPageState extends State<SearchPage> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.whiteColor,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(color: Colors.grey[300]!),
         ),
@@ -313,7 +313,7 @@ class _SearchPageState extends State<SearchPage> {
             height: 100,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.black, width: 1),
+              border: Border.all(color: AppColors.blackColor, width: 1),
             ),
             // ClipRRect agar isi (gambar) ikut membulatkan sudut
             child: ClipRRect(

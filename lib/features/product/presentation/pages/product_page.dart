@@ -194,7 +194,7 @@ class _ProductPageState extends State<ProductPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.whiteColor,
       appBar: CustomAppBar(title: _pageTitle),
       body: Column(
         children: [
@@ -206,7 +206,7 @@ class _ProductPageState extends State<ProductPage> {
                   child: Container(
                     height: 30,
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: AppColors.whiteColor,
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(color: AppColors.grayColor),
                     ),
@@ -247,7 +247,7 @@ class _ProductPageState extends State<ProductPage> {
                           'assets/icons/filter.png',
                           width: 24,
                           height: 24,
-                          color: Colors.black,
+                          color: AppColors.blackColor,
                         ),
                       ),
                       if (_selectedTypeIds.isNotEmpty ||

@@ -108,7 +108,7 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.whiteColor,
         body: CustomScrollView(
           slivers: [
             _buildSliverAppBar(),
@@ -146,7 +146,7 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
           leading: IconButton(
             icon: const Icon(
               FontAwesomeIcons.arrowLeft,
-              color: Colors.white,
+              color: AppColors.whiteColor,
               size: 20,
             ),
             onPressed: () => context.pop(), // ✅ PERBAIKAN: Gunakan context.pop()
@@ -158,7 +158,7 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
                 fontFamily: AppFonts.primaryFont,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: Color(0xffffffff),
+                color: AppColors.whiteColor,
               ),
             ),
             background: Stack(
@@ -239,7 +239,7 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      color: Colors.white,
+      color: AppColors.whiteColor,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

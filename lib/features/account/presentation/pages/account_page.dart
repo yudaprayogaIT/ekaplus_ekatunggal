@@ -12,7 +12,7 @@ class AccountPage extends StatelessWidget {
     final primaryYellow = AppColors.secondaryColor;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.whiteColor,
       appBar: CustomAppBar(title: 'Akun',
       onLeadingPressed: () => context.goNamed('home'),),
       body: Column(
@@ -41,7 +41,7 @@ class AccountPage extends StatelessWidget {
           //               fontFamily: AppFonts.primaryFont,
           //               fontSize: 16,
           //               fontWeight: FontWeight.w700,
-          //               color: Colors.white,
+          //               color: AppColors.whiteColor,
           //             ),
           //           ),
           //         ],
@@ -54,7 +54,7 @@ class AccountPage extends StatelessWidget {
           Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
-            color: Colors.white,
+            color: AppColors.whiteColor,
             child: Column(
               children: [
                 Stack(
@@ -146,7 +146,7 @@ class AccountPage extends StatelessWidget {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          backgroundColor: Colors.white,
+                          backgroundColor: AppColors.whiteColor,
                         ),
                         child: Text(
                           'DAFTAR',

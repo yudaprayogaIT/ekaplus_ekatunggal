@@ -9,7 +9,7 @@ class AboutPage extends StatelessWidget {
   Widget build(BuildContext context) {
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.whiteColor,
       appBar: const CustomAppBar(title: 'Tentang Ekatunggal'),
       body: SingleChildScrollView(
         child: Column(

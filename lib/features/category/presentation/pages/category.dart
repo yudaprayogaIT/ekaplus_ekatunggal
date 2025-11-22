@@ -62,7 +62,7 @@ class _CategoryPageState extends State<CategoryPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.whiteColor,
       appBar: AppBar(
         backgroundColor: AppColors.primaryColor,
         centerTitle: true,
@@ -73,7 +73,7 @@ class _CategoryPageState extends State<CategoryPage>
             fontFamily: AppFonts.primaryFont,
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: AppColors.whiteColor,
           ),
         ),
         toolbarHeight: 80,
@@ -228,7 +228,7 @@ class _CategoryPageState extends State<CategoryPage>
                                   fontFamily: AppFonts.primaryFont,
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
-                                  color: Colors.black,
+                                  color: AppColors.blackColor,
                                 ),
                               ),
                             ),
@@ -324,7 +324,7 @@ class _CategoryTile extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontFamily: AppFonts.primaryFont,
-                    color: Colors.white,
+                    color: AppColors.whiteColor,
                     fontWeight: FontWeight.w700,
                     fontSize: 13,
                   ),

@@ -124,7 +124,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         width: width ?? double.infinity,
         height: height ?? double.infinity,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.whiteColor,
           borderRadius: radius ?? BorderRadius.zero,
         ),
       ),
@@ -142,7 +142,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.whiteColor,
       appBar: CustomAppBar(title: 'Lihat Detail'),
       body: BlocBuilder<ProductBloc, ProductState>(
         builder: (context, state) {
@@ -329,7 +329,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                   width: isSelected ? 3 : 1,
                                 ),
                                 borderRadius: BorderRadius.circular(8),
-                                color: Colors.white,
+                                color: AppColors.whiteColor,
                                 boxShadow: isSelected
                                     ? [
                                         BoxShadow(
@@ -454,7 +454,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                     decoration: BoxDecoration(
                                       color: isSelected
                                           ? AppColors.secondaryColor
-                                          : Colors.white,
+                                          : AppColors.whiteColor,
                                       borderRadius: BorderRadius.circular(8),
                                       border: Border.all(
                                         color: isSelected

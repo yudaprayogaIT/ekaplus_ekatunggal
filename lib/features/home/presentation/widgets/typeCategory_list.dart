@@ -51,7 +51,7 @@ class TypeCategoryList extends StatelessWidget {
             width: double.infinity,
             padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppColors.whiteColor,
               borderRadius: BorderRadius.circular(16),
               image: const DecorationImage(
                 image: AssetImage('assets/images/kategoribg.png'),

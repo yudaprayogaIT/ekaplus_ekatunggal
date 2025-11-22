@@ -209,7 +209,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
       builder: (context) {
         return Container(
           height: 320,
-          color: Colors.white,
+          color: AppColors.whiteColor,
           child: Column(
             children: [
               SizedBox(
@@ -317,7 +317,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
     final yellowColor = const Color(0xFFFDD100);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.whiteColor,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(153),
         child: AppBar(
@@ -346,7 +346,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                     Text(
                       'Daftar',
                       style: TextStyle(
-                        color: Colors.white,
+                        color: AppColors.whiteColor,
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
@@ -355,7 +355,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                     Text(
                       'Lengkapi Profil Anda',
                       style: TextStyle(
-                        color: Colors.white,
+                        color: AppColors.whiteColor,
                         fontWeight: FontWeight.w500,
                         fontSize: 14,
                       ),
@@ -557,7 +557,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                                 : _submitForm,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: yellowColor,
-                              foregroundColor: Colors.black,
+                              foregroundColor: AppColors.blackColor,
                               disabledBackgroundColor: Colors.grey[300],
                               minimumSize: const Size(double.infinity, 56),
                               elevation: 0,
@@ -571,7 +571,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                                     width: 24,
                                     child: CircularProgressIndicator(
                                       strokeWidth: 2.5,
-                                      color: Colors.black,
+                                      color: AppColors.blackColor,
                                     ),
                                   )
                                 : const Text(

@@ -43,7 +43,7 @@ class _CategoryModalWidgetState extends State<CategoryModalWidget> {
       builder: (context, scrollController) {
         return Container(
           decoration: const BoxDecoration(
-            color: Colors.white,
+            color: AppColors.whiteColor,
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(24),
               topRight: Radius.circular(24),
@@ -110,7 +110,7 @@ class _CategoryModalWidgetState extends State<CategoryModalWidget> {
                         fontFamily: AppFonts.primaryFont,
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
-                        color: Colors.black,
+                        color: AppColors.blackColor,
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -120,7 +120,7 @@ class _CategoryModalWidgetState extends State<CategoryModalWidget> {
                         fontFamily: AppFonts.primaryFont,
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
-                        color: Colors.black,
+                        color: AppColors.blackColor,
                       ),
                     ),
                   ],
@@ -198,7 +198,7 @@ class _CategoryModalWidgetState extends State<CategoryModalWidget> {
                               // Category Items
                               Container(
                                 decoration: BoxDecoration(
-                                  color: Colors.white,
+                                  color: AppColors.whiteColor,
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: ListView.builder(

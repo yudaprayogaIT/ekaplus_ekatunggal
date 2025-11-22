@@ -130,7 +130,7 @@ class _DevToolsPageState extends State<DevToolsPage> {
                           label: const Text('Share File'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.primaryColor,
-                            foregroundColor: Colors.white,
+                            foregroundColor: AppColors.whiteColor,
                             padding: const EdgeInsets.all(16),
                           ),
                         ),
@@ -143,7 +143,7 @@ class _DevToolsPageState extends State<DevToolsPage> {
                           label: const Text('Copy JSON'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.blue,
-                            foregroundColor: Colors.white,
+                            foregroundColor: AppColors.whiteColor,
                             padding: const EdgeInsets.all(16),
                           ),
                         ),
@@ -167,7 +167,7 @@ class _DevToolsPageState extends State<DevToolsPage> {
                         style: const TextStyle(
                           fontFamily: 'monospace',
                           fontSize: 12,
-                          color: Colors.white,
+                          color: AppColors.whiteColor,
                         ),
                       ),
                     ),

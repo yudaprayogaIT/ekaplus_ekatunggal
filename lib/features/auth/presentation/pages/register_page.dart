@@ -139,7 +139,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                     Text(
                       'Daftar',
                       style: TextStyle(
-                        color: Colors.white,
+                        color: AppColors.whiteColor,
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
@@ -148,7 +148,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                     Text(
                       'Masukkan nomor handphone untuk aktivasi',
                       style: TextStyle(
-                        color: Colors.white,
+                        color: AppColors.whiteColor,
                         fontWeight: FontWeight.w500,
                         fontSize: 14,
                       ),
@@ -404,7 +404,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                             color: AppColors.grayColor,
                             width: 1.5,
                           ),
-                          foregroundColor: Colors.black,
+                          foregroundColor: AppColors.blackColor,
                         ),
                       ),
 
@@ -421,7 +421,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                                 : _onNextPressed,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: yellowColor,
-                              foregroundColor: Colors.black,
+                              foregroundColor: AppColors.blackColor,
                               minimumSize: const Size(double.infinity, 56),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
@@ -434,7 +434,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                                     height: 24,
                                     child: CircularProgressIndicator(
                                       strokeWidth: 2.5,
-                                      color: Colors.black,
+                                      color: AppColors.blackColor,
                                     ),
                                   )
                                 : const Text(

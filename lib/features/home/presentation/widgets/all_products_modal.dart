@@ -1,7 +1,8 @@
 // lib/features/home/presentation/widgets/all_products_modal.dart
 
+import 'package:ekaplus_ekatunggal/constant.dart';
 import 'package:flutter/material.dart';
-import '../placeholder_pages.dart';
+// import '../placeholder_pages.dart';
 
 class AllProductsModal extends StatelessWidget {
   const AllProductsModal({super.key});
@@ -48,7 +49,7 @@ class AllProductsModal extends StatelessWidget {
     return Container(
       height: modalHeight,
       decoration: const BoxDecoration(
-        color: Colors.white,
+        color: AppColors.whiteColor,
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: Column(

@@ -36,7 +36,7 @@ class ProfileHeader extends StatelessWidget {
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontFamily: AppFonts.primaryFont,
-                    color: Colors.black,
+                    color: AppColors.blackColor,
                     fontSize: 15,
                   ),
                 ),
@@ -75,7 +75,7 @@ class ProfileHeader extends StatelessWidget {
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontFamily: AppFonts.primaryFont,
-                      color: Colors.black,
+                      color: AppColors.blackColor,
                       fontSize: 16,
                     ),
                   ),
@@ -119,7 +119,7 @@ class ProfileHeader extends StatelessWidget {
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontFamily: AppFonts.primaryFont,
-                      color: Colors.black,
+                      color: AppColors.blackColor,
                       fontSize: 16,
                     ),
                   ),
@@ -137,7 +137,7 @@ class ProfileHeader extends StatelessWidget {
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontFamily: AppFonts.primaryFont,
-                  color: Colors.black,
+                  color: AppColors.blackColor,
                   fontSize: 15,
                 ),
               ),

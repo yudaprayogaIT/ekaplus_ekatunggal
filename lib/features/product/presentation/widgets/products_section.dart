@@ -350,7 +350,7 @@ class _CategoryChip extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: BoxDecoration(
-          color: selected ? AppColors.secondaryColor : Colors.white,
+          color: selected ? AppColors.secondaryColor : AppColors.whiteColor,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: selected ? Colors.transparent : Colors.grey.shade300,
