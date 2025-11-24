@@ -48,17 +48,21 @@ class _SelectAvatarPageState extends State<SelectAvatarPage> {
   ];
 
   final List<Color> bgColors = [
-    const Color(0xFF000000),
-    const Color(0xFFFF69B4),
-    const Color(0xFF00CED1),
-    const Color(0xFF808080),
-    const Color(0xFF4169E1),
-    const Color(0xFF90EE90),
-    const Color(0xFFFFB6C1),
+    const Color(0xFFC61633),
+    const Color(0xFFE43C4A),
+    const Color(0xFFF08D8E),
+    const Color(0xFFE5B729),
+    const Color(0xFFFEDC63),
+    const Color(0xFFFFF2B4),
+    const Color(0xFF4F4F4F),
+    const Color(0xFFBDBDBD),
+    const Color(0xFF5366FC),
+    const Color(0xFF56E0FF),
+    const Color(0xFFB6FFA6),
   ];
 
   String? selectedAvatar;
-  Color selectedBgColor = const Color(0xFF000000);
+  Color selectedBgColor = AppColors.primaryColor;
   bool isLoading = false;
 
   @override
@@ -118,22 +122,32 @@ class _SelectAvatarPageState extends State<SelectAvatarPage> {
             // Preview Section
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(24),
-              color: AppColors.primaryColor,
+              padding: const EdgeInsets.all(0),
+              color: selectedBgColor,
               child: Column(
                 children: [
                   Container(
-                    width: 150,
-                    height: 150,
+                    width: 250,
+                    height: 250,
                     decoration: BoxDecoration(
                       color: selectedBgColor,
-                      shape: BoxShape.circle,
+                      // shape: BoxShape.circle,
                     ),
-                    child: ClipOval(
+                    // child: ClipOval(
+                    child: Container(
+                      // pastikan ClipOval mengisi parent agar image selalu centered
+                      width: double.infinity,
+                      height: double.infinity,
+                      // padding: const EdgeInsets.all(12),
+                      alignment: Alignment.center,
+                      color: Colors.transparent,
                       child: selectedAvatar != null
                           ? Image.asset(
                               selectedAvatar!,
-                              fit: BoxFit.cover,
+                              fit: BoxFit.contain,
+                              width: double.infinity,
+                              height: double.infinity,
+                              alignment: Alignment.center,
                               errorBuilder: (_, __, ___) => const Icon(
                                 Icons.person,
                                 size: 80,
@@ -147,6 +161,7 @@ class _SelectAvatarPageState extends State<SelectAvatarPage> {
                             ),
                     ),
                   ),
+                  // ),
                 ],
               ),
             ),
@@ -168,70 +183,102 @@ class _SelectAvatarPageState extends State<SelectAvatarPage> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    GridView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 3,
-                        crossAxisSpacing: 16,
-                        mainAxisSpacing: 16,
-                      ),
-                      itemCount: avatars.length,
-                      itemBuilder: (context, index) {
-                        final avatar = avatars[index];
-                        final isSelected = selectedAvatar == avatar;
+                    LayoutBuilder(
+                      builder: (context, constraints) {
+                        final spacing = 16.0;
+                        // hitung itemSize agar 3 kolom rapi (perhatikan padding/spacing)
+                        final itemSize =
+                            (constraints.maxWidth - (spacing * 2)) / 3;
 
-                        return GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              selectedAvatar = avatar;
-                            });
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: selectedBgColor,
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: isSelected
-                                    ? AppColors.primaryColor
-                                    : Colors.grey.shade300,
-                                width: isSelected ? 3 : 1,
-                              ),
-                            ),
-                            child: Stack(
-                              children: [
-                                ClipOval(
-                                  child: Image.asset(
-                                    avatar,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (_, __, ___) => const Icon(
-                                      Icons.person,
-                                      size: 40,
-                                      color: Colors.white,
+                        return Wrap(
+                          spacing: spacing,
+                          runSpacing: spacing,
+                          children: avatars.map((avatar) {
+                            final isSelected = selectedAvatar == avatar;
+
+                            return GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  selectedAvatar = avatar;
+                                });
+                              },
+                              child: SizedBox(
+                                width: itemSize,
+                                height: itemSize,
+                                child: Stack(
+                                  clipBehavior: Clip.none,
+                                  children: [
+                                    // Circle with border and avatar image (centered with padding)
+                                    Center(
+                                      child: Container(
+                                        width: itemSize,
+                                        height: itemSize,
+                                        decoration: BoxDecoration(
+                                          color: selectedBgColor,
+                                          shape: BoxShape.circle,
+                                          border: Border.all(
+                                            color: isSelected
+                                                ? AppColors.primaryColor
+                                                : Colors.grey.shade300,
+                                            width: isSelected ? 3 : 1,
+                                          ),
+                                        ),
+                                        child: ClipOval(
+                                          child: Container(
+                                            width: double.infinity,
+                                            height: double.infinity,
+                                            alignment: Alignment.center,
+                                            color: Colors.transparent,
+                                            child: Image.asset(
+                                              avatar,
+                                              fit: BoxFit.contain,
+                                              alignment: Alignment.center,
+                                              width: double.infinity,
+                                              height: double.infinity,
+                                              errorBuilder: (_, __, ___) =>
+                                                  const Icon(
+                                                    Icons.person,
+                                                    size: 40,
+                                                    color: Colors.white,
+                                                  ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
                                     ),
-                                  ),
+
+                                    // Check icon (posisi sedikit keluar dari lingkaran seperti mock)
+                                    if (isSelected)
+                                      Positioned(
+                                        top: -6,
+                                        right: -6,
+                                        child: Container(
+                                          padding: const EdgeInsets.all(6),
+                                          decoration: BoxDecoration(
+                                            color: AppColors.primaryColor,
+                                            shape: BoxShape.circle,
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black.withOpacity(
+                                                  0.15,
+                                                ),
+                                                blurRadius: 4,
+                                                offset: const Offset(0, 2),
+                                              ),
+                                            ],
+                                          ),
+                                          child: const Icon(
+                                            Icons.check,
+                                            color: Colors.white,
+                                            size: 14,
+                                          ),
+                                        ),
+                                      ),
+                                  ],
                                 ),
-                                if (isSelected)
-                                  Positioned(
-                                    top: 4,
-                                    right: 4,
-                                    child: Container(
-                                      padding: const EdgeInsets.all(4),
-                                      decoration: BoxDecoration(
-                                        color: AppColors.primaryColor,
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: const Icon(
-                                        Icons.check,
-                                        color: Colors.white,
-                                        size: 16,
-                                      ),
-                                    ),
-                                  ),
-                              ],
-                            ),
-                          ),
+                              ),
+                            );
+                          }).toList(),
                         );
                       },
                     ),
@@ -246,42 +293,50 @@ class _SelectAvatarPageState extends State<SelectAvatarPage> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    Wrap(
-                      spacing: 16,
-                      runSpacing: 16,
-                      children: bgColors.map((color) {
-                        final isSelected = selectedBgColor == color;
+                    SizedBox(
+                      height: 70, // tinggi area selector warna
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: bgColors.map((color) {
+                            final isSelected = selectedBgColor == color;
 
-                        return GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              selectedBgColor = color;
-                            });
-                          },
-                          child: Container(
-                            width: 50,
-                            height: 50,
-                            decoration: BoxDecoration(
-                              color: color,
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: isSelected
-                                    ? AppColors.primaryColor
-                                    : Colors.grey.shade300,
-                                width: isSelected ? 3 : 1,
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 16),
+                              child: GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    selectedBgColor = color;
+                                  });
+                                },
+                                child: Container(
+                                  width: 50,
+                                  height: 50,
+                                  decoration: BoxDecoration(
+                                    color: color,
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: isSelected
+                                          ? AppColors.primaryColor
+                                          : Colors.grey.shade300,
+                                      width: isSelected ? 3 : 1,
+                                    ),
+                                  ),
+                                  child: isSelected
+                                      ? const Icon(
+                                          Icons.check,
+                                          color: Colors.white,
+                                          size: 24,
+                                        )
+                                      : null,
+                                ),
                               ),
-                            ),
-                            child: isSelected
-                                ? const Icon(
-                                    Icons.check,
-                                    color: Colors.white,
-                                    size: 24,
-                                  )
-                                : null,
-                          ),
-                        );
-                      }).toList(),
+                            );
+                          }).toList(),
+                        ),
+                      ),
                     ),
+
                     const SizedBox(height: 32),
                   ],
                 ),
@@ -318,8 +373,9 @@ class _SelectAvatarPageState extends State<SelectAvatarPage> {
                         width: 20,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(Colors.black87),
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.black87,
+                          ),
                         ),
                       )
                     : Text(
@@ -355,10 +411,10 @@ class _SelectAvatarPageState extends State<SelectAvatarPage> {
 
     // Trigger update via AuthBloc
     context.read<AuthBloc>().add(
-          UpdateProfilePictureEvent(
-            userId: widget.user.phone, // Using phone as userId
-            profilePicPath: selectedAvatar,
-          ),
-        );
+      UpdateProfilePictureEvent(
+        userId: widget.user.phone, // Using phone as userId
+        profilePicPath: selectedAvatar,
+      ),
+    );
   }
 }
