@@ -27,7 +27,7 @@ class MyRouter {
   GoRouter get router => GoRouter(
     // initialLocation: "/",
     // initialLocation: "/login",
-    initialLocation: "/wishlist",
+    initialLocation: "/account",
     routes: [
       ShellRoute(
         builder: (context, state, child) {
