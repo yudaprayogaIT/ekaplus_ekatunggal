@@ -4,6 +4,7 @@ import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/login_user.dart
 import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/register_user.dart';
 import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/request_otp.dart';
 import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/verify_otp.dart';
+import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/update_profile_picture.dart'; // ADD THIS
 import 'package:ekaplus_ekatunggal/features/auth/presentation/bloc/auth_event.dart';
 import 'package:ekaplus_ekatunggal/features/auth/presentation/bloc/auth_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,6 +15,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final VerifyOtp verifyOtp;
   final RegisterUser registerUser;
   final LoginUser loginUser;
+  final UpdateProfilePicture updateProfilePicture;
 
   AuthBloc({
     required this.checkPhoneExists,
@@ -21,6 +23,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required this.verifyOtp,
     required this.registerUser,
     required this.loginUser,
+    required this.updateProfilePicture,
   }) : super(AuthInitial()) {
     on<CheckPhoneEvent>(_onCheckPhone);
     on<RequestOtpEvent>(_onRequestOtp);
@@ -28,6 +31,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<RegisterUserEvent>(_onRegisterUser);
     on<LoginUserEvent>(_onLoginUser);
     on<ResetAuthEvent>(_onResetAuth);
+    on<UpdateProfilePictureEvent>(_onUpdateProfilePicture);
   }
 
   Future<void> _onCheckPhone(
@@ -87,8 +91,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           emit(OtpVerificationSuccess(event.phone));
         } else {
           print('❌ OTP Invalid or Expired');
-          emit(const OtpVerificationError(
-              'OTP tidak valid atau sudah kadaluarsa'));
+          emit(
+            const OtpVerificationError('OTP tidak valid atau sudah kadaluarsa'),
+          );
         }
       },
     );
@@ -153,5 +158,33 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   void _onResetAuth(ResetAuthEvent event, Emitter<AuthState> emit) {
     print('🔄 Resetting Auth State');
     emit(AuthInitial());
+  }
+
+  Future<void> _onUpdateProfilePicture(
+    UpdateProfilePictureEvent event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(AuthLoading());
+
+    print('🔄 Updating profile picture for: ${event.userId}');
+
+    final result = await updateProfilePicture(
+      event.userId,
+      event.profilePicPath,
+      event.bgColor,
+    );
+
+    result.fold(
+      (failure) {
+        print('❌ Profile Picture Update Failed: ${failure.message}');
+        emit(ProfilePictureUpdateError(failure.message ?? 'Update failed'));
+      },
+      (user) {
+        print(
+          '✅ Profile Picture Updated: ${user.profilePic} with color: ${user.profileBgColor}',
+        );
+        emit(ProfilePictureUpdateSuccess(user));
+      },
+    );
   }
 }

@@ -86,4 +86,19 @@ class LoginUserEvent extends AuthEvent {
   List<Object> get props => [identifier, password];
 }
 
+class UpdateProfilePictureEvent extends AuthEvent {
+  final String userId;
+  final String? profilePicPath;
+  final String? bgColor;
+
+  const UpdateProfilePictureEvent({
+    required this.userId,
+    required this.profilePicPath,
+    this.bgColor,
+  });
+
+  @override
+  List<Object?> get props => [userId, profilePicPath, bgColor];
+}
+
 class ResetAuthEvent extends AuthEvent {}

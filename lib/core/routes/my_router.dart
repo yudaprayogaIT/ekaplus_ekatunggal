@@ -1,6 +1,8 @@
 // lib/core/routes/my_router.dart
 import 'package:ekaplus_ekatunggal/features/account/presentation/pages/about_page.dart';
 import 'package:ekaplus_ekatunggal/features/account/presentation/pages/account_page.dart';
+import 'package:ekaplus_ekatunggal/features/account/presentation/pages/select_avatar_page.dart';
+import 'package:ekaplus_ekatunggal/features/auth/domain/entities/user.dart';
 import 'package:ekaplus_ekatunggal/features/auth/presentation/pages/login_page.dart';
 import 'package:ekaplus_ekatunggal/features/auth/presentation/pages/otp_verification_page.dart';
 import 'package:ekaplus_ekatunggal/features/auth/presentation/pages/register_form_page.dart';
@@ -112,6 +114,15 @@ class MyRouter {
         path: '/about',
         builder: (context, state) {
           return AboutPage();
+        },
+      ),
+
+      GoRoute(
+        path: '/select-avatar',
+        name: 'selectAvatar',
+        builder: (context, state) {
+          final user = state.extra as User;
+          return SelectAvatarPage(user: user);
         },
       ),
 

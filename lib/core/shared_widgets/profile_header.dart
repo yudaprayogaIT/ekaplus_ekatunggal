@@ -19,10 +19,54 @@ class ProfileHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<AuthSessionCubit, AuthSessionState>(
       builder: (context, authState) {
-        Widget avatarImage = Image.asset(
-          'assets/images/avatar_placeholder.png',
-          fit: BoxFit.cover,
-        );
+        // Build avatar based on auth state
+        Widget buildAvatar() {
+          if (authState is AuthSessionAuthenticated) {
+            final user = authState.user;
+            
+            // Check if user has profile picture
+            if (user.profilePic != null && user.profilePic!.isNotEmpty) {
+              // Check if it's a URL (uploaded image) or asset path (avatar)
+              if (user.profilePic!.startsWith('http')) {
+                return Image.network(
+                  user.profilePic!,
+                  fit: BoxFit.contain,
+                  errorBuilder: (_, __, ___) => _buildDefaultAvatar(user.fullName),
+                );
+              } else if (user.profilePic!.startsWith('assets/')) {
+                return Image.asset(
+                  user.profilePic!,
+                  fit: BoxFit.contain,
+                  errorBuilder: (_, __, ___) => _buildDefaultAvatar(user.fullName),
+                );
+              } else {
+                // Local file path (from gallery)
+                return Image.asset(
+                  user.profilePic!,
+                  fit: BoxFit.contain,
+                  errorBuilder: (_, __, ___) => _buildDefaultAvatar(user.fullName),
+                );
+              }
+            }
+            
+            // No profile pic - show default with initials
+            return _buildDefaultAvatar(user.fullName);
+          }
+          
+          // Guest - show placeholder
+          return Image.asset(
+            'assets/images/avatar_placeholder.png',
+            fit: BoxFit.contain,
+            errorBuilder: (_, __, ___) => Container(
+              color: AppColors.primaryColor,
+              child: const Icon(
+                Icons.person,
+                color: Colors.white,
+                size: 28,
+              ),
+            ),
+          );
+        }
 
         // Determine what to show based on auth state
         Widget buildTextArea() {
@@ -93,7 +137,6 @@ class ProfileHeader extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          // user.company ?? 'PT Nama Perusahaan',
                           'PT Nama Perusahaan',
                           style: const TextStyle(
                             color: AppColors.primaryColor,
@@ -148,10 +191,8 @@ class ProfileHeader extends StatelessWidget {
         // Handle tap action
         void handleTap() {
           if (authState is AuthSessionGuest) {
-            // Navigate to login page
             context.pushNamed('login');
           } else if (authState is AuthSessionAuthenticated) {
-            // Navigate to account page
             context.pushNamed('account');
           }
         }
@@ -167,7 +208,7 @@ class ProfileHeader extends StatelessWidget {
                       width: 44,
                       height: 44,
                       decoration: const BoxDecoration(
-                        color: Colors.transparent,
+                        color: Colors.white,
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
@@ -177,7 +218,7 @@ class ProfileHeader extends StatelessWidget {
                           ),
                         ],
                       ),
-                      child: ClipOval(child: avatarImage),
+                      child: ClipOval(child: buildAvatar()),
                     ),
                     const SizedBox(width: 12),
                     Expanded(child: buildTextArea()),
@@ -200,5 +241,35 @@ class ProfileHeader extends StatelessWidget {
         );
       },
     );
+  }
+
+  // Helper: Build default avatar with initials
+  Widget _buildDefaultAvatar(String fullName) {
+    return Container(
+      color: AppColors.primaryColor,
+      child: Center(
+        child: Text(
+          _getInitials(fullName),
+          style: const TextStyle(
+            fontFamily: AppFonts.primaryFont,
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            color: Colors.white,
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Helper: Get initials from full name
+  String _getInitials(String name) {
+    if (name.isEmpty) return '?';
+    
+    final words = name.trim().split(' ');
+    if (words.length == 1) {
+      return words[0][0].toUpperCase();
+    }
+    
+    return '${words[0][0]}${words[1][0]}'.toUpperCase();
   }
 }

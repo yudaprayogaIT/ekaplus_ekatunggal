@@ -22,4 +22,7 @@ abstract class AuthRepository {
 
   // Login user with phone/username and password
   Future<Either<Failure, User>> loginUser(String identifier, String password);
+
+  // update profile picture
+  Future<Either<Failure, User>> updateProfilePicture(String userId, String? profilePicPath, String? bgColor,);
 }

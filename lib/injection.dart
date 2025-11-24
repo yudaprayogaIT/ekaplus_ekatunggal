@@ -1,4 +1,5 @@
 // lib/injection.dart
+import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/update_profile_picture.dart';
 import 'package:ekaplus_ekatunggal/features/wishlist/domain/usecases/bulk_delete_wishlist.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
@@ -132,6 +133,7 @@ Future<void> init() async {
   myinjection.registerLazySingleton(() => VerifyOtp(myinjection()));
   myinjection.registerLazySingleton(() => RegisterUser(myinjection()));
   myinjection.registerLazySingleton(() => LoginUser(myinjection()));
+  myinjection.registerLazySingleton(() => UpdateProfilePicture(myinjection()));
 
   // Type UseCases
   myinjection.registerLazySingleton(() => GetAllType(myinjection()));
@@ -165,6 +167,7 @@ Future<void> init() async {
       verifyOtp: myinjection(),
       registerUser: myinjection(),
       loginUser: myinjection(),
+      updateProfilePicture: myinjection()
     ),
   );
 

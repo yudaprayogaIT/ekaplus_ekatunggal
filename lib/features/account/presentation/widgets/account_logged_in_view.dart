@@ -1,10 +1,12 @@
-// lib/features/account/presentation/widgets/account_logged_in_view.dart
+import 'dart:io';
 import 'package:ekaplus_ekatunggal/constant.dart';
+import 'package:ekaplus_ekatunggal/features/account/presentation/widgets/profile_picture_options.dart';
 import 'package:ekaplus_ekatunggal/features/auth/domain/entities/user.dart';
 import 'package:ekaplus_ekatunggal/features/auth/presentation/cubit/auth_session_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 
 class AccountLoggedInView extends StatelessWidget {
   final User user;
@@ -24,41 +26,32 @@ class AccountLoggedInView extends StatelessWidget {
             child: Column(
               children: [
                 // Profile Avatar & Name
-                _buildProfileHeader(),
+                _buildProfileHeader(context),
 
                 const SizedBox(height: 24),
 
                 // Nama Lengkap
-                _buildInfoSection(
-                  label: 'Nama Lengkap',
-                  value: user.fullName,
-                ),
+                _buildInfoSection(label: 'Nama Lengkap', value: user.fullName),
 
                 const Divider(height: 1),
 
                 const SizedBox(height: 12),
 
                 // Nomor Handphone
-                _buildInfoSection(
-                  label: 'Nomor Handphone',
-                  value: user.phone,
-                ),
+                _buildInfoSection(label: 'Nomor Handphone', value: user.phone),
 
                 const Divider(height: 1),
 
                 const SizedBox(height: 12),
 
                 // Email
-                _buildInfoSection(
-                  label: 'Email',
-                  value: user.email,
-                ),
+                _buildInfoSection(label: 'Email', value: user.email),
 
                 const Divider(height: 1),
 
                 const SizedBox(height: 20),
 
-                // Company Card (if exists)
+                // Company Card
                 _buildCompanyCard(),
 
                 const SizedBox(height: 20),
@@ -92,19 +85,18 @@ class AccountLoggedInView extends StatelessWidget {
             ),
           ),
 
-          // Full width divider (no padding)
+          // Full width divider
           Container(
             width: double.infinity,
             height: 5,
-            color: Color(0xFFE0E0E0),
+            color: const Color(0xFFE0E0E0),
           ),
 
-          // Settings Section with padding
+          // Settings Section
           Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
-                // Settings Title
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
@@ -120,7 +112,6 @@ class AccountLoggedInView extends StatelessWidget {
 
                 const SizedBox(height: 12),
 
-                // Change Password
                 _buildSettingItem(
                   icon: Icons.lock_outline,
                   title: 'Ganti Password',
@@ -131,13 +122,10 @@ class AccountLoggedInView extends StatelessWidget {
 
                 const Divider(height: 1),
 
-                // Logout
                 _buildSettingItem(
                   icon: Icons.logout,
                   title: 'Log Out',
-                  onTap: () {
-                    _showLogoutDialog(context);
-                  },
+                  onTap: () => _showLogoutDialog(context),
                 ),
               ],
             ),
@@ -147,28 +135,49 @@ class AccountLoggedInView extends StatelessWidget {
     );
   }
 
-  Widget _buildProfileHeader() {
+  Widget _buildProfileHeader(BuildContext context) {
     return Column(
       children: [
-        // Avatar
-        Container(
-          width: 180,
-          height: 180,
-          decoration: BoxDecoration(
-            color: AppColors.primaryColor,
-            shape: BoxShape.circle,
-          ),
-          child: Center(
-            child: Text(
-              _getInitials(user.fullName),
-              style: TextStyle(
-                fontFamily: AppFonts.primaryFont,
-                fontSize: 32,
-                fontWeight: FontWeight.w700,
+        // Avatar with camera icon
+        Stack(
+          children: [
+            // Profile Picture
+            Container(
+              width: 180,
+              height: 180,
+              decoration: BoxDecoration(
                 color: AppColors.whiteColor,
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.grey.shade300, width: 2),
+              ),
+              child: ClipOval(
+                child: _buildProfileImage(),
               ),
             ),
-          ),
+
+            // Camera Icon Button
+            Positioned(
+              bottom: 0,
+              right: 0,
+              child: GestureDetector(
+                onTap: () => _showProfilePictureOptions(context),
+                child: Container(
+                  width: 50,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryColor,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 3),
+                  ),
+                  child: const Icon(
+                    Icons.camera_alt,
+                    color: Colors.white,
+                    size: 24,
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
 
         const SizedBox(height: 12),
@@ -186,15 +195,13 @@ class AccountLoggedInView extends StatelessWidget {
 
         const SizedBox(height: 4),
 
+        // Status Badge
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: Color(0x65A7A7A7),
-              width: 1,
-            ),
-            color: Color(0x33A7A7A7),
+            border: Border.all(color: const Color(0x65A7A7A7), width: 1),
+            color: const Color(0x33A7A7A7),
           ),
           child: Text(
             'Belum terhubung dengan perusahaan',
@@ -209,11 +216,67 @@ class AccountLoggedInView extends StatelessWidget {
     );
   }
 
+  Widget _buildProfileImage() {
+    // Check if user has profile_pic (avatar or uploaded image)
+    if (user.profilePic != null && user.profilePic!.isNotEmpty) {
+      // Check if it's a URL (uploaded image) or asset path (avatar)
+      if (user.profilePic!.startsWith('http')) {
+        return Image.network(
+          user.profilePic!,
+          fit: BoxFit.contain,
+          errorBuilder: (_, __, ___) => _buildDefaultAvatar(),
+        );
+      } else if (user.profilePic!.startsWith('assets/')) {
+        return Image.asset(
+          user.profilePic!,
+          fit: BoxFit.contain,
+          errorBuilder: (_, __, ___) => _buildDefaultAvatar(),
+        );
+      }
+    }
+
+    // Default avatar
+    return _buildDefaultAvatar();
+  }
+
+  Widget _buildDefaultAvatar() {
+    return Image.asset(
+      'assets/images/avatar_placeholder.png',
+      fit: BoxFit.contain,
+      errorBuilder: (_, __, ___) => Container(
+        color: AppColors.primaryColor,
+        child: Center(
+          child: Text(
+            _getInitials(user.fullName),
+            style: TextStyle(
+              fontFamily: AppFonts.primaryFont,
+              fontSize: 48,
+              fontWeight: FontWeight.w700,
+              color: AppColors.whiteColor,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showProfilePictureOptions(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (sheetContext) => ProfilePictureOptionsSheet(
+        user: user,
+        onDismiss: () => Navigator.pop(sheetContext),
+      ),
+    );
+  }
+
   Widget _buildInfoSection({required String label, required String value}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Label
         Text(
           label,
           style: TextStyle(
@@ -222,10 +285,7 @@ class AccountLoggedInView extends StatelessWidget {
             color: AppColors.grayColor,
           ),
         ),
-
         const SizedBox(height: 4),
-
-        // Value with Edit button
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -251,7 +311,6 @@ class AccountLoggedInView extends StatelessWidget {
             ),
           ],
         ),
-
         const SizedBox(height: 8),
       ],
     );
@@ -267,7 +326,6 @@ class AccountLoggedInView extends StatelessWidget {
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          // Image
           Align(
             alignment: Alignment.centerLeft,
             child: SizedBox(
@@ -290,8 +348,6 @@ class AccountLoggedInView extends StatelessWidget {
               ),
             ),
           ),
-
-          // Text overlay
           Positioned(
             top: 45,
             right: 0,
@@ -383,12 +439,8 @@ class AccountLoggedInView extends StatelessWidget {
 
   String _getInitials(String name) {
     if (name.isEmpty) return '?';
-
     final words = name.trim().split(' ');
-    if (words.length == 1) {
-      return words[0][0].toUpperCase();
-    }
-
+    if (words.length == 1) return words[0][0].toUpperCase();
     return '${words[0][0]}${words[1][0]}'.toUpperCase();
   }
 }

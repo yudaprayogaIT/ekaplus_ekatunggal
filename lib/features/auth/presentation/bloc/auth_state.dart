@@ -88,3 +88,18 @@ class LoginError extends AuthState {
   @override
   List<Object> get props => [message];
 }
+
+// update profile picture
+class ProfilePictureUpdateSuccess extends AuthState {
+  final User user;
+  const ProfilePictureUpdateSuccess(this.user);
+  @override
+  List<Object> get props => [user];
+}
+
+class ProfilePictureUpdateError extends AuthState {
+  final String message;
+  const ProfilePictureUpdateError(this.message);
+  @override
+  List<Object> get props => [message];
+}

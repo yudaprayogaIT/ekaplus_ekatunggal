@@ -109,20 +109,25 @@ class AuthRepositoryImplementation implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, User>> loginUser(String identifier, String password) async {
+  Future<Either<Failure, User>> loginUser(
+    String identifier,
+    String password,
+  ) async {
     try {
       print('🔍 Attempting login with: $identifier');
 
       UserModel? user;
 
       // Check if identifier is phone or username
-      if (identifier.startsWith('0') || identifier.startsWith('62') || identifier.contains(RegExp(r'^\d+$'))) {
+      if (identifier.startsWith('0') ||
+          identifier.startsWith('62') ||
+          identifier.contains(RegExp(r'^\d+$'))) {
         // Normalize phone number
         String normalizedPhone = identifier.replaceAll(RegExp(r'[^0-9]'), '');
         if (normalizedPhone.startsWith('0')) {
           normalizedPhone = '62${normalizedPhone.substring(1)}';
         }
-        
+
         print('🔍 Searching by phone: $normalizedPhone');
         user = await localDataSource.getUserByPhone(normalizedPhone);
       } else {
@@ -133,17 +138,21 @@ class AuthRepositoryImplementation implements AuthRepository {
 
       if (user == null) {
         print('❌ User not found: $identifier');
-        return const Left(CacheFailure(message: 'Username atau nomor HP tidak ditemukan'));
+        return const Left(
+          CacheFailure(message: 'Username atau nomor HP tidak ditemukan'),
+        );
       }
 
       // Verify password
       if (user.password != password) {
         print('❌ Invalid password for user: $identifier');
-        return const Left(CacheFailure(message: 'Password yang Anda masukkan salah'));
+        return const Left(
+          CacheFailure(message: 'Password yang Anda masukkan salah'),
+        );
       }
 
       print('✅ Login successful: ${user.username}');
-      
+
       // Update last login
       final updatedUser = user.copyWith(
         lastLogin: DateTime.now(),
@@ -155,6 +164,38 @@ class AuthRepositoryImplementation implements AuthRepository {
     } catch (e) {
       print('❌ Login error: $e');
       return Left(CacheFailure(message: 'Terjadi kesalahan saat login'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, User>> updateProfilePicture(
+    String userId,
+    String? profilePicPath,
+    String? bgColor,
+  ) async {
+    try {
+      print('🔄 Updating profile picture for user: $userId');
+
+      // Get current user
+      final user = await localDataSource.getUserByPhone(userId);
+      if (user == null) {
+        return const Left(CacheFailure(message: 'User not found'));
+      }
+
+      // Update profile picture
+      final updatedUser = user.copyWith(
+        profilePic: profilePicPath,
+        profileBgColor: bgColor,
+        updatedAt: DateTime.now(),
+      );
+
+      await localDataSource.updateUser(updatedUser);
+
+      print('✅ Profile picture updated successfully');
+      return Right(updatedUser);
+    } catch (e) {
+      print('❌ Error updating profile picture: $e');
+      return Left(CacheFailure(message: e.toString()));
     }
   }
 }

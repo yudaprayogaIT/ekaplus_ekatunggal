@@ -23,6 +23,7 @@ class User extends Equatable {
 
   // Profile
   final String? profilePic;
+  final String? profileBgColor;
   final String? picture; // Google profile picture
 
   // Referral
@@ -69,6 +70,7 @@ class User extends Equatable {
     required this.dateOfBirth,
     required this.birthPlace,
     this.profilePic,
+    this.profileBgColor,
     this.picture,
     this.referralCode,
     this.referredBy,
@@ -109,6 +111,7 @@ class User extends Equatable {
     dateOfBirth,
     birthPlace,
     profilePic,
+    profileBgColor,
     picture,
     referralCode,
     referredBy,
