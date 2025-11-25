@@ -1,8 +1,19 @@
 // lib/core/routes/my_router.dart
+import 'package:ekaplus_ekatunggal/features/account/presentation/cubit/profile_update_cubit.dart';
 import 'package:ekaplus_ekatunggal/features/account/presentation/pages/about_page.dart';
 import 'package:ekaplus_ekatunggal/features/account/presentation/pages/account_page.dart';
+import 'package:ekaplus_ekatunggal/features/account/presentation/pages/edit_email_page.dart';
+import 'package:ekaplus_ekatunggal/features/account/presentation/pages/edit_full_name_page.dart';
+import 'package:ekaplus_ekatunggal/features/account/presentation/pages/edit_phone_number.dart';
 import 'package:ekaplus_ekatunggal/features/account/presentation/pages/select_avatar_page.dart';
+import 'package:ekaplus_ekatunggal/features/account/presentation/pages/verify_email_change_page.dart';
+import 'package:ekaplus_ekatunggal/features/account/presentation/pages/verify_phone_number.dart';
 import 'package:ekaplus_ekatunggal/features/auth/domain/entities/user.dart';
+import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/request_email_change.dart';
+import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/request_phone_change.dart';
+import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/update_full_name.dart';
+import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/verify_email_change.dart';
+import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/verify_phone_change.dart';
 import 'package:ekaplus_ekatunggal/features/auth/presentation/pages/login_page.dart';
 import 'package:ekaplus_ekatunggal/features/auth/presentation/pages/otp_verification_page.dart';
 import 'package:ekaplus_ekatunggal/features/auth/presentation/pages/register_form_page.dart';
@@ -12,6 +23,7 @@ import 'package:ekaplus_ekatunggal/features/search/presentation/pages/search_pag
 import 'package:ekaplus_ekatunggal/features/wishlist/presentation/pages/wishlist_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:ekaplus_ekatunggal/features/home/presentation/pages/home_page.dart';
@@ -24,6 +36,8 @@ import 'package:ekaplus_ekatunggal/features/product/presentation/pages/products_
 import 'package:ekaplus_ekatunggal/features/category/domain/entities/category.dart';
 
 import 'package:ekaplus_ekatunggal/core/shared_widgets/bottom_nav.dart';
+
+final getIt = GetIt.instance;
 
 class MyRouter {
   GoRouter get router => GoRouter(
@@ -180,6 +194,95 @@ class MyRouter {
             title: extra['title'] ?? 'Products',
             headerTitle: extra['headerTitle'] ?? '',
             headerSubTitle: extra['headerSubTitle'] ?? 'Products',
+          );
+        },
+      ),
+
+      GoRoute(
+        path: '/account/edit-name',
+        name: 'edit-name',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          return BlocProvider(
+            create: (context) => ProfileUpdateCubit(
+              updateFullName: getIt<UpdateFullName>(),
+              requestPhoneChange: getIt<RequestPhoneChange>(),
+              verifyPhoneChange: getIt<VerifyPhoneChange>(),
+              requestEmailChange: getIt<RequestEmailChange>(),
+              verifyEmailChange: getIt<VerifyEmailChange>(),
+            ),
+            child: EditFullNamePage(
+              userId: extra['userId'] as String,
+              currentName: extra['currentName'] as String,
+            ),
+          );
+        },
+      ),
+
+      GoRoute(
+        path: '/account/edit-phone',
+        name: 'edit-phone',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          return BlocProvider(
+            create: (context) => ProfileUpdateCubit(
+              updateFullName: getIt<UpdateFullName>(),
+              requestPhoneChange: getIt<RequestPhoneChange>(),
+              verifyPhoneChange: getIt<VerifyPhoneChange>(),
+              requestEmailChange: getIt<RequestEmailChange>(),
+              verifyEmailChange: getIt<VerifyEmailChange>(),
+            ),
+            child: EditPhonePage(
+              userId: extra['userId'] as String,
+              currentPhone: extra['currentPhone'] as String,
+            ),
+          );
+        },
+      ),
+
+      GoRoute(
+        path: '/account/verify-phone',
+        name: 'verify-phone',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          // Don't create new ProfileUpdateCubit, use existing one from parent
+          return VerifyPhoneChangePage(
+            userId: extra['userId'] as String,
+            phone: extra['phone'] as String,
+          );
+        },
+      ),
+
+      GoRoute(
+        path: '/account/edit-email',
+        name: 'edit-email',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          return BlocProvider(
+            create: (context) => ProfileUpdateCubit(
+              updateFullName: getIt<UpdateFullName>(),
+              requestPhoneChange: getIt<RequestPhoneChange>(),
+              verifyPhoneChange: getIt<VerifyPhoneChange>(),
+              requestEmailChange: getIt<RequestEmailChange>(),
+              verifyEmailChange: getIt<VerifyEmailChange>(),
+            ),
+            child: EditEmailPage(
+              userId: extra['userId'] as String,
+              currentEmail: extra['currentEmail'] as String,
+            ),
+          );
+        },
+      ),
+
+      GoRoute(
+        path: '/account/verify-email',
+        name: 'verify-email',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          // Don't create new ProfileUpdateCubit, use existing one from parent
+          return VerifyEmailChangePage(
+            userId: extra['userId'] as String,
+            email: extra['email'] as String,
           );
         },
       ),

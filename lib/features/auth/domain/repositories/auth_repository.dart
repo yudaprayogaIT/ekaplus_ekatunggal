@@ -5,24 +5,43 @@ import 'package:ekaplus_ekatunggal/features/auth/domain/entities/user.dart';
 import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/register_user.dart';
 
 abstract class AuthRepository {
-  /// Check if phone number already exists
+  // Existing methods
   Future<Either<Failure, bool>> checkPhoneExists(String phone);
-
-  /// Request OTP for phone number
   Future<Either<Failure, String>> requestOtp(String phone);
-
-  /// Verify OTP code
   Future<Either<Failure, bool>> verifyOtp(String phone, String otp);
-
-  /// Register new user
   Future<Either<Failure, User>> registerUser(RegisterUserParams params);
-
-  /// Get user by phone
   Future<Either<Failure, User>> getUserByPhone(String phone);
-
-  // Login user with phone/username and password
   Future<Either<Failure, User>> loginUser(String identifier, String password);
+  Future<Either<Failure, User>> updateProfilePicture(
+    String userId,
+    String? profilePicPath,
+    String? bgColor,
+  );
 
-  // update profile picture
-  Future<Either<Failure, User>> updateProfilePicture(String userId, String? profilePicPath, String? bgColor,);
+  // Profile update methods
+  Future<Either<Failure, User>> updateFullName(String userId, String fullName);
+  
+  Future<Either<Failure, String>> requestPhoneChange({
+    required String userId,
+    required String newPhone,
+    required String password,
+  });
+  
+  Future<Either<Failure, User>> verifyPhoneChange({
+    required String userId,
+    required String newPhone,
+    required String verificationCode,
+  });
+  
+  Future<Either<Failure, String>> requestEmailChange({
+    required String userId,
+    required String newEmail,
+    required String password,
+  });
+  
+  Future<Either<Failure, User>> verifyEmailChange({
+    required String userId,
+    required String newEmail,
+    required String verificationCode,
+  });
 }

@@ -1,5 +1,10 @@
 // lib/injection.dart
 import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/update_profile_picture.dart';
+import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/update_full_name.dart'; // ← ADD
+import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/request_phone_change.dart'; // ← ADD
+import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/verify_phone_change.dart'; // ← ADD
+import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/request_email_change.dart'; // ← ADD
+import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/verify_email_change.dart'; // ← ADD
 import 'package:ekaplus_ekatunggal/features/wishlist/domain/usecases/bulk_delete_wishlist.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
@@ -134,6 +139,14 @@ Future<void> init() async {
   myinjection.registerLazySingleton(() => RegisterUser(myinjection()));
   myinjection.registerLazySingleton(() => LoginUser(myinjection()));
   myinjection.registerLazySingleton(() => UpdateProfilePicture(myinjection()));
+  
+  // 🔥 Profile Update UseCases
+  myinjection.registerLazySingleton(() => UpdateFullName(myinjection()));
+  myinjection.registerLazySingleton(() => RequestPhoneChange(myinjection()));
+  myinjection.registerLazySingleton(() => VerifyPhoneChange(myinjection()));
+  myinjection.registerLazySingleton(() => RequestEmailChange(myinjection()));
+  myinjection.registerLazySingleton(() => VerifyEmailChange(myinjection()));
+  print('✅ Profile Update UseCases registered');
 
   // Type UseCases
   myinjection.registerLazySingleton(() => GetAllType(myinjection()));

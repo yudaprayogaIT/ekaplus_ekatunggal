@@ -10,7 +10,9 @@ import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/register_user.d
 class AuthRepositoryImplementation implements AuthRepository {
   final AuthLocalDataSource localDataSource;
 
-  AuthRepositoryImplementation({required this.localDataSource});
+  AuthRepositoryImplementation({
+    required this.localDataSource,
+  });
 
   @override
   Future<Either<Failure, bool>> checkPhoneExists(String phone) async {
@@ -196,6 +198,192 @@ class AuthRepositoryImplementation implements AuthRepository {
     } catch (e) {
       print('❌ Error updating profile picture: $e');
       return Left(CacheFailure(message: e.toString()));
+    }
+  }
+
+  // ========== PROFILE UPDATE METHODS ==========
+
+  @override
+  Future<Either<Failure, User>> updateFullName(String userId, String fullName) async {
+    try {
+      print('🔄 Updating full name for user: $userId');
+
+      // Get current user by phone (userId is phone in local storage)
+      final user = await localDataSource.getUserByPhone(userId);
+      if (user == null) {
+        return const Left(CacheFailure(message: 'User tidak ditemukan'));
+      }
+
+      // Split full name into first and last name
+      final nameParts = fullName.trim().split(' ');
+      final firstName = nameParts.first;
+      final lastName = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
+
+      // Update user
+      final updatedUser = user.copyWith(
+        firstName: firstName,
+        lastName: lastName,
+        fullName: fullName.trim(),
+        updatedAt: DateTime.now(),
+      );
+
+      await localDataSource.updateUser(updatedUser);
+
+      print('✅ Full name updated successfully');
+      return Right(updatedUser);
+    } catch (e) {
+      print('❌ Error updating full name: $e');
+      return Left(CacheFailure(message: 'Gagal mengubah nama: ${e.toString()}'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, String>> requestPhoneChange({
+    required String userId,
+    required String newPhone,
+    required String password,
+  }) async {
+    try {
+      print('🔄 Requesting phone change for user: $userId');
+
+      // Get current user
+      final user = await localDataSource.getUserByPhone(userId);
+      if (user == null) {
+        return const Left(CacheFailure(message: 'User tidak ditemukan'));
+      }
+
+      // Verify password
+      if (user.password != password) {
+        return const Left(CacheFailure(message: 'Password salah'));
+      }
+
+      // Check if new phone already exists
+      final phoneExists = await localDataSource.checkPhoneExists(newPhone);
+      if (phoneExists) {
+        return const Left(CacheFailure(message: 'Nomor handphone sudah digunakan'));
+      }
+
+      // Generate OTP for new phone
+      final otp = await localDataSource.generateOtp(newPhone);
+
+      print('✅ OTP sent to new phone: $newPhone');
+      return Right('Kode verifikasi telah dikirim ke $newPhone. Kode: $otp');
+    } catch (e) {
+      print('❌ Error requesting phone change: $e');
+      return Left(CacheFailure(message: 'Gagal mengirim kode verifikasi'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, User>> verifyPhoneChange({
+    required String userId,
+    required String newPhone,
+    required String verificationCode,
+  }) async {
+    try {
+      print('🔄 Verifying phone change for user: $userId');
+
+      // Verify OTP
+      final isValid = await localDataSource.verifyOtp(newPhone, verificationCode);
+      if (!isValid) {
+        return const Left(CacheFailure(message: 'Kode verifikasi tidak valid atau sudah kadaluarsa'));
+      }
+
+      // Get current user
+      final user = await localDataSource.getUserByPhone(userId);
+      if (user == null) {
+        return const Left(CacheFailure(message: 'User tidak ditemukan'));
+      }
+
+      // Update phone number
+      final updatedUser = user.copyWith(
+        phone: newPhone,
+        isPhoneVerified: true,
+        updatedAt: DateTime.now(),
+      );
+
+      await localDataSource.updateUser(updatedUser);
+
+      print('✅ Phone changed successfully');
+      return Right(updatedUser);
+    } catch (e) {
+      print('❌ Error verifying phone change: $e');
+      return Left(CacheFailure(message: 'Gagal mengubah nomor handphone'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, String>> requestEmailChange({
+    required String userId,
+    required String newEmail,
+    required String password,
+  }) async {
+    try {
+      print('🔄 Requesting email change for user: $userId');
+
+      // Get current user
+      final user = await localDataSource.getUserByPhone(userId);
+      if (user == null) {
+        return const Left(CacheFailure(message: 'User tidak ditemukan'));
+      }
+
+      // Verify password
+      if (user.password != password) {
+        return const Left(CacheFailure(message: 'Password salah'));
+      }
+
+      // Check if email already exists
+      final emailUser = await localDataSource.getUserByEmail(newEmail);
+      if (emailUser != null && emailUser.phone != userId) {
+        return const Left(CacheFailure(message: 'Email sudah digunakan'));
+      }
+
+      // Generate OTP for verification (using phone as identifier)
+      final otp = await localDataSource.generateOtp('email_$newEmail');
+
+      print('✅ Verification code sent to email: $newEmail');
+      return Right('Kode verifikasi telah dikirim ke $newEmail. Kode: $otp');
+    } catch (e) {
+      print('❌ Error requesting email change: $e');
+      return Left(CacheFailure(message: 'Gagal mengirim kode verifikasi'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, User>> verifyEmailChange({
+    required String userId,
+    required String newEmail,
+    required String verificationCode,
+  }) async {
+    try {
+      print('🔄 Verifying email change for user: $userId');
+
+      // Verify OTP
+      final isValid = await localDataSource.verifyOtp('email_$newEmail', verificationCode);
+      if (!isValid) {
+        return const Left(CacheFailure(message: 'Kode verifikasi tidak valid atau sudah kadaluarsa'));
+      }
+
+      // Get current user
+      final user = await localDataSource.getUserByPhone(userId);
+      if (user == null) {
+        return const Left(CacheFailure(message: 'User tidak ditemukan'));
+      }
+
+      // Update email
+      final updatedUser = user.copyWith(
+        email: newEmail,
+        isEmailVerified: true,
+        updatedAt: DateTime.now(),
+      );
+
+      await localDataSource.updateUser(updatedUser);
+
+      print('✅ Email changed successfully');
+      return Right(updatedUser);
+    } catch (e) {
+      print('❌ Error verifying email change: $e');
+      return Left(CacheFailure(message: 'Gagal mengubah email'));
     }
   }
 }

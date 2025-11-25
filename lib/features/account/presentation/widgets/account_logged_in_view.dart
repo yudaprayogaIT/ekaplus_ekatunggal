@@ -31,21 +31,36 @@ class AccountLoggedInView extends StatelessWidget {
                 const SizedBox(height: 24),
 
                 // Nama Lengkap
-                _buildInfoSection(label: 'Nama Lengkap', value: user.fullName),
+                _buildInfoSection(
+                  label: 'Nama Lengkap',
+                  value: user.fullName,
+                  context: context,
+                  userId: user.phone, // phone is used as userId
+                ),
 
                 const Divider(height: 1),
 
                 const SizedBox(height: 12),
 
                 // Nomor Handphone
-                _buildInfoSection(label: 'Nomor Handphone', value: user.phone),
+                _buildInfoSection(
+                  label: 'Nomor Handphone',
+                  value: user.phone,
+                  context: context,
+                  userId: user.phone,
+                ),
 
                 const Divider(height: 1),
 
                 const SizedBox(height: 12),
 
                 // Email
-                _buildInfoSection(label: 'Email', value: user.email),
+                _buildInfoSection(
+                  label: 'Email',
+                  value: user.email,
+                  context: context,
+                  userId: user.phone,
+                ),
 
                 const Divider(height: 1),
 
@@ -273,7 +288,12 @@ class AccountLoggedInView extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoSection({required String label, required String value}) {
+  Widget _buildInfoSection({
+    required String label,
+    required String value,
+    required BuildContext context,
+    required String userId,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -300,13 +320,34 @@ class AccountLoggedInView extends StatelessWidget {
                 ),
               ),
             ),
-            Text(
-              'Ubah',
-              style: TextStyle(
-                fontFamily: AppFonts.primaryFont,
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: AppColors.primaryColor,
+            GestureDetector(
+              onTap: () {
+                // Navigate based on label
+                if (label == 'Nama Lengkap') {
+                  context.pushNamed('edit-name', extra: {
+                    'userId': userId,
+                    'currentName': value,
+                  });
+                } else if (label == 'Nomor Handphone') {
+                  context.pushNamed('edit-phone', extra: {
+                    'userId': userId,
+                    'currentPhone': value,
+                  });
+                } else if (label == 'Email') {
+                  context.pushNamed('edit-email', extra: {
+                    'userId': userId,
+                    'currentEmail': value,
+                  });
+                }
+              },
+              child: Text(
+                'Ubah',
+                style: TextStyle(
+                  fontFamily: AppFonts.primaryFont,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.primaryColor,
+                ),
               ),
             ),
           ],
