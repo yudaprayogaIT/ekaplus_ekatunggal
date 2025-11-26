@@ -28,15 +28,19 @@ class StorageService {
     // Create file with empty array if not exists
     if (!await file.exists()) {
       if (fileName == _usersFileName) {
-        await file.writeAsString(jsonEncode({
-          'users': [],
-          'last_updated': DateTime.now().toIso8601String(),
-        }));
+        await file.writeAsString(
+          jsonEncode({
+            'users': [],
+            'last_updated': DateTime.now().toIso8601String(),
+          }),
+        );
       } else if (fileName == _otpFileName) {
-        await file.writeAsString(jsonEncode({
-          'otp_sessions': [],
-          'last_updated': DateTime.now().toIso8601String(),
-        }));
+        await file.writeAsString(
+          jsonEncode({
+            'otp_sessions': [],
+            'last_updated': DateTime.now().toIso8601String(),
+          }),
+        );
       }
     }
 
@@ -51,9 +55,9 @@ class StorageService {
       final file = await _getLocalFile(_usersFileName);
       final contents = await file.readAsString();
       final Map<String, dynamic> jsonData = jsonDecode(contents);
-      
+
       final List<dynamic> usersList = jsonData['users'] ?? [];
-      
+
       print('📖 Loaded ${usersList.length} users from storage');
       return usersList.cast<Map<String, dynamic>>();
     } catch (e) {
@@ -340,7 +344,7 @@ class StorageService {
       final file = await _getLocalFile(_otpFileName);
       final contents = await file.readAsString();
       final Map<String, dynamic> jsonData = jsonDecode(contents);
-      
+
       final List<dynamic> otpList = jsonData['otp_sessions'] ?? [];
       return otpList.cast<Map<String, dynamic>>();
     } catch (e) {
@@ -365,6 +369,17 @@ class StorageService {
       print('💾 OTP session saved for: ${otpSession['phone']}');
     } catch (e) {
       print("❌ Error saving OTP session: $e");
+      rethrow;
+    }
+  }
+
+  Future<void> saveAllUsers(List<Map<String, dynamic>> users) async {
+    try {
+      await _saveUsersToFile(users);
+      await _autoSaveToAssets(users);
+      print('✅ All users saved successfully (${users.length} users)');
+    } catch (e) {
+      print('❌ Error saving all users: $e');
       rethrow;
     }
   }

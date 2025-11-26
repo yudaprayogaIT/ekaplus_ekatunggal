@@ -28,12 +28,13 @@ class AuthSessionCubit extends Cubit<AuthSessionState> {
 
       // Convert Map to User entity
       final user = UserModel.fromJson(userData);
-      
-      // Determine status (you can add logic to check if member)
+
+      // Determine status
       final status = _determineUserStatus(user);
 
       emit(AuthSessionAuthenticated(user: user, status: status));
       print('✅ Session restored: ${user.fullName}');
+      print('📱 Current userId (phone): ${user.phone}');
     } catch (e) {
       print('❌ Error checking session: $e');
       emit(const AuthSessionGuest());
@@ -41,7 +42,7 @@ class AuthSessionCubit extends Cubit<AuthSessionState> {
   }
 
   // Login - save session and update state
-  Future<void> login(User user) async {
+ Future<void> login(User user) async {
     try {
       // Save to SharedPreferences
       final userMap = (user as UserModel).toJson();
@@ -50,8 +51,9 @@ class AuthSessionCubit extends Cubit<AuthSessionState> {
       // Update state
       final status = _determineUserStatus(user);
       emit(AuthSessionAuthenticated(user: user, status: status));
-      
+
       print('✅ User logged in: ${user.fullName}');
+      print('📱 UserId (phone): ${user.phone}');
     } catch (e) {
       print('❌ Error saving login session: $e');
     }
@@ -69,17 +71,54 @@ class AuthSessionCubit extends Cubit<AuthSessionState> {
   }
 
   // Update user data (e.g., after profile edit)
-  Future<void> updateUser(User user) async {
+   Future<void> updateUser(User updatedUser) async {
     try {
-      final userMap = (user as UserModel).toJson();
+      print('');
+      print('🔄 === UPDATING USER IN SESSION ===');
+      
+      // Get current user from state
+      final currentState = state;
+      if (currentState is! AuthSessionAuthenticated) {
+        print('⚠️ Not authenticated, cannot update');
+        return;
+      }
+
+      final oldUser = currentState.user;
+      final oldPhone = oldUser.phone;
+      final newPhone = updatedUser.phone;
+
+      print('📱 Old userId (phone): $oldPhone');
+      print('📱 New userId (phone): $newPhone');
+      print('👤 User: ${updatedUser.fullName}');
+      print('📧 Email: ${updatedUser.email}');
+
+      // Convert to map
+      final userMap = (updatedUser as UserModel).toJson();
+
+      // ✨ CRITICAL: Update session with new phone as key
       await SessionManager.updateUserData(userMap);
 
-      final status = _determineUserStatus(user);
-      emit(AuthSessionAuthenticated(user: user, status: status));
-      
-      print('✅ User data updated: ${user.fullName}');
+      // Update state
+      final status = _determineUserStatus(updatedUser);
+      emit(AuthSessionAuthenticated(user: updatedUser, status: status));
+
+      if (oldPhone != newPhone) {
+        print('');
+        print('🔄 PHONE CHANGED!');
+        print('   Old: $oldPhone');
+        print('   New: $newPhone');
+        print('   ⚠️ All future requests will use new phone as userId');
+        print('');
+      }
+
+      print('✅ === SESSION UPDATE COMPLETE ===');
+      print('📱 Current userId: ${updatedUser.phone}');
+      print('');
     } catch (e) {
-      print('❌ Error updating user: $e');
+      print('');
+      print('❌ === SESSION UPDATE FAILED ===');
+      print('Error: $e');
+      print('');
     }
   }
 
@@ -87,7 +126,7 @@ class AuthSessionCubit extends Cubit<AuthSessionState> {
   UserStatus _determineUserStatus(User user) {
     // TODO: Add your logic to determine if user is member
     // For example: check if user has company, membership level, etc.
-    
+
     // For now, default to loggedIn
     // You can add: if (user.company != null) return UserStatus.member;
     return UserStatus.loggedIn;
@@ -96,7 +135,7 @@ class AuthSessionCubit extends Cubit<AuthSessionState> {
   // Helper getters for easy access
   bool get isGuest => state is AuthSessionGuest;
   bool get isAuthenticated => state is AuthSessionAuthenticated;
-  
+
   User? get currentUser {
     final currentState = state;
     if (currentState is AuthSessionAuthenticated) {
@@ -111,5 +150,11 @@ class AuthSessionCubit extends Cubit<AuthSessionState> {
       return currentState.status;
     }
     return null;
+  }
+
+  // ✨ NEW: Get current userId (phone number)
+  String? get currentUserId {
+    final user = currentUser;
+    return user?.phone;
   }
 }

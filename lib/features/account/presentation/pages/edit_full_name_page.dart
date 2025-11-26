@@ -29,12 +29,12 @@ class _EditFullNamePageState extends State<EditFullNamePage> {
   @override
   void initState() {
     super.initState();
-    
+
     // Split current name into first and last name
     final nameParts = widget.currentName.trim().split(' ');
     final firstName = nameParts.isNotEmpty ? nameParts.first : '';
     final lastName = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
-    
+
     _firstNameController = TextEditingController(text: firstName);
     _lastNameController = TextEditingController(text: lastName);
   }
@@ -54,12 +54,13 @@ class _EditFullNamePageState extends State<EditFullNamePage> {
         title: 'Ubah Nama',
         onLeadingPressed: () => context.pop(),
       ),
+      resizeToAvoidBottomInset: true,
       body: BlocListener<ProfileUpdateCubit, ProfileUpdateState>(
         listener: (context, state) {
           if (state is ProfileUpdateSuccess) {
             // Update auth session with new user data
             context.read<AuthSessionCubit>().updateUser(state.user);
-            
+
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
@@ -76,10 +77,9 @@ class _EditFullNamePageState extends State<EditFullNamePage> {
             );
           }
         },
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Form(
-            key: _formKey,
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -93,7 +93,11 @@ class _EditFullNamePageState extends State<EditFullNamePage> {
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.info_outline, color: Colors.blue.shade700, size: 20),
+                      Icon(
+                        Icons.info_outline,
+                        color: Colors.blue.shade700,
+                        size: 20,
+                      ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
@@ -108,9 +112,9 @@ class _EditFullNamePageState extends State<EditFullNamePage> {
                     ],
                   ),
                 ),
-                
+
                 const SizedBox(height: 24),
-                
+
                 // First Name
                 Text(
                   'Nama Depan',
@@ -145,9 +149,9 @@ class _EditFullNamePageState extends State<EditFullNamePage> {
                     return null;
                   },
                 ),
-                
+
                 const SizedBox(height: 16),
-                
+
                 // Last Name
                 Text(
                   'Nama Belakang',
@@ -182,9 +186,9 @@ class _EditFullNamePageState extends State<EditFullNamePage> {
                     return null;
                   },
                 ),
-                
+
                 const SizedBox(height: 8),
-                
+
                 Text(
                   'Nama belakang bersifat opsional',
                   style: TextStyle(
@@ -193,9 +197,9 @@ class _EditFullNamePageState extends State<EditFullNamePage> {
                     color: AppColors.grayColor,
                   ),
                 ),
-                
+
                 const SizedBox(height: 24),
-                
+
                 // Preview
                 Container(
                   padding: const EdgeInsets.all(12),
@@ -208,7 +212,7 @@ class _EditFullNamePageState extends State<EditFullNamePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Pratinjau:',
+                        'Nama Lengkap:',
                         style: TextStyle(
                           fontFamily: AppFonts.primaryFont,
                           fontSize: 12,
@@ -216,18 +220,19 @@ class _EditFullNamePageState extends State<EditFullNamePage> {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      ValueListenableBuilder(
+                      ValueListenableBuilder<TextEditingValue>(
                         valueListenable: _firstNameController,
                         builder: (context, firstValue, child) {
-                          return ValueListenableBuilder(
+                          return ValueListenableBuilder<TextEditingValue>(
                             valueListenable: _lastNameController,
                             builder: (context, lastValue, child) {
-                              final firstName = _firstNameController.text.trim();
+                              final firstName = _firstNameController.text
+                                  .trim();
                               final lastName = _lastNameController.text.trim();
-                              final fullName = lastName.isEmpty 
-                                  ? firstName 
+                              final fullName = lastName.isEmpty
+                                  ? firstName
                                   : '$firstName $lastName';
-                              
+
                               return Text(
                                 fullName.isEmpty ? '-' : fullName,
                                 style: TextStyle(
@@ -244,40 +249,48 @@ class _EditFullNamePageState extends State<EditFullNamePage> {
                     ],
                   ),
                 ),
-                
-                const SizedBox(height: 24),
-                
+
+                // Spacer untuk mendorong tombol ke bawah
+                const Spacer(),
+
                 BlocBuilder<ProfileUpdateCubit, ProfileUpdateState>(
                   builder: (context, state) {
                     final isLoading = state is ProfileUpdateLoading;
-                    
-                    return ElevatedButton(
-                      onPressed: isLoading ? null : _handleSave,
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        backgroundColor: AppColors.primaryColor,
-                        disabledBackgroundColor: AppColors.primaryColor.withOpacity(0.5),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+
+                    return SizedBox(
+                      width: double.infinity,
+                      height: 48,
+                      child: ElevatedButton(
+                        onPressed: isLoading ? null : _handleSave,
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          backgroundColor: AppColors.secondaryColor,
+                          disabledBackgroundColor: AppColors.secondaryColor
+                              .withOpacity(0.5),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
                         ),
+                        child: isLoading
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Colors.white,
+                                  ),
+                                ),
+                              )
+                            : Text(
+                                'Simpan',
+                                style: TextStyle(
+                                  fontFamily: AppFonts.primaryFont,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.blackColor,
+                                ),
+                              ),
                       ),
-                      child: isLoading
-                          ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                              ),
-                            )
-                          : Text(
-                              'Simpan',
-                              style: TextStyle(
-                                fontFamily: AppFonts.primaryFont,
-                                fontWeight: FontWeight.w700,
-                                color: AppColors.whiteColor,
-                              ),
-                            ),
                     );
                   },
                 ),
@@ -294,13 +307,13 @@ class _EditFullNamePageState extends State<EditFullNamePage> {
       final firstName = _firstNameController.text.trim();
       final lastName = _lastNameController.text.trim();
       final fullName = lastName.isEmpty ? firstName : '$firstName $lastName';
-      
+
       // Check if name changed
       if (fullName != widget.currentName) {
         context.read<ProfileUpdateCubit>().updateName(
-              userId: widget.userId,
-              fullName: fullName,
-            );
+          userId: widget.userId,
+          fullName: fullName,
+        );
       } else {
         context.pop();
       }

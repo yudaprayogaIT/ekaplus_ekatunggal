@@ -52,7 +52,8 @@ class _VerifyPasswordPageState extends State<VerifyPasswordPage> {
         title: widget.title,
         onLeadingPressed: () => context.pop(),
       ),
-      body: SingleChildScrollView(
+      body: SafeArea(
+        child: Padding(
         padding: const EdgeInsets.all(16),
         child: Form(
           key: _formKey,
@@ -69,7 +70,11 @@ class _VerifyPasswordPageState extends State<VerifyPasswordPage> {
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.info_outline, color: Colors.blue.shade700, size: 20),
+                    Icon(
+                      Icons.info_outline,
+                      color: Colors.blue.shade700,
+                      size: 20,
+                    ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
@@ -112,7 +117,9 @@ class _VerifyPasswordPageState extends State<VerifyPasswordPage> {
                   ),
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                      _obscurePassword
+                          ? Icons.visibility_off
+                          : Icons.visibility,
                       color: AppColors.grayColor,
                     ),
                     onPressed: () {
@@ -151,15 +158,17 @@ class _VerifyPasswordPageState extends State<VerifyPasswordPage> {
                 ),
               ),
 
-              const SizedBox(height: 24),
+              const Spacer(),
 
               // Submit Button
               ElevatedButton(
                 onPressed: _isVerifying ? null : _handleNext,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  backgroundColor: AppColors.primaryColor,
-                  disabledBackgroundColor: AppColors.primaryColor.withOpacity(0.5),
+                  backgroundColor: AppColors.secondaryColor,
+                  disabledBackgroundColor: AppColors.secondaryColor.withOpacity(
+                    0.5,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -170,7 +179,9 @@ class _VerifyPasswordPageState extends State<VerifyPasswordPage> {
                         width: 20,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            AppColors.whiteColor,
+                          ),
                         ),
                       )
                     : Text(
@@ -178,13 +189,14 @@ class _VerifyPasswordPageState extends State<VerifyPasswordPage> {
                         style: TextStyle(
                           fontFamily: AppFonts.primaryFont,
                           fontWeight: FontWeight.w700,
-                          color: AppColors.whiteColor,
+                          color: AppColors.blackColor,
                         ),
                       ),
               ),
             ],
           ),
         ),
+      ),
       ),
     );
   }
@@ -232,6 +244,14 @@ class _VerifyPasswordPageState extends State<VerifyPasswordPage> {
           final extra = widget.nextRouteExtra ?? {};
           extra['password'] = password; // Pass verified password
           extra['userId'] = widget.userId;
+
+          // ← ADD TYPE DETECTION
+          // If nextRouteExtra contains 'currentPhone' or 'currentEmail',
+          // it means we're editing contact info
+          if (widget.nextRoute == 'edit-contact') {
+            // Type is already in extra from AccountLoggedInView
+            // Just keep it as is
+          }
 
           context.pushNamed(widget.nextRoute, extra: extra);
         }

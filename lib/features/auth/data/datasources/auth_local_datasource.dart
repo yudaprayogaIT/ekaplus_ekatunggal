@@ -13,6 +13,7 @@ abstract class AuthLocalDataSource {
   Future<UserModel?> getUserByUsername(String username);
   Future<UserModel?> getUserByEmail(String email);
   Future<void> updateUser(UserModel user);
+  Future<void> updateUserPhone(String oldPhone, String newPhone, UserModel updatedUser);
 }
 
 class AuthLocalDataSourceImpl implements AuthLocalDataSource {
@@ -191,5 +192,43 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
 
   Future<String> getStorageFilePath() async {
     return await _storageService.getUsersFilePath();
+  }
+
+  @override
+  Future<void> updateUserPhone(
+    String oldPhone,
+    String newPhone,
+    UserModel updatedUser,
+  ) async {
+    try {
+      print('🔄 Updating user phone from $oldPhone to $newPhone');
+
+      // Load all users
+      final users = await _storageService.loadUsers();
+
+      // Find user with old phone
+      final userIndex = users.indexWhere((u) => u['phone'] == oldPhone);
+
+      if (userIndex == -1) {
+        throw Exception('User with phone $oldPhone not found');
+      }
+
+      // Remove old user entry
+      users.removeAt(userIndex);
+
+      // Add updated user with new phone
+      final updatedUserMap = updatedUser.toJson();
+      users.add(updatedUserMap);
+
+      // Save all users
+      await _storageService.saveAllUsers(users);
+
+      print('✅ User phone updated successfully!');
+      print('   Old phone: $oldPhone');
+      print('   New phone: $newPhone');
+    } catch (e) {
+      print('❌ Error updating user phone: $e');
+      rethrow;
+    }
   }
 }

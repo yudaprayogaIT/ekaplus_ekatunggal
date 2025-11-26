@@ -282,49 +282,50 @@ class AuthRepositoryImplementation implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, User>> verifyPhoneChange({
-    required String userId,
-    required String newPhone,
-    required String verificationCode,
-  }) async {
-    try {
-      print('🔄 Verifying phone change for user: $userId');
+Future<Either<Failure, User>> verifyPhoneChange({
+  required String userId,
+  required String newPhone,
+  required String verificationCode,
+}) async {
+  try {
+    print('🔄 Verifying phone change for user: $userId');
 
-      // Verify OTP
-      final isValid = await localDataSource.verifyOtp(
-        newPhone,
-        verificationCode,
-      );
-      if (!isValid) {
-        return const Left(
-          CacheFailure(
-            message: 'Kode verifikasi tidak valid atau sudah kadaluarsa',
-          ),
-        );
-      }
-
-      // Get current user
-      final user = await localDataSource.getUserByPhone(userId);
-      if (user == null) {
-        return const Left(CacheFailure(message: 'User tidak ditemukan'));
-      }
-
-      // Update phone number
-      final updatedUser = user.copyWith(
-        phone: newPhone,
-        isPhoneVerified: true,
-        updatedAt: DateTime.now(),
-      );
-
-      await localDataSource.updateUser(updatedUser);
-
-      print('✅ Phone changed successfully');
-      return Right(updatedUser);
-    } catch (e) {
-      print('❌ Error verifying phone change: $e');
-      return Left(CacheFailure(message: 'Gagal mengubah nomor handphone'));
+    // Verify OTP
+    final isValid = await localDataSource.verifyOtp(newPhone, verificationCode);
+    if (!isValid) {
+      return const Left(CacheFailure(message: 'Kode verifikasi tidak valid atau sudah kadaluarsa'));
     }
+
+    // Get current user by OLD phone (userId)
+    final user = await localDataSource.getUserByPhone(userId);
+    if (user == null) {
+      return const Left(CacheFailure(message: 'User tidak ditemukan'));
+    }
+
+    print('📱 Old phone: ${user.phone}');
+    print('📱 New phone: $newPhone');
+
+    // Create updated user with new phone
+    final updatedUser = user.copyWith(
+      phone: newPhone,
+      isPhoneVerified: true,
+      updatedAt: DateTime.now(),
+    );
+
+    // ⚠️ CRITICAL: Use special method to update phone (changes the key)
+    await localDataSource.updateUserPhone(
+      userId, // old phone
+      newPhone, // new phone
+      updatedUser,
+    );
+
+    print('✅ Phone changed successfully');
+    return Right(updatedUser);
+  } catch (e) {
+    print('❌ Error verifying phone change: $e');
+    return Left(CacheFailure(message: 'Gagal mengubah nomor handphone: ${e.toString()}'));
   }
+}
 
   @override
   Future<Either<Failure, String>> requestEmailChange({

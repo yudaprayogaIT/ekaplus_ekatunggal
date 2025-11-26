@@ -4,14 +4,12 @@ import 'package:ekaplus_ekatunggal/features/account/presentation/cubit/profile_u
 import 'package:ekaplus_ekatunggal/features/account/presentation/pages/about_page.dart';
 import 'package:ekaplus_ekatunggal/features/account/presentation/pages/account_page.dart';
 import 'package:ekaplus_ekatunggal/features/account/presentation/pages/change_password_page.dart';
-import 'package:ekaplus_ekatunggal/features/account/presentation/pages/edit_email_page.dart';
+import 'package:ekaplus_ekatunggal/features/account/presentation/pages/edit_contact_page.dart'; // ✨ NEW
 import 'package:ekaplus_ekatunggal/features/account/presentation/pages/edit_full_name_page.dart';
-import 'package:ekaplus_ekatunggal/features/account/presentation/pages/edit_phone_page.dart';
 import 'package:ekaplus_ekatunggal/features/account/presentation/pages/new_password_page.dart';
 import 'package:ekaplus_ekatunggal/features/account/presentation/pages/select_avatar_page.dart';
-import 'package:ekaplus_ekatunggal/features/account/presentation/pages/verify_email_change_page.dart';
+import 'package:ekaplus_ekatunggal/features/account/presentation/pages/verify_contact_complete_page.dart'; // ✨ NEW
 import 'package:ekaplus_ekatunggal/features/account/presentation/pages/verify_password_page.dart';
-import 'package:ekaplus_ekatunggal/features/account/presentation/pages/verify_phone_number.dart';
 import 'package:ekaplus_ekatunggal/features/auth/domain/entities/user.dart';
 import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/change_password.dart';
 import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/request_email_change.dart';
@@ -21,6 +19,9 @@ import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/update_full_nam
 import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/verify_email_change.dart';
 import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/verify_old_password.dart';
 import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/verify_phone_change.dart';
+import 'package:ekaplus_ekatunggal/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:ekaplus_ekatunggal/features/auth/presentation/bloc/otp_timer/otp_timer_bloc.dart';
+import 'package:ekaplus_ekatunggal/features/auth/presentation/bloc/otp_timer/otp_timer_event.dart';
 import 'package:ekaplus_ekatunggal/features/auth/presentation/pages/forgot_password_phone_page.dart';
 import 'package:ekaplus_ekatunggal/features/auth/presentation/pages/login_page.dart';
 import 'package:ekaplus_ekatunggal/features/auth/presentation/pages/otp_verification_page.dart';
@@ -88,16 +89,63 @@ class MyRouter {
             MaterialPage(key: state.pageKey, child: const RegisterPage()),
       ),
 
+      // ========== OTP VERIFICATION (REUSABLE) ==========
+      // GoRoute(
+      //   path: '/otp-verification',
+      //   name: 'otp-verification',
+      //   pageBuilder: (context, state) {
+      //     final extra = state.extra as Map<String, dynamic>?;
+
+      //     return MaterialPage(
+      //       key: state.pageKey,
+      //       child: MultiBlocProvider(
+      //         providers: [
+      //           BlocProvider(create: (context) => getIt<AuthBloc>()),
+      //           BlocProvider(
+      //             create: (context) =>
+      //                 getIt<OtpTimerBloc>()
+      //                   ..add(const StartOtpTimer(duration: 60)),
+      //           ),
+      //           // If cubit is passed (profile update flow), provide it
+      //           if (extra?['cubit'] != null)
+      //             BlocProvider.value(
+      //               value: extra!['cubit'] as ProfileUpdateCubit,
+      //             ),
+      //         ],
+      //         child: OtpVerificationPage(
+      //           phoneNumber: extra?['phoneNumber'] as String? ?? '',
+      //           title: extra?['title'] as String?,
+      //           subtitle: extra?['subtitle'] as String?,
+      //           nextRoute: extra?['nextRoute'] as String?,
+      //           isPasswordReset: extra?['isPasswordReset'] as bool? ?? false,
+      //           cubit: extra?['cubit'] as ProfileUpdateCubit?,
+      //           userId: extra?['userId'] as String?,
+      //           contactType: extra?['contactType'] as ContactType?,
+      //         ),
+      //       ),
+      //     );
+      //   },
+      // ),
+
+      // Legacy OTP route (untuk backward compatibility)
       GoRoute(
         path: '/otp',
         name: 'otp',
         pageBuilder: (context, state) {
-          // Get phone number from extra
           final phoneNumber = state.extra as String? ?? '';
-
           return MaterialPage(
             key: state.pageKey,
-            child: OtpVerificationPage(phoneNumber: phoneNumber),
+            child: MultiBlocProvider(
+              providers: [
+                BlocProvider(create: (context) => getIt<AuthBloc>()),
+                BlocProvider(
+                  create: (context) =>
+                      getIt<OtpTimerBloc>()
+                        ..add(const StartOtpTimer(duration: 60)),
+                ),
+              ],
+              child: OtpVerificationPage(phoneNumber: phoneNumber),
+            ),
           );
         },
       ),
@@ -108,7 +156,6 @@ class MyRouter {
         name: 'registerForm',
         pageBuilder: (context, state) {
           final phoneNumber = state.extra as String? ?? '';
-
           return MaterialPage(
             key: state.pageKey,
             child: RegisterFormPage(phoneNumber: phoneNumber),
@@ -210,165 +257,129 @@ class MyRouter {
       // ============================================
       // ---------- PROFILE UPDATE ROUTES -----------
       // ============================================
+
       // 1. Edit Name (No password needed)
-      GoRoute(
-        path: '/account/edit-name',
-        name: 'edit-name',
-        builder: (context, state) {
-          final extra = state.extra as Map<String, dynamic>;
-          return BlocProvider(
-            create: (context) => ProfileUpdateCubit(
-              updateFullName: getIt<UpdateFullName>(),
-              requestPhoneChange: getIt<RequestPhoneChange>(),
-              verifyPhoneChange: getIt<VerifyPhoneChange>(),
-              requestEmailChange: getIt<RequestEmailChange>(),
-              verifyEmailChange: getIt<VerifyEmailChange>(),
-            ),
-            child: EditFullNamePage(
-              userId: extra['userId'] as String,
-              currentName: extra['currentName'] as String,
-            ),
-          );
-        },
+GoRoute(
+  path: '/account/edit-name',
+  name: 'edit-name',
+  builder: (context, state) {
+    final extra = state.extra as Map<String, dynamic>;
+    return BlocProvider(
+      create: (context) => ProfileUpdateCubit(
+        updateFullName: getIt<UpdateFullName>(),
+        requestPhoneChange: getIt<RequestPhoneChange>(),
+        verifyPhoneChange: getIt<VerifyPhoneChange>(),
+        requestEmailChange: getIt<RequestEmailChange>(),
+        verifyEmailChange: getIt<VerifyEmailChange>(),
       ),
-
-      // 2. Verify Password Page (Reusable)
-      GoRoute(
-        path: '/account/verify-password',
-        name: 'verify-password',
-        builder: (context, state) {
-          final extra = state.extra as Map<String, dynamic>;
-          return VerifyPasswordPage(
-            userId: extra['userId'] as String,
-            title: extra['title'] as String,
-            subtitle: extra['subtitle'] as String,
-            nextRoute: extra['nextRoute'] as String,
-            nextRouteExtra: extra['nextRouteExtra'] as Map<String, dynamic>?,
-          );
-        },
+      child: EditFullNamePage(
+        userId: extra['userId'] as String,
+        currentName: extra['currentName'] as String,
       ),
+    );
+  },
+),
 
-      // 3. Edit Phone (After Password Verified)
-      GoRoute(
-        path: '/account/edit-phone-verified',
-        name: 'edit-phone-verified',
-        builder: (context, state) {
-          final extra = state.extra as Map<String, dynamic>;
-          return BlocProvider(
-            create: (context) => ProfileUpdateCubit(
-              updateFullName: getIt<UpdateFullName>(),
-              requestPhoneChange: getIt<RequestPhoneChange>(),
-              verifyPhoneChange: getIt<VerifyPhoneChange>(),
-              requestEmailChange: getIt<RequestEmailChange>(),
-              verifyEmailChange: getIt<VerifyEmailChange>(),
-            ),
-            child: EditPhonePage(
-              userId: extra['userId'] as String,
-              currentPhone: extra['currentPhone'] as String,
-              verifiedPassword: extra['password'] as String,
-            ),
-          );
-        },
+// 2. Verify Password Page (Reusable)
+GoRoute(
+  path: '/account/verify-password',
+  name: 'verify-password',
+  builder: (context, state) {
+    final extra = state.extra as Map<String, dynamic>;
+    return VerifyPasswordPage(
+      userId: extra['userId'] as String,
+      title: extra['title'] as String,
+      subtitle: extra['subtitle'] as String,
+      nextRoute: extra['nextRoute'] as String,
+      nextRouteExtra: extra['nextRouteExtra'] as Map<String, dynamic>?,
+    );
+  },
+),
+
+// 3. Edit Contact (Unified for Phone & Email)
+GoRoute(
+  path: '/account/edit-contact',
+  name: 'edit-contact',
+  builder: (context, state) {
+    final extra = state.extra as Map<String, dynamic>;
+    final type = extra['type'] as String;
+    
+    return BlocProvider(
+      create: (context) => ProfileUpdateCubit(
+        updateFullName: getIt<UpdateFullName>(),
+        requestPhoneChange: getIt<RequestPhoneChange>(),
+        verifyPhoneChange: getIt<VerifyPhoneChange>(),
+        requestEmailChange: getIt<RequestEmailChange>(),
+        verifyEmailChange: getIt<VerifyEmailChange>(),
       ),
-
-      // 4. Verify Phone Change (OTP) - Use BlocProvider.value
-      GoRoute(
-        path: '/account/verify-phone',
-        name: 'verify-phone',
-        builder: (context, state) {
-          final extra = state.extra as Map<String, dynamic>;
-          final cubit = extra['cubit'] as ProfileUpdateCubit?;
-
-          // If cubit is passed, use BlocProvider.value
-          if (cubit != null) {
-            return BlocProvider<ProfileUpdateCubit>.value(
-              value: cubit,
-              child: VerifyPhoneChangePage(
-                userId: extra['userId'] as String,
-                phone: extra['phone'] as String,
-              ),
-            );
-          }
-
-          // Fallback: create new cubit (shouldn't happen)
-          return BlocProvider(
-            create: (context) => ProfileUpdateCubit(
-              updateFullName: getIt<UpdateFullName>(),
-              requestPhoneChange: getIt<RequestPhoneChange>(),
-              verifyPhoneChange: getIt<VerifyPhoneChange>(),
-              requestEmailChange: getIt<RequestEmailChange>(),
-              verifyEmailChange: getIt<VerifyEmailChange>(),
-            ),
-            child: VerifyPhoneChangePage(
-              userId: extra['userId'] as String,
-              phone: extra['phone'] as String,
-            ),
-          );
-        },
+      child: EditContactPage(
+        userId: extra['userId'] as String,
+        currentValue: type == 'phone' 
+            ? extra['currentPhone'] as String
+            : extra['currentEmail'] as String,
+        verifiedPassword: extra['password'] as String,
+        type: type == 'phone' ? ContactType.phone : ContactType.email,
       ),
+    );
+  },
+),
 
-      // 5. Edit Email (After Password Verified)
-      GoRoute(
-        path: '/account/edit-email-verified',
-        name: 'edit-email-verified',
-        builder: (context, state) {
-          final extra = state.extra as Map<String, dynamic>;
-          return BlocProvider(
-            create: (context) => ProfileUpdateCubit(
-              updateFullName: getIt<UpdateFullName>(),
-              requestPhoneChange: getIt<RequestPhoneChange>(),
-              verifyPhoneChange: getIt<VerifyPhoneChange>(),
-              requestEmailChange: getIt<RequestEmailChange>(),
-              verifyEmailChange: getIt<VerifyEmailChange>(),
-            ),
-            child: EditEmailPage(
-              userId: extra['userId'] as String,
-              currentEmail: extra['currentEmail'] as String,
-              verifiedPassword: extra['password'] as String,
-            ),
-          );
-        },
+// 4. OTP Verification (Reusable)
+GoRoute(
+  path: '/account/otp-verification',
+  name: 'otp-verification',
+  builder: (context, state) {
+    final extra = state.extra as Map<String, dynamic>;
+    final cubit = extra['cubit'] as ProfileUpdateCubit?;
+    
+    if (cubit != null) {
+      return BlocProvider<ProfileUpdateCubit>.value(
+        value: cubit,
+        child: OtpVerificationPage(
+          phoneNumber: extra['phoneNumber'] as String,
+          title: extra['title'] as String?,
+          subtitle: extra['subtitle'] as String?,
+          nextRoute: extra['nextRoute'] as String?,
+          isPasswordReset: extra['isPasswordReset'] as bool? ?? false,
+          cubit: cubit,
+          userId: extra['userId'] as String?,
+          contactType: extra['contactType'] as ContactType?,
+        ),
+      );
+    }
+    
+    // Fallback
+    return const Scaffold(
+      body: Center(child: Text('Error: Missing cubit')),
+    );
+  },
+),
+
+// 5. Verify Contact Complete (Final verification)
+GoRoute(
+  path: '/account/verify-contact-complete',
+  name: 'verify-contact-complete',
+  builder: (context, state) {
+    final extra = state.extra as Map<String, dynamic>;
+    final cubit = extra['cubit'] as ProfileUpdateCubit;
+    
+    return BlocProvider<ProfileUpdateCubit>.value(
+      value: cubit,
+      child: VerifyContactCompletePage(
+        userId: extra['userId'] as String,
+        newValue: extra['newValue'] as String,
+        verificationCode: extra['verificationCode'] as String,
+        type: extra['type'] as ContactType,
+        cubit: cubit,
       ),
-
-      // 6. Verify Email Change (OTP) - Use BlocProvider.value
-      GoRoute(
-        path: '/account/verify-email',
-        name: 'verify-email',
-        builder: (context, state) {
-          final extra = state.extra as Map<String, dynamic>;
-          final cubit = extra['cubit'] as ProfileUpdateCubit?;
-
-          // If cubit is passed, use BlocProvider.value
-          if (cubit != null) {
-            return BlocProvider<ProfileUpdateCubit>.value(
-              value: cubit,
-              child: VerifyEmailChangePage(
-                userId: extra['userId'] as String,
-                email: extra['email'] as String,
-              ),
-            );
-          }
-
-          // Fallback: create new cubit (shouldn't happen)
-          return BlocProvider(
-            create: (context) => ProfileUpdateCubit(
-              updateFullName: getIt<UpdateFullName>(),
-              requestPhoneChange: getIt<RequestPhoneChange>(),
-              verifyPhoneChange: getIt<VerifyPhoneChange>(),
-              requestEmailChange: getIt<RequestEmailChange>(),
-              verifyEmailChange: getIt<VerifyEmailChange>(),
-            ),
-            child: VerifyEmailChangePage(
-              userId: extra['userId'] as String,
-              email: extra['email'] as String,
-            ),
-          );
-        },
-      ),
+    );
+  },
+),
 
       // ============================================
       // -------- PASSWORD MANAGEMENT ROUTES --------
       // ============================================
+
       // 1. Change Password (from Settings) - Step 1: Old Password
       GoRoute(
         path: '/account/change-password',
@@ -381,13 +392,16 @@ class MyRouter {
               changePassword: getIt<ChangePassword>(),
               resetPasswordWithOtp: getIt<ResetPasswordWithOtp>(),
             ),
-            child: ChangePasswordPage(userId: extra['userId'] as String),
+            child: ChangePasswordPage(
+              userId: extra['userId'] as String,
+              verifiedPassword:
+                  extra['password'] as String?, // ✨ Pass verified password
+            ),
           );
         },
       ),
 
       // 2. New Password Page (Reusable for Change & Reset)
-      // ⚠️ IMPORTANT: Don't create BlocProvider here, pass cubit via extra
       GoRoute(
         path: '/account/new-password',
         name: 'new-password',
@@ -407,7 +421,7 @@ class MyRouter {
             );
           }
 
-          // If no cubit (shouldn't happen), create new one
+          // If no cubit, create new one
           return BlocProvider(
             create: (context) => ChangePasswordCubit(
               verifyOldPassword: getIt<VerifyOldPassword>(),
@@ -438,14 +452,24 @@ class MyRouter {
         name: 'otp-forgot-password',
         builder: (context, state) {
           final extra = state.extra as Map<String, dynamic>;
-          return OtpVerificationPage(
-            phoneNumber: extra['phone'] as String,
-            title: extra['title'] as String? ?? 'Atur Ulang Password',
-            subtitle:
-                extra['subtitle'] as String? ??
-                'Masukkan kode OTP yang telah dikirim',
-            nextRoute: 'new-password-reset',
-            isPasswordReset: true,
+          return MultiBlocProvider(
+            providers: [
+              BlocProvider(create: (context) => getIt<AuthBloc>()),
+              BlocProvider(
+                create: (context) =>
+                    getIt<OtpTimerBloc>()
+                      ..add(const StartOtpTimer(duration: 60)),
+              ),
+            ],
+            child: OtpVerificationPage(
+              phoneNumber: extra['phone'] as String,
+              title: extra['title'] as String? ?? 'Atur Ulang Password',
+              subtitle:
+                  extra['subtitle'] as String? ??
+                  'Masukkan kode OTP yang telah dikirim',
+              nextRoute: 'new-password-reset',
+              isPasswordReset: true,
+            ),
           );
         },
       ),
@@ -500,22 +524,18 @@ class AppShell extends StatelessWidget {
   void _refreshPage(BuildContext context, int index) {
     switch (index) {
       case 0: // Home
-        // Jika HomePage juga pakai BLoC, trigger event di sini
         break;
 
       case 1: // Category
-        // Trigger ulang load categories
         context.read<CategoryBloc>().add(
           const CategoryEventGetAllCategories(1),
         );
         break;
 
       case 2: // Wishlist
-        // Jika Wishlist pakai BLoC, trigger event di sini
         break;
 
       case 3: // account
-        // Jika Account pakai BLoC, trigger event di sini
         break;
     }
   }
@@ -532,10 +552,7 @@ class AppShell extends StatelessWidget {
           final name = _routeNames[i];
 
           if (i == currentIndex) {
-            // navigasi ke root route tab
             GoRouter.of(context).goNamed(name);
-
-            // trigger refresh jika perlu
             WidgetsBinding.instance.addPostFrameCallback((_) {
               try {
                 _refreshPage(context, i);
@@ -543,11 +560,9 @@ class AppShell extends StatelessWidget {
                 // Ignore errors jika bloc tidak tersedia
               }
             });
-
             return;
           }
 
-          // tap pada tab berbeda -> pindah normal
           GoRouter.of(context).goNamed(name);
         },
       ),

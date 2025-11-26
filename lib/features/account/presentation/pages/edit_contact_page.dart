@@ -1,4 +1,4 @@
-// lib/features/account/presentation/pages/edit_email_page.dart
+// lib/features/account/presentation/pages/edit_contact_page.dart
 import 'package:ekaplus_ekatunggal/constant.dart';
 import 'package:ekaplus_ekatunggal/core/shared_widgets/app_bar.dart';
 import 'package:ekaplus_ekatunggal/features/account/presentation/cubit/profile_update_cubit.dart';
@@ -6,53 +6,69 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-class EditEmailPage extends StatefulWidget {
-  final String userId;
-  final String currentEmail;
-  final String verifiedPassword;
+enum ContactType { phone, email }
 
-  const EditEmailPage({
+class EditContactPage extends StatefulWidget {
+  final String userId;
+  final String currentValue;
+  final String verifiedPassword;
+  final ContactType type;
+
+  const EditContactPage({
     Key? key,
     required this.userId,
-    required this.currentEmail,
+    required this.currentValue,
     required this.verifiedPassword,
+    required this.type,
   }) : super(key: key);
 
   @override
-  State<EditEmailPage> createState() => _EditEmailPageState();
+  State<EditContactPage> createState() => _EditContactPageState();
 }
 
-class _EditEmailPageState extends State<EditEmailPage> {
-  late TextEditingController _emailController;
-  late TextEditingController _confirmEmailController;
+class _EditContactPageState extends State<EditContactPage> {
+  late TextEditingController _valueController;
+  late TextEditingController _confirmValueController;
   final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     super.initState();
-    _emailController = TextEditingController();
-    _confirmEmailController = TextEditingController();
+    _valueController = TextEditingController();
+    _confirmValueController = TextEditingController();
   }
 
   @override
   void dispose() {
-    _emailController.dispose();
-    _confirmEmailController.dispose();
+    _valueController.dispose();
+    _confirmValueController.dispose();
     super.dispose();
   }
+
+  bool get isPhone => widget.type == ContactType.phone;
+
+  String get title => isPhone ? 'Ubah Nomor Handphone' : 'Ubah Email';
+  String get fieldLabel => isPhone ? 'Nomor Handphone Baru' : 'Email Baru';
+  String get confirmLabel =>
+      isPhone ? 'Konfirmasi Nomor Handphone' : 'Konfirmasi Email';
+  String get currentLabel => isPhone ? 'Nomor saat ini:' : 'Email saat ini:';
+  String get hintText =>
+      isPhone ? 'Contoh: 081234567890' : 'Contoh: user@example.com';
+  String get confirmHintText =>
+      isPhone ? 'Konfirmasi nomor handphone baru' : 'Konfirmasi email baru';
+  String get otpInfoText => isPhone
+      ? 'Kode OTP akan dikirim ke nomor baru'
+      : 'Kode verifikasi akan dikirim ke email baru';
+  String get buttonText => isPhone ? 'Kirim Kode OTP' : 'Kirim Kode Verifikasi';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.whiteColor,
-      appBar: CustomAppBar(
-        title: 'Ubah Email',
-        onLeadingPressed: () => context.pop(),
-      ),
+      appBar: CustomAppBar(title: title, onLeadingPressed: () => context.pop()),
       body: BlocListener<ProfileUpdateCubit, ProfileUpdateState>(
         listener: (context, state) {
           if (state is ProfileUpdateAwaitingVerification) {
-            // Show OTP message
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
@@ -60,16 +76,26 @@ class _EditEmailPageState extends State<EditEmailPage> {
                 duration: const Duration(seconds: 5),
               ),
             );
-            
-            // Get cubit and pass it to next route
+
             final cubit = context.read<ProfileUpdateCubit>();
-            
+            final newValue = isPhone ? state.pendingPhone : state.pendingEmail;
+
             context.pushNamed(
-              'verify-email',
+              'otp-verification',
               extra: {
+                'phoneNumber': newValue ?? '',
+                'title': isPhone
+                    ? 'Verifikasi Nomor Handphone'
+                    : 'Verifikasi Email',
+                'subtitle': isPhone
+                    ? 'Masukkan kode OTP yang dikirim ke nomor baru'
+                    : 'Masukkan kode verifikasi yang dikirim ke email baru',
+                'nextRoute': 'verify-contact-complete',
+                'isPasswordReset': false,
+                'cubit': cubit,
                 'userId': widget.userId,
-                'email': state.pendingEmail,
-                'cubit': cubit, // ← PASS CUBIT HERE
+                'contactType': widget.type,
+                'password': widget.verifiedPassword,
               },
             );
           } else if (state is ProfileUpdateError) {
@@ -88,7 +114,7 @@ class _EditEmailPageState extends State<EditEmailPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Current Email Info
+                // Current Value Info
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
@@ -99,7 +125,7 @@ class _EditEmailPageState extends State<EditEmailPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Email saat ini:',
+                        currentLabel,
                         style: TextStyle(
                           fontFamily: AppFonts.primaryFont,
                           fontSize: 12,
@@ -108,7 +134,7 @@ class _EditEmailPageState extends State<EditEmailPage> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        widget.currentEmail,
+                        widget.currentValue,
                         style: TextStyle(
                           fontFamily: AppFonts.primaryFont,
                           fontSize: 14,
@@ -121,9 +147,9 @@ class _EditEmailPageState extends State<EditEmailPage> {
                 ),
                 const SizedBox(height: 24),
 
-                // New Email
+                // New Value
                 Text(
-                  'Email Baru',
+                  fieldLabel,
                   style: TextStyle(
                     fontFamily: AppFonts.primaryFont,
                     fontSize: 14,
@@ -133,10 +159,12 @@ class _EditEmailPageState extends State<EditEmailPage> {
                 ),
                 const SizedBox(height: 8),
                 TextFormField(
-                  controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
+                  controller: _valueController,
+                  keyboardType: isPhone
+                      ? TextInputType.phone
+                      : TextInputType.emailAddress,
                   decoration: InputDecoration(
-                    hintText: 'Contoh: user@example.com',
+                    hintText: hintText,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -147,22 +175,55 @@ class _EditEmailPageState extends State<EditEmailPage> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Email tidak boleh kosong';
+                      return '${isPhone ? 'Nomor handphone' : 'Email'} tidak boleh kosong';
                     }
-                    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
-                      return 'Format email tidak valid';
+
+                    if (isPhone) {
+                      if (!RegExp(r'^[0-9+]+$').hasMatch(value)) {
+                        return 'Nomor handphone tidak valid';
+                      }
+
+                      // Normalize for comparison
+                      String normalizedNew = value.replaceAll(
+                        RegExp(r'[^0-9]'),
+                        '',
+                      );
+                      if (normalizedNew.startsWith('0')) {
+                        normalizedNew = '62${normalizedNew.substring(1)}';
+                      }
+
+                      String normalizedCurrent = widget.currentValue.replaceAll(
+                        RegExp(r'[^0-9]'),
+                        '',
+                      );
+                      if (normalizedCurrent.startsWith('0')) {
+                        normalizedCurrent =
+                            '62${normalizedCurrent.substring(1)}';
+                      }
+
+                      if (normalizedNew == normalizedCurrent) {
+                        return 'Nomor baru sama dengan nomor lama';
+                      }
+                    } else {
+                      if (!RegExp(
+                        r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                      ).hasMatch(value)) {
+                        return 'Format email tidak valid';
+                      }
+                      if (value.toLowerCase() ==
+                          widget.currentValue.toLowerCase()) {
+                        return 'Email baru sama dengan email lama';
+                      }
                     }
-                    if (value.toLowerCase() == widget.currentEmail.toLowerCase()) {
-                      return 'Email baru sama dengan email lama';
-                    }
+
                     return null;
                   },
                 ),
                 const SizedBox(height: 16),
 
-                // Confirm Email
+                // Confirm Value
                 Text(
-                  'Konfirmasi Email',
+                  confirmLabel,
                   style: TextStyle(
                     fontFamily: AppFonts.primaryFont,
                     fontSize: 14,
@@ -172,10 +233,12 @@ class _EditEmailPageState extends State<EditEmailPage> {
                 ),
                 const SizedBox(height: 8),
                 TextFormField(
-                  controller: _confirmEmailController,
-                  keyboardType: TextInputType.emailAddress,
+                  controller: _confirmValueController,
+                  keyboardType: isPhone
+                      ? TextInputType.phone
+                      : TextInputType.emailAddress,
                   decoration: InputDecoration(
-                    hintText: 'Konfirmasi email baru',
+                    hintText: confirmHintText,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -186,17 +249,24 @@ class _EditEmailPageState extends State<EditEmailPage> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Konfirmasi email tidak boleh kosong';
+                      return 'Konfirmasi ${isPhone ? 'nomor' : 'email'} tidak boleh kosong';
                     }
-                    if (value.toLowerCase() != _emailController.text.toLowerCase()) {
-                      return 'Email tidak cocok';
+
+                    final compareValue = isPhone ? value : value.toLowerCase();
+                    final originalValue = isPhone
+                        ? _valueController.text
+                        : _valueController.text.toLowerCase();
+
+                    if (compareValue != originalValue) {
+                      return '${isPhone ? 'Nomor' : 'Email'} tidak cocok';
                     }
                     return null;
                   },
                 ),
+
                 const SizedBox(height: 8),
                 Text(
-                  'Kode verifikasi akan dikirim ke email baru',
+                  otpInfoText,
                   style: TextStyle(
                     fontFamily: AppFonts.primaryFont,
                     fontSize: 12,
@@ -208,13 +278,14 @@ class _EditEmailPageState extends State<EditEmailPage> {
                 BlocBuilder<ProfileUpdateCubit, ProfileUpdateState>(
                   builder: (context, state) {
                     final isLoading = state is ProfileUpdateLoading;
-                    
+
                     return ElevatedButton(
                       onPressed: isLoading ? null : _handleSubmit,
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         backgroundColor: AppColors.primaryColor,
-                        disabledBackgroundColor: AppColors.primaryColor.withOpacity(0.5),
+                        disabledBackgroundColor: AppColors.primaryColor
+                            .withOpacity(0.5),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -225,11 +296,13 @@ class _EditEmailPageState extends State<EditEmailPage> {
                               width: 20,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.white,
+                                ),
                               ),
                             )
                           : Text(
-                              'Kirim Kode Verifikasi',
+                              buttonText,
                               style: TextStyle(
                                 fontFamily: AppFonts.primaryFont,
                                 fontWeight: FontWeight.w700,
@@ -249,11 +322,28 @@ class _EditEmailPageState extends State<EditEmailPage> {
 
   void _handleSubmit() {
     if (_formKey.currentState!.validate()) {
-      context.read<ProfileUpdateCubit>().requestEmailUpdate(
-            userId: widget.userId,
-            newEmail: _emailController.text.trim().toLowerCase(),
-            password: widget.verifiedPassword,
-          );
+      if (isPhone) {
+        // Normalize phone number
+        String newPhone = _valueController.text.trim().replaceAll(
+          RegExp(r'[^0-9]'),
+          '',
+        );
+        if (newPhone.startsWith('0')) {
+          newPhone = '62${newPhone.substring(1)}';
+        }
+
+        context.read<ProfileUpdateCubit>().requestPhoneUpdate(
+          userId: widget.userId,
+          newPhone: newPhone,
+          password: widget.verifiedPassword,
+        );
+      } else {
+        context.read<ProfileUpdateCubit>().requestEmailUpdate(
+          userId: widget.userId,
+          newEmail: _valueController.text.trim().toLowerCase(),
+          password: widget.verifiedPassword,
+        );
+      }
     }
   }
 }

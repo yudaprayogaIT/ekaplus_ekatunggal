@@ -1,8 +1,10 @@
+// lib/features/account/presentation/widgets/account_logged_in_view.dart
 import 'dart:io';
 import 'package:ekaplus_ekatunggal/constant.dart';
 import 'package:ekaplus_ekatunggal/features/account/presentation/widgets/profile_picture_options.dart';
 import 'package:ekaplus_ekatunggal/features/auth/domain/entities/user.dart';
 import 'package:ekaplus_ekatunggal/features/auth/presentation/cubit/auth_session_cubit.dart';
+import 'package:ekaplus_ekatunggal/features/auth/presentation/cubit/auth_session_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -15,148 +17,116 @@ class AccountLoggedInView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      color: AppColors.whiteColor,
-      child: Column(
-        children: [
-          // Content with padding
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                // Profile Avatar & Name
-                _buildProfileHeader(context),
+    // Use BlocBuilder to always get the latest user data
+    return BlocBuilder<AuthSessionCubit, AuthSessionState>(
+      builder: (context, sessionState) {
+        // Get current user from session (might have updated phone/email)
+        final currentUser = sessionState is AuthSessionAuthenticated
+            ? sessionState.user
+            : user;
 
-                const SizedBox(height: 24),
+        return Container(
+          width: double.infinity,
+          color: AppColors.whiteColor,
+          child: Column(
+            children: [
+              // Content with padding
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    // Profile Avatar & Name
+                    _buildProfileHeader(context, currentUser),
 
-                // Nama Lengkap
-                _buildInfoSection(
-                  label: 'Nama Lengkap',
-                  value: user.fullName,
-                  context: context,
-                  userId: user.phone, // phone is used as userId
-                ),
+                    const SizedBox(height: 24),
 
-                const Divider(height: 1),
+                    // Nama Lengkap
+                    _buildInfoSection(
+                      label: 'Nama Lengkap',
+                      value: currentUser.fullName,
+                      context: context,
+                      userId: currentUser.phone, // Always use current phone
+                    ),
 
-                const SizedBox(height: 12),
+                    const Divider(height: 1),
 
-                // Nomor Handphone
-                _buildInfoSection(
-                  label: 'Nomor Handphone',
-                  value: user.phone,
-                  context: context,
-                  userId: user.phone,
-                ),
+                    const SizedBox(height: 12),
 
-                const Divider(height: 1),
+                    // Nomor Handphone
+                    _buildInfoSection(
+                      label: 'Nomor Handphone',
+                      value: currentUser.phone,
+                      context: context,
+                      userId: currentUser.phone,
+                    ),
 
-                const SizedBox(height: 12),
+                    const Divider(height: 1),
 
-                // Email
-                _buildInfoSection(
-                  label: 'Email',
-                  value: user.email,
-                  context: context,
-                  userId: user.phone,
-                ),
+                    const SizedBox(height: 12),
 
-                const Divider(height: 1),
+                    // Email
+                    _buildInfoSection(
+                      label: 'Email',
+                      value: currentUser.email,
+                      context: context,
+                      userId: currentUser.phone,
+                    ),
 
-                const SizedBox(height: 20),
+                    const Divider(height: 1),
 
-                // Company Card
-                _buildCompanyCard(),
+                    const SizedBox(height: 20),
 
-                const SizedBox(height: 20),
+                    // Company Card
+                    _buildCompanyCard(),
 
-                // Connect Company Button
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      // TODO: Navigate to connect company page
-                    },
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      backgroundColor: AppColors.secondaryColor,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                    const SizedBox(height: 20),
+
+                    // Connect Company Button
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          // TODO: Navigate to connect company page
+                        },
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          backgroundColor: AppColors.secondaryColor,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: Text(
+                          'Hubungkan Perusahaan',
+                          style: TextStyle(
+                            fontFamily: AppFonts.primaryFont,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.black87,
+                          ),
+                        ),
                       ),
                     ),
-                    child: Text(
-                      'Hubungkan Perusahaan',
-                      style: TextStyle(
-                        fontFamily: AppFonts.primaryFont,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.black87,
-                      ),
-                    ),
-                  ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+
+              // Full width divider
+              Container(
+                width: double.infinity,
+                height: 5,
+                color: const Color(0xFFE0E0E0),
+              ),
+
+              // Settings Section
+              _buildSettingsSection(context, currentUser),
+            ],
           ),
-
-          // Full width divider
-          Container(
-            width: double.infinity,
-            height: 5,
-            color: const Color(0xFFE0E0E0),
-          ),
-
-          // Settings Section
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Pengaturan dan Keamanan',
-                    style: TextStyle(
-                      fontFamily: AppFonts.primaryFont,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.black87,
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 12),
-
-                _buildSettingItem(
-                  icon: Icons.lock_outline,
-                  title: 'Ganti Password',
-                  onTap: () {
-                    // Navigate to change password
-                    context.pushNamed(
-                      'change-password',
-                      extra: {
-                        'userId': user.phone, // phone is userId
-                      },
-                    );
-                  },
-                ),
-
-                const Divider(height: 1),
-
-                _buildSettingItem(
-                  icon: Icons.logout,
-                  title: 'Log Out',
-                  onTap: () => _showLogoutDialog(context),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 
-  Widget _buildProfileHeader(BuildContext context) {
+  Widget _buildProfileHeader(BuildContext context, User currentUser) {
     return Column(
       children: [
         // Avatar with camera icon
@@ -171,7 +141,9 @@ class AccountLoggedInView extends StatelessWidget {
                 shape: BoxShape.circle,
                 border: Border.all(color: Colors.grey.shade300, width: 2),
               ),
-              child: ClipOval(child: _buildProfileImage()),
+              child: ClipOval(
+                child: _buildProfileImage(currentUser),
+              ),
             ),
 
             // Camera Icon Button
@@ -179,7 +151,7 @@ class AccountLoggedInView extends StatelessWidget {
               bottom: 0,
               right: 0,
               child: GestureDetector(
-                onTap: () => _showProfilePictureOptions(context),
+                onTap: () => _showProfilePictureOptions(context, currentUser),
                 child: Container(
                   width: 50,
                   height: 50,
@@ -203,7 +175,7 @@ class AccountLoggedInView extends StatelessWidget {
 
         // Name
         Text(
-          user.fullName,
+          currentUser.fullName,
           style: TextStyle(
             fontFamily: AppFonts.primaryFont,
             fontSize: 18,
@@ -235,30 +207,30 @@ class AccountLoggedInView extends StatelessWidget {
     );
   }
 
-  Widget _buildProfileImage() {
+  Widget _buildProfileImage(User currentUser) {
     // Check if user has profile_pic (avatar or uploaded image)
-    if (user.profilePic != null && user.profilePic!.isNotEmpty) {
+    if (currentUser.profilePic != null && currentUser.profilePic!.isNotEmpty) {
       // Check if it's a URL (uploaded image) or asset path (avatar)
-      if (user.profilePic!.startsWith('http')) {
+      if (currentUser.profilePic!.startsWith('http')) {
         return Image.network(
-          user.profilePic!,
+          currentUser.profilePic!,
           fit: BoxFit.contain,
-          errorBuilder: (_, __, ___) => _buildDefaultAvatar(),
+          errorBuilder: (_, __, ___) => _buildDefaultAvatar(currentUser),
         );
-      } else if (user.profilePic!.startsWith('assets/')) {
+      } else if (currentUser.profilePic!.startsWith('assets/')) {
         return Image.asset(
-          user.profilePic!,
+          currentUser.profilePic!,
           fit: BoxFit.contain,
-          errorBuilder: (_, __, ___) => _buildDefaultAvatar(),
+          errorBuilder: (_, __, ___) => _buildDefaultAvatar(currentUser),
         );
       }
     }
 
     // Default avatar
-    return _buildDefaultAvatar();
+    return _buildDefaultAvatar(currentUser);
   }
 
-  Widget _buildDefaultAvatar() {
+  Widget _buildDefaultAvatar(User currentUser) {
     return Image.asset(
       'assets/images/avatar_placeholder.png',
       fit: BoxFit.contain,
@@ -266,7 +238,7 @@ class AccountLoggedInView extends StatelessWidget {
         color: AppColors.primaryColor,
         child: Center(
           child: Text(
-            _getInitials(user.fullName),
+            _getInitials(currentUser.fullName),
             style: TextStyle(
               fontFamily: AppFonts.primaryFont,
               fontSize: 48,
@@ -279,100 +251,111 @@ class AccountLoggedInView extends StatelessWidget {
     );
   }
 
-  void _showProfilePictureOptions(BuildContext context) {
+  void _showProfilePictureOptions(BuildContext context, User currentUser) {
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (sheetContext) => ProfilePictureOptionsSheet(
-        user: user,
+        user: currentUser,
         onDismiss: () => Navigator.pop(sheetContext),
       ),
     );
   }
 
   Widget _buildInfoSection({
-  required String label,
-  required String value,
-  required BuildContext context,
-  required String userId,
-}) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        label,
-        style: TextStyle(
-          fontFamily: AppFonts.primaryFont,
-          fontSize: 12,
-          color: AppColors.grayColor,
+    required String label,
+    required String value,
+    required BuildContext context,
+    required String userId,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontFamily: AppFonts.primaryFont,
+            fontSize: 12,
+            color: AppColors.grayColor,
+          ),
         ),
-      ),
-      const SizedBox(height: 4),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: Text(
-              value,
-              style: TextStyle(
-                fontFamily: AppFonts.primaryFont,
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: Colors.black87,
+        const SizedBox(height: 4),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Text(
+                value,
+                style: TextStyle(
+                  fontFamily: AppFonts.primaryFont,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                ),
               ),
             ),
-          ),
-          GestureDetector(
-            onTap: () {
-              // Navigate based on label
-              if (label == 'Nama Lengkap') {
-                // Direct navigate (no password needed)
-                context.pushNamed('edit-name', extra: {
-                  'userId': userId,
-                  'currentName': value,
-                });
-              } else if (label == 'Nomor Handphone') {
-                // Navigate via password verification
-                context.pushNamed('verify-password', extra: {
-                  'userId': userId,
-                  'title': 'Ubah Nomor Handphone',
-                  'subtitle': 'Masukkan password untuk verifikasi',
-                  'nextRoute': 'edit-phone-verified',
-                  'nextRouteExtra': {
-                    'currentPhone': value,
-                  },
-                });
-              } else if (label == 'Email') {
-                // Navigate via password verification
-                context.pushNamed('verify-password', extra: {
-                  'userId': userId,
-                  'title': 'Ubah Email',
-                  'subtitle': 'Masukkan password untuk verifikasi',
-                  'nextRoute': 'edit-email-verified',
-                  'nextRouteExtra': {
-                    'currentEmail': value,
-                  },
-                });
-              }
-            },
-            child: Text(
-              'Ubah',
-              style: TextStyle(
-                fontFamily: AppFonts.primaryFont,
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: AppColors.primaryColor,
+            GestureDetector(
+              onTap: () {
+                // Navigate based on label
+                if (label == 'Nama Lengkap') {
+                  // Direct navigate (no password needed)
+                  context.pushNamed(
+                    'edit-name',
+                    extra: {
+                      'userId': userId,
+                      'currentName': value,
+                    },
+                  );
+                } else if (label == 'Nomor Handphone') {
+                  // Navigate via password verification
+                  context.pushNamed(
+                    'verify-password',
+                    extra: {
+                      'userId': userId,
+                      'title': 'Ubah Nomor Handphone',
+                      'subtitle': 'Masukkan password untuk verifikasi',
+                      'nextRoute': 'edit-contact',
+                      'nextRouteExtra': {
+                        'currentPhone': value,
+                        'type': 'phone',
+                      },
+                    },
+                  );
+                } else if (label == 'Email') {
+                  // Navigate via password verification
+                  context.pushNamed(
+                    'verify-password',
+                    extra: {
+                      'userId': userId,
+                      'title': 'Ubah Email',
+                      'subtitle': 'Masukkan password untuk verifikasi',
+                      'nextRoute': 'edit-contact',
+                      'nextRouteExtra': {
+                        'currentEmail': value,
+                        'type': 'email',
+                      },
+                    },
+                  );
+                }
+              },
+              child: Text(
+                'Ubah',
+                style: TextStyle(
+                  fontFamily: AppFonts.primaryFont,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.primaryColor,
+                ),
               ),
             ),
-          ),
-        ],
-      ),
-      const SizedBox(height: 8),
-    ],
-  );
-}
+          ],
+        ),
+        const SizedBox(height: 8),
+      ],
+    );
+  }
 
   Widget _buildCompanyCard() {
     return Container(
@@ -423,6 +406,52 @@ class AccountLoggedInView extends StatelessWidget {
                 ),
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSettingsSection(BuildContext context, User currentUser) {
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              'Pengaturan dan Keamanan',
+              style: TextStyle(
+                fontFamily: AppFonts.primaryFont,
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                color: Colors.black87,
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 12),
+
+          _buildSettingItem(
+            icon: Icons.lock_outline,
+            title: 'Ganti Password',
+            onTap: () {
+              // Navigate to change password with current phone
+              context.pushNamed(
+                'change-password',
+                extra: {
+                  'userId': currentUser.phone, // Always use current phone
+                },
+              );
+            },
+          ),
+
+          const Divider(height: 1),
+
+          _buildSettingItem(
+            icon: Icons.logout,
+            title: 'Log Out',
+            onTap: () => _showLogoutDialog(context),
           ),
         ],
       ),
