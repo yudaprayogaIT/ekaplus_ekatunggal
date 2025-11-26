@@ -66,13 +66,13 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
               ),
             );
 
-            // Pop all password-related pages
+            // Navigate based on flow
             if (widget.flow == 'change') {
-              // From settings: pop to account page
-              context.pop(); // new password page
-              context.pop(); // change password page
+              // From settings: pop back to account page
+              context.pop(); // pop new password page
+              context.pop(); // pop change password page
             } else {
-              // From forgot password: pop all and go to login
+              // From forgot password: go to login
               context.go('/login');
             }
           } else if (state is ChangePasswordError) {

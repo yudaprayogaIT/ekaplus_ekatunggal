@@ -47,10 +47,13 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
       body: BlocListener<ChangePasswordCubit, ChangePasswordState>(
         listener: (context, state) {
           if (state is ChangePasswordOldVerified) {
-            // Old password correct, go to new password page
+            // Old password correct, navigate and PASS CUBIT
+            final cubit = context.read<ChangePasswordCubit>();
+            
             context.pushNamed('new-password', extra: {
               'userId': widget.userId,
-              'flow': 'change', // change or reset
+              'flow': 'change',
+              'cubit': cubit, // ← PASS CUBIT HERE
             });
           } else if (state is ChangePasswordError) {
             ScaffoldMessenger.of(context).showSnackBar(

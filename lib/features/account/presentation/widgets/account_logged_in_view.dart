@@ -293,73 +293,86 @@ class AccountLoggedInView extends StatelessWidget {
   }
 
   Widget _buildInfoSection({
-    required String label,
-    required String value,
-    required BuildContext context,
-    required String userId,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontFamily: AppFonts.primaryFont,
-            fontSize: 12,
-            color: AppColors.grayColor,
+  required String label,
+  required String value,
+  required BuildContext context,
+  required String userId,
+}) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        label,
+        style: TextStyle(
+          fontFamily: AppFonts.primaryFont,
+          fontSize: 12,
+          color: AppColors.grayColor,
+        ),
+      ),
+      const SizedBox(height: 4),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Text(
+              value,
+              style: TextStyle(
+                fontFamily: AppFonts.primaryFont,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
+              ),
+            ),
           ),
-        ),
-        const SizedBox(height: 4),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Text(
-                value,
-                style: TextStyle(
-                  fontFamily: AppFonts.primaryFont,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
-                ),
+          GestureDetector(
+            onTap: () {
+              // Navigate based on label
+              if (label == 'Nama Lengkap') {
+                // Direct navigate (no password needed)
+                context.pushNamed('edit-name', extra: {
+                  'userId': userId,
+                  'currentName': value,
+                });
+              } else if (label == 'Nomor Handphone') {
+                // Navigate via password verification
+                context.pushNamed('verify-password', extra: {
+                  'userId': userId,
+                  'title': 'Ubah Nomor Handphone',
+                  'subtitle': 'Masukkan password untuk verifikasi',
+                  'nextRoute': 'edit-phone-verified',
+                  'nextRouteExtra': {
+                    'currentPhone': value,
+                  },
+                });
+              } else if (label == 'Email') {
+                // Navigate via password verification
+                context.pushNamed('verify-password', extra: {
+                  'userId': userId,
+                  'title': 'Ubah Email',
+                  'subtitle': 'Masukkan password untuk verifikasi',
+                  'nextRoute': 'edit-email-verified',
+                  'nextRouteExtra': {
+                    'currentEmail': value,
+                  },
+                });
+              }
+            },
+            child: Text(
+              'Ubah',
+              style: TextStyle(
+                fontFamily: AppFonts.primaryFont,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: AppColors.primaryColor,
               ),
             ),
-            GestureDetector(
-              onTap: () {
-                // Navigate based on label
-                if (label == 'Nama Lengkap') {
-                  context.pushNamed(
-                    'edit-name',
-                    extra: {'userId': userId, 'currentName': value},
-                  );
-                } else if (label == 'Nomor Handphone') {
-                  context.pushNamed(
-                    'edit-phone',
-                    extra: {'userId': userId, 'currentPhone': value},
-                  );
-                } else if (label == 'Email') {
-                  context.pushNamed(
-                    'edit-email',
-                    extra: {'userId': userId, 'currentEmail': value},
-                  );
-                }
-              },
-              child: Text(
-                'Ubah',
-                style: TextStyle(
-                  fontFamily: AppFonts.primaryFont,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.primaryColor,
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
-      ],
-    );
-  }
+          ),
+        ],
+      ),
+      const SizedBox(height: 8),
+    ],
+  );
+}
 
   Widget _buildCompanyCard() {
     return Container(

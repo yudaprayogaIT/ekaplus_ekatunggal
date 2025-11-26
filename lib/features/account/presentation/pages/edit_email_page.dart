@@ -9,11 +9,13 @@ import 'package:go_router/go_router.dart';
 class EditEmailPage extends StatefulWidget {
   final String userId;
   final String currentEmail;
+  final String verifiedPassword;
 
   const EditEmailPage({
     Key? key,
     required this.userId,
     required this.currentEmail,
+    required this.verifiedPassword,
   }) : super(key: key);
 
   @override
@@ -22,20 +24,20 @@ class EditEmailPage extends StatefulWidget {
 
 class _EditEmailPageState extends State<EditEmailPage> {
   late TextEditingController _emailController;
-  late TextEditingController _passwordController;
+  late TextEditingController _confirmEmailController;
   final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     super.initState();
     _emailController = TextEditingController();
-    _passwordController = TextEditingController();
+    _confirmEmailController = TextEditingController();
   }
 
   @override
   void dispose() {
     _emailController.dispose();
-    _passwordController.dispose();
+    _confirmEmailController.dispose();
     super.dispose();
   }
 
@@ -59,11 +61,15 @@ class _EditEmailPageState extends State<EditEmailPage> {
               ),
             );
             
+            // Get cubit and pass it to next route
+            final cubit = context.read<ProfileUpdateCubit>();
+            
             context.pushNamed(
               'verify-email',
               extra: {
                 'userId': widget.userId,
                 'email': state.pendingEmail,
+                'cubit': cubit, // ← PASS CUBIT HERE
               },
             );
           } else if (state is ProfileUpdateError) {
@@ -154,9 +160,9 @@ class _EditEmailPageState extends State<EditEmailPage> {
                 ),
                 const SizedBox(height: 16),
 
-                // Password Confirmation
+                // Confirm Email
                 Text(
-                  'Password',
+                  'Konfirmasi Email',
                   style: TextStyle(
                     fontFamily: AppFonts.primaryFont,
                     fontSize: 14,
@@ -166,10 +172,10 @@ class _EditEmailPageState extends State<EditEmailPage> {
                 ),
                 const SizedBox(height: 8),
                 TextFormField(
-                  controller: _passwordController,
-                  obscureText: true,
+                  controller: _confirmEmailController,
+                  keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
-                    hintText: 'Masukkan password Anda',
+                    hintText: 'Konfirmasi email baru',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -180,14 +186,17 @@ class _EditEmailPageState extends State<EditEmailPage> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Password tidak boleh kosong';
+                      return 'Konfirmasi email tidak boleh kosong';
+                    }
+                    if (value.toLowerCase() != _emailController.text.toLowerCase()) {
+                      return 'Email tidak cocok';
                     }
                     return null;
                   },
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Masukkan password untuk verifikasi perubahan',
+                  'Kode verifikasi akan dikirim ke email baru',
                   style: TextStyle(
                     fontFamily: AppFonts.primaryFont,
                     fontSize: 12,
@@ -220,7 +229,7 @@ class _EditEmailPageState extends State<EditEmailPage> {
                               ),
                             )
                           : Text(
-                              'Lanjutkan',
+                              'Kirim Kode Verifikasi',
                               style: TextStyle(
                                 fontFamily: AppFonts.primaryFont,
                                 fontWeight: FontWeight.w700,
@@ -243,7 +252,7 @@ class _EditEmailPageState extends State<EditEmailPage> {
       context.read<ProfileUpdateCubit>().requestEmailUpdate(
             userId: widget.userId,
             newEmail: _emailController.text.trim().toLowerCase(),
-            password: _passwordController.text,
+            password: widget.verifiedPassword,
           );
     }
   }

@@ -9,11 +9,13 @@ import 'package:go_router/go_router.dart';
 class EditPhonePage extends StatefulWidget {
   final String userId;
   final String currentPhone;
+  final String verifiedPassword;
 
   const EditPhonePage({
     Key? key,
     required this.userId,
     required this.currentPhone,
+    required this.verifiedPassword,
   }) : super(key: key);
 
   @override
@@ -22,20 +24,20 @@ class EditPhonePage extends StatefulWidget {
 
 class _EditPhonePageState extends State<EditPhonePage> {
   late TextEditingController _phoneController;
-  late TextEditingController _passwordController;
+  late TextEditingController _confirmPhoneController;
   final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     super.initState();
     _phoneController = TextEditingController();
-    _passwordController = TextEditingController();
+    _confirmPhoneController = TextEditingController();
   }
 
   @override
   void dispose() {
     _phoneController.dispose();
-    _passwordController.dispose();
+    _confirmPhoneController.dispose();
     super.dispose();
   }
 
@@ -59,12 +61,16 @@ class _EditPhonePageState extends State<EditPhonePage> {
               ),
             );
             
+            // Get cubit and pass it to next route
+            final cubit = context.read<ProfileUpdateCubit>();
+            
             // Navigate to OTP verification page
             context.pushNamed(
               'verify-phone',
               extra: {
                 'userId': widget.userId,
                 'phone': state.pendingPhone,
+                'cubit': cubit, // ← PASS CUBIT HERE
               },
             );
           } else if (state is ProfileUpdateError) {
@@ -167,9 +173,9 @@ class _EditPhonePageState extends State<EditPhonePage> {
                 ),
                 const SizedBox(height: 16),
 
-                // Password Confirmation
+                // Confirm Phone Number
                 Text(
-                  'Password',
+                  'Konfirmasi Nomor Handphone',
                   style: TextStyle(
                     fontFamily: AppFonts.primaryFont,
                     fontSize: 14,
@@ -179,10 +185,10 @@ class _EditPhonePageState extends State<EditPhonePage> {
                 ),
                 const SizedBox(height: 8),
                 TextFormField(
-                  controller: _passwordController,
-                  obscureText: true,
+                  controller: _confirmPhoneController,
+                  keyboardType: TextInputType.phone,
                   decoration: InputDecoration(
-                    hintText: 'Masukkan password Anda',
+                    hintText: 'Konfirmasi nomor handphone baru',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -193,14 +199,18 @@ class _EditPhonePageState extends State<EditPhonePage> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Password tidak boleh kosong';
+                      return 'Konfirmasi nomor tidak boleh kosong';
+                    }
+                    if (value != _phoneController.text) {
+                      return 'Nomor tidak cocok';
                     }
                     return null;
                   },
                 ),
+
                 const SizedBox(height: 8),
                 Text(
-                  'Masukkan password untuk verifikasi perubahan',
+                  'Kode OTP akan dikirim ke nomor baru',
                   style: TextStyle(
                     fontFamily: AppFonts.primaryFont,
                     fontSize: 12,
@@ -233,7 +243,7 @@ class _EditPhonePageState extends State<EditPhonePage> {
                               ),
                             )
                           : Text(
-                              'Lanjutkan',
+                              'Kirim Kode OTP',
                               style: TextStyle(
                                 fontFamily: AppFonts.primaryFont,
                                 fontWeight: FontWeight.w700,
@@ -262,7 +272,7 @@ class _EditPhonePageState extends State<EditPhonePage> {
       context.read<ProfileUpdateCubit>().requestPhoneUpdate(
             userId: widget.userId,
             newPhone: newPhone,
-            password: _passwordController.text,
+            password: widget.verifiedPassword,
           );
     }
   }
