@@ -1,19 +1,26 @@
 // lib/core/routes/my_router.dart
+import 'package:ekaplus_ekatunggal/features/account/presentation/cubit/change_password_cubit.dart';
 import 'package:ekaplus_ekatunggal/features/account/presentation/cubit/profile_update_cubit.dart';
 import 'package:ekaplus_ekatunggal/features/account/presentation/pages/about_page.dart';
 import 'package:ekaplus_ekatunggal/features/account/presentation/pages/account_page.dart';
+import 'package:ekaplus_ekatunggal/features/account/presentation/pages/change_password_page.dart';
 import 'package:ekaplus_ekatunggal/features/account/presentation/pages/edit_email_page.dart';
 import 'package:ekaplus_ekatunggal/features/account/presentation/pages/edit_full_name_page.dart';
 import 'package:ekaplus_ekatunggal/features/account/presentation/pages/edit_phone_number.dart';
+import 'package:ekaplus_ekatunggal/features/account/presentation/pages/new_password_page.dart';
 import 'package:ekaplus_ekatunggal/features/account/presentation/pages/select_avatar_page.dart';
 import 'package:ekaplus_ekatunggal/features/account/presentation/pages/verify_email_change_page.dart';
 import 'package:ekaplus_ekatunggal/features/account/presentation/pages/verify_phone_number.dart';
 import 'package:ekaplus_ekatunggal/features/auth/domain/entities/user.dart';
+import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/change_password.dart';
 import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/request_email_change.dart';
 import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/request_phone_change.dart';
+import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/reset_password_with_otp.dart';
 import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/update_full_name.dart';
 import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/verify_email_change.dart';
+import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/verify_old_password.dart';
 import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/verify_phone_change.dart';
+import 'package:ekaplus_ekatunggal/features/auth/presentation/pages/forgot_password_phone_page.dart';
 import 'package:ekaplus_ekatunggal/features/auth/presentation/pages/login_page.dart';
 import 'package:ekaplus_ekatunggal/features/auth/presentation/pages/otp_verification_page.dart';
 import 'package:ekaplus_ekatunggal/features/auth/presentation/pages/register_form_page.dart';
@@ -283,6 +290,88 @@ class MyRouter {
           return VerifyEmailChangePage(
             userId: extra['userId'] as String,
             email: extra['email'] as String,
+          );
+        },
+      ),
+
+      // PASSWORD MANAGEMENT ROUTES
+      // ============================================
+
+      // 1. Change Password (from Settings) - Step 1: Old Password
+      GoRoute(
+        path: '/account/change-password',
+        name: 'change-password',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          return BlocProvider(
+            create: (context) => ChangePasswordCubit(
+              verifyOldPassword: getIt<VerifyOldPassword>(),
+              changePassword: getIt<ChangePassword>(),
+              resetPasswordWithOtp: getIt<ResetPasswordWithOtp>(),
+            ),
+            child: ChangePasswordPage(userId: extra['userId'] as String),
+          );
+        },
+      ),
+
+      // 2. New Password Page (Reusable for Change & Reset)
+      GoRoute(
+        path: '/account/new-password',
+        name: 'new-password',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          // Don't create new cubit, use existing from parent
+          return NewPasswordPage(
+            userId: extra['userId'] as String?,
+            phone: extra['phone'] as String?,
+            flow: extra['flow'] as String, // 'change' or 'reset'
+          );
+        },
+      ),
+
+      // 3. Forgot Password - Phone Entry
+      GoRoute(
+        path: '/forgot-password-phone',
+        name: 'forgot-password-phone',
+        builder: (context, state) {
+          return const ForgotPasswordPhonePage();
+        },
+      ),
+
+      // 4. Forgot Password - OTP Verification (Reusing OTP Page)
+      GoRoute(
+        path: '/otp-forgot-password',
+        name: 'otp-forgot-password',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          return OtpVerificationPage(
+            phoneNumber: extra['phone'] as String,
+            title: extra['title'] as String? ?? 'Atur Ulang Password',
+            subtitle:
+                extra['subtitle'] as String? ??
+                'Masukkan kode OTP yang telah dikirim',
+            nextRoute: 'new-password-reset',
+            isPasswordReset: true,
+          );
+        },
+      ),
+
+      // 5. New Password after OTP (Reset Flow)
+      GoRoute(
+        path: '/new-password-reset',
+        name: 'new-password-reset',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          return BlocProvider(
+            create: (context) => ChangePasswordCubit(
+              verifyOldPassword: getIt<VerifyOldPassword>(),
+              changePassword: getIt<ChangePassword>(),
+              resetPasswordWithOtp: getIt<ResetPasswordWithOtp>(),
+            ),
+            child: NewPasswordPage(
+              phone: extra['phone'] as String,
+              flow: 'reset',
+            ),
           );
         },
       ),

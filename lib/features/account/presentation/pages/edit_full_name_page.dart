@@ -22,18 +22,27 @@ class EditFullNamePage extends StatefulWidget {
 }
 
 class _EditFullNamePageState extends State<EditFullNamePage> {
-  late TextEditingController _nameController;
+  late TextEditingController _firstNameController;
+  late TextEditingController _lastNameController;
   final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: widget.currentName);
+    
+    // Split current name into first and last name
+    final nameParts = widget.currentName.trim().split(' ');
+    final firstName = nameParts.isNotEmpty ? nameParts.first : '';
+    final lastName = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
+    
+    _firstNameController = TextEditingController(text: firstName);
+    _lastNameController = TextEditingController(text: lastName);
   }
 
   @override
   void dispose() {
-    _nameController.dispose();
+    _firstNameController.dispose();
+    _lastNameController.dispose();
     super.dispose();
   }
 
@@ -42,7 +51,7 @@ class _EditFullNamePageState extends State<EditFullNamePage> {
     return Scaffold(
       backgroundColor: AppColors.whiteColor,
       appBar: CustomAppBar(
-        title: 'Ubah Nama Lengkap',
+        title: 'Ubah Nama',
         onLeadingPressed: () => context.pop(),
       ),
       body: BlocListener<ProfileUpdateCubit, ProfileUpdateState>(
@@ -67,15 +76,44 @@ class _EditFullNamePageState extends State<EditFullNamePage> {
             );
           }
         },
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                // Info text
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.blue.shade200),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.info_outline, color: Colors.blue.shade700, size: 20),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'Nama akan ditampilkan sebagai: Nama Depan + Nama Belakang',
+                          style: TextStyle(
+                            fontFamily: AppFonts.primaryFont,
+                            fontSize: 12,
+                            color: Colors.blue.shade700,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                
+                const SizedBox(height: 24),
+                
+                // First Name
                 Text(
-                  'Nama Lengkap',
+                  'Nama Depan',
                   style: TextStyle(
                     fontFamily: AppFonts.primaryFont,
                     fontSize: 14,
@@ -85,9 +123,10 @@ class _EditFullNamePageState extends State<EditFullNamePage> {
                 ),
                 const SizedBox(height: 8),
                 TextFormField(
-                  controller: _nameController,
+                  controller: _firstNameController,
+                  textCapitalization: TextCapitalization.words,
                   decoration: InputDecoration(
-                    hintText: 'Masukkan nama lengkap',
+                    hintText: 'Contoh: John',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -98,15 +137,116 @@ class _EditFullNamePageState extends State<EditFullNamePage> {
                   ),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return 'Nama lengkap tidak boleh kosong';
+                      return 'Nama depan tidak boleh kosong';
                     }
-                    if (value.trim().length < 3) {
-                      return 'Nama lengkap minimal 3 karakter';
+                    if (value.trim().length < 2) {
+                      return 'Nama depan minimal 2 karakter';
                     }
                     return null;
                   },
                 ),
+                
+                const SizedBox(height: 16),
+                
+                // Last Name
+                Text(
+                  'Nama Belakang',
+                  style: TextStyle(
+                    fontFamily: AppFonts.primaryFont,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                TextFormField(
+                  controller: _lastNameController,
+                  textCapitalization: TextCapitalization.words,
+                  decoration: InputDecoration(
+                    hintText: 'Contoh: Doe (opsional)',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                  ),
+                  validator: (value) {
+                    // Last name is optional, but if filled, must be at least 2 chars
+                    if (value != null && value.trim().isNotEmpty) {
+                      if (value.trim().length < 2) {
+                        return 'Nama belakang minimal 2 karakter';
+                      }
+                    }
+                    return null;
+                  },
+                ),
+                
+                const SizedBox(height: 8),
+                
+                Text(
+                  'Nama belakang bersifat opsional',
+                  style: TextStyle(
+                    fontFamily: AppFonts.primaryFont,
+                    fontSize: 12,
+                    color: AppColors.grayColor,
+                  ),
+                ),
+                
                 const SizedBox(height: 24),
+                
+                // Preview
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.grey.shade300),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Pratinjau:',
+                        style: TextStyle(
+                          fontFamily: AppFonts.primaryFont,
+                          fontSize: 12,
+                          color: AppColors.grayColor,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      ValueListenableBuilder(
+                        valueListenable: _firstNameController,
+                        builder: (context, firstValue, child) {
+                          return ValueListenableBuilder(
+                            valueListenable: _lastNameController,
+                            builder: (context, lastValue, child) {
+                              final firstName = _firstNameController.text.trim();
+                              final lastName = _lastNameController.text.trim();
+                              final fullName = lastName.isEmpty 
+                                  ? firstName 
+                                  : '$firstName $lastName';
+                              
+                              return Text(
+                                fullName.isEmpty ? '-' : fullName,
+                                style: TextStyle(
+                                  fontFamily: AppFonts.primaryFont,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.black87,
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                
+                const SizedBox(height: 24),
+                
                 BlocBuilder<ProfileUpdateCubit, ProfileUpdateState>(
                   builder: (context, state) {
                     final isLoading = state is ProfileUpdateLoading;
@@ -151,11 +291,15 @@ class _EditFullNamePageState extends State<EditFullNamePage> {
 
   void _handleSave() {
     if (_formKey.currentState!.validate()) {
-      final newName = _nameController.text.trim();
-      if (newName != widget.currentName) {
+      final firstName = _firstNameController.text.trim();
+      final lastName = _lastNameController.text.trim();
+      final fullName = lastName.isEmpty ? firstName : '$firstName $lastName';
+      
+      // Check if name changed
+      if (fullName != widget.currentName) {
         context.read<ProfileUpdateCubit>().updateName(
               userId: widget.userId,
-              fullName: newName,
+              fullName: fullName,
             );
       } else {
         context.pop();

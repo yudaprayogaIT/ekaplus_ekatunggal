@@ -99,8 +99,8 @@ class _LoginPageState extends State<LoginPage>
       final password = _passwordController.text;
 
       context.read<AuthBloc>().add(
-            LoginUserEvent(identifier: identifier, password: password),
-          );
+        LoginUserEvent(identifier: identifier, password: password),
+      );
     }
   }
 
@@ -271,7 +271,9 @@ class _LoginPageState extends State<LoginPage>
                                     borderSide: BorderSide(
                                       color: _identifierError != null
                                           ? AppColors.primaryColor
-                                          : AppColors.grayColor.withOpacity(0.5),
+                                          : AppColors.grayColor.withOpacity(
+                                              0.5,
+                                            ),
                                       width: _identifierError != null ? 2 : 1,
                                     ),
                                   ),
@@ -306,7 +308,9 @@ class _LoginPageState extends State<LoginPage>
                                 ),
                                 validator: _validateIdentifier,
                                 onChanged: (value) {
-                                  if (_identifierError != null && mounted && !_isDisposed) {
+                                  if (_identifierError != null &&
+                                      mounted &&
+                                      !_isDisposed) {
                                     setState(() {
                                       _identifierError = null;
                                     });
@@ -356,7 +360,8 @@ class _LoginPageState extends State<LoginPage>
                                     onPressed: () {
                                       if (mounted && !_isDisposed) {
                                         setState(() {
-                                          _isPasswordVisible = !_isPasswordVisible;
+                                          _isPasswordVisible =
+                                              !_isPasswordVisible;
                                         });
                                       }
                                     },
@@ -369,7 +374,9 @@ class _LoginPageState extends State<LoginPage>
                                     borderSide: BorderSide(
                                       color: _passwordError != null
                                           ? AppColors.primaryColor
-                                          : AppColors.grayColor.withOpacity(0.5),
+                                          : AppColors.grayColor.withOpacity(
+                                              0.5,
+                                            ),
                                       width: _passwordError != null ? 2 : 1,
                                     ),
                                   ),
@@ -404,7 +411,9 @@ class _LoginPageState extends State<LoginPage>
                                 ),
                                 validator: _validatePassword,
                                 onChanged: (value) {
-                                  if (_passwordError != null && mounted && !_isDisposed) {
+                                  if (_passwordError != null &&
+                                      mounted &&
+                                      !_isDisposed) {
                                     setState(() {
                                       _passwordError = null;
                                     });
@@ -417,53 +426,22 @@ class _LoginPageState extends State<LoginPage>
                             const SizedBox(height: 8),
 
                             // Forgot Password Section (same as before)
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                TextButton(
-                                  onPressed: () {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text('Fitur Lupa Password segera hadir'),
-                                      ),
-                                    );
-                                  },
-                                  style: TextButton.styleFrom(
-                                    padding: EdgeInsets.zero,
-                                    minimumSize: const Size(0, 0),
-                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                  ),
-                                  child: const Text(
-                                    'Lupa password ?',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: AppColors.grayColor,
-                                    ),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: GestureDetector(
+                                onTap: () {
+                                  context.pushNamed('forgot-password-phone');
+                                },
+                                child: Text(
+                                  'Lupa Password?',
+                                  style: TextStyle(
+                                    fontFamily: AppFonts.primaryFont,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.primaryColor,
                                   ),
                                 ),
-                                TextButton(
-                                  onPressed: () {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text('Fitur Lupa Password segera hadir'),
-                                      ),
-                                    );
-                                  },
-                                  style: TextButton.styleFrom(
-                                    padding: EdgeInsets.zero,
-                                    minimumSize: const Size(0, 0),
-                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                  ),
-                                  child: const Text(
-                                    'Lupa Password',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: AppColors.primaryColor,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
 
                             const SizedBox(height: 24),
@@ -472,7 +450,10 @@ class _LoginPageState extends State<LoginPage>
                             Row(
                               children: const [
                                 Expanded(
-                                  child: Divider(thickness: 0.8, color: Colors.black26),
+                                  child: Divider(
+                                    thickness: 0.8,
+                                    color: Colors.black26,
+                                  ),
                                 ),
                                 Padding(
                                   padding: EdgeInsets.symmetric(horizontal: 8),
@@ -485,7 +466,10 @@ class _LoginPageState extends State<LoginPage>
                                   ),
                                 ),
                                 Expanded(
-                                  child: Divider(thickness: 0.8, color: Colors.black26),
+                                  child: Divider(
+                                    thickness: 0.8,
+                                    color: Colors.black26,
+                                  ),
                                 ),
                               ],
                             ),
@@ -497,7 +481,9 @@ class _LoginPageState extends State<LoginPage>
                               onPressed: () {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                    content: Text('Google Sign In belum tersedia'),
+                                    content: Text(
+                                      'Google Sign In belum tersedia',
+                                    ),
                                   ),
                                 );
                               },
@@ -506,7 +492,10 @@ class _LoginPageState extends State<LoginPage>
                                 width: 24,
                                 height: 24,
                                 errorBuilder: (context, error, stackTrace) {
-                                  return const Icon(Icons.g_mobiledata, size: 24);
+                                  return const Icon(
+                                    Icons.g_mobiledata,
+                                    size: 24,
+                                  );
                                 },
                               ),
                               label: const Text(
@@ -538,13 +527,19 @@ class _LoginPageState extends State<LoginPage>
                                 final isLoading = state is AuthLoading;
 
                                 return ElevatedButton(
-                                  onPressed: (isLoading || _isNavigating || _isDisposed)
+                                  onPressed:
+                                      (isLoading ||
+                                          _isNavigating ||
+                                          _isDisposed)
                                       ? null
                                       : _onLoginPressed,
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: yellowColor,
                                     foregroundColor: AppColors.blackColor,
-                                    minimumSize: const Size(double.infinity, 56),
+                                    minimumSize: const Size(
+                                      double.infinity,
+                                      56,
+                                    ),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(10),
                                     ),
@@ -589,7 +584,8 @@ class _LoginPageState extends State<LoginPage>
                                   style: TextButton.styleFrom(
                                     padding: EdgeInsets.zero,
                                     minimumSize: const Size(0, 0),
-                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                    tapTargetSize:
+                                        MaterialTapTargetSize.shrinkWrap,
                                   ),
                                   child: const Text(
                                     'Daftar Sekarang',

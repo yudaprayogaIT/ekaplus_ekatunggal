@@ -28,6 +28,28 @@ class PhoneCheckError extends AuthState {
   List<Object> get props => [message];
 }
 
+// --- Phone Exists States (for forgot password) ---
+class PhoneExistsState extends AuthState {
+  final bool exists;
+  const PhoneExistsState(this.exists);
+  @override
+  List<Object> get props => [exists];
+}
+
+class PhoneNotFoundError extends AuthState {
+  final String message;
+  const PhoneNotFoundError(this.message);
+  @override
+  List<Object> get props => [message];
+}
+
+class AuthError extends AuthState {
+  final String message;
+  const AuthError(this.message);
+  @override
+  List<Object> get props => [message];
+}
+
 // --- OTP Request States ---
 class OtpRequestSuccess extends AuthState {
   final String otp;
@@ -89,7 +111,7 @@ class LoginError extends AuthState {
   List<Object> get props => [message];
 }
 
-// update profile picture
+// --- Update Profile Picture States ---
 class ProfilePictureUpdateSuccess extends AuthState {
   final User user;
   const ProfilePictureUpdateSuccess(this.user);

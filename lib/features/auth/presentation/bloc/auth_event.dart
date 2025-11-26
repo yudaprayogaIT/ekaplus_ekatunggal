@@ -17,6 +17,16 @@ class CheckPhoneEvent extends AuthEvent {
   List<Object> get props => [phone];
 }
 
+// Event khusus untuk forgot password - cek apakah phone terdaftar
+class CheckPhoneExistsEvent extends AuthEvent {
+  final String phone;
+
+  const CheckPhoneExistsEvent(this.phone);
+
+  @override
+  List<Object> get props => [phone];
+}
+
 class RequestOtpEvent extends AuthEvent {
   final String phone;
 

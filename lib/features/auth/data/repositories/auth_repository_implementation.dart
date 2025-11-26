@@ -10,9 +10,7 @@ import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/register_user.d
 class AuthRepositoryImplementation implements AuthRepository {
   final AuthLocalDataSource localDataSource;
 
-  AuthRepositoryImplementation({
-    required this.localDataSource,
-  });
+  AuthRepositoryImplementation({required this.localDataSource});
 
   @override
   Future<Either<Failure, bool>> checkPhoneExists(String phone) async {
@@ -204,7 +202,10 @@ class AuthRepositoryImplementation implements AuthRepository {
   // ========== PROFILE UPDATE METHODS ==========
 
   @override
-  Future<Either<Failure, User>> updateFullName(String userId, String fullName) async {
+  Future<Either<Failure, User>> updateFullName(
+    String userId,
+    String fullName,
+  ) async {
     try {
       print('🔄 Updating full name for user: $userId');
 
@@ -217,7 +218,9 @@ class AuthRepositoryImplementation implements AuthRepository {
       // Split full name into first and last name
       final nameParts = fullName.trim().split(' ');
       final firstName = nameParts.first;
-      final lastName = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
+      final lastName = nameParts.length > 1
+          ? nameParts.sublist(1).join(' ')
+          : '';
 
       // Update user
       final updatedUser = user.copyWith(
@@ -233,7 +236,9 @@ class AuthRepositoryImplementation implements AuthRepository {
       return Right(updatedUser);
     } catch (e) {
       print('❌ Error updating full name: $e');
-      return Left(CacheFailure(message: 'Gagal mengubah nama: ${e.toString()}'));
+      return Left(
+        CacheFailure(message: 'Gagal mengubah nama: ${e.toString()}'),
+      );
     }
   }
 
@@ -260,7 +265,9 @@ class AuthRepositoryImplementation implements AuthRepository {
       // Check if new phone already exists
       final phoneExists = await localDataSource.checkPhoneExists(newPhone);
       if (phoneExists) {
-        return const Left(CacheFailure(message: 'Nomor handphone sudah digunakan'));
+        return const Left(
+          CacheFailure(message: 'Nomor handphone sudah digunakan'),
+        );
       }
 
       // Generate OTP for new phone
@@ -284,9 +291,16 @@ class AuthRepositoryImplementation implements AuthRepository {
       print('🔄 Verifying phone change for user: $userId');
 
       // Verify OTP
-      final isValid = await localDataSource.verifyOtp(newPhone, verificationCode);
+      final isValid = await localDataSource.verifyOtp(
+        newPhone,
+        verificationCode,
+      );
       if (!isValid) {
-        return const Left(CacheFailure(message: 'Kode verifikasi tidak valid atau sudah kadaluarsa'));
+        return const Left(
+          CacheFailure(
+            message: 'Kode verifikasi tidak valid atau sudah kadaluarsa',
+          ),
+        );
       }
 
       // Get current user
@@ -359,9 +373,16 @@ class AuthRepositoryImplementation implements AuthRepository {
       print('🔄 Verifying email change for user: $userId');
 
       // Verify OTP
-      final isValid = await localDataSource.verifyOtp('email_$newEmail', verificationCode);
+      final isValid = await localDataSource.verifyOtp(
+        'email_$newEmail',
+        verificationCode,
+      );
       if (!isValid) {
-        return const Left(CacheFailure(message: 'Kode verifikasi tidak valid atau sudah kadaluarsa'));
+        return const Left(
+          CacheFailure(
+            message: 'Kode verifikasi tidak valid atau sudah kadaluarsa',
+          ),
+        );
       }
 
       // Get current user
@@ -384,6 +405,101 @@ class AuthRepositoryImplementation implements AuthRepository {
     } catch (e) {
       print('❌ Error verifying email change: $e');
       return Left(CacheFailure(message: 'Gagal mengubah email'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> verifyOldPassword({
+    required String userId,
+    required String oldPassword,
+  }) async {
+    try {
+      print('🔐 Verifying old password for user: $userId');
+
+      // Get current user
+      final user = await localDataSource.getUserByPhone(userId);
+      if (user == null) {
+        return const Left(CacheFailure(message: 'User tidak ditemukan'));
+      }
+
+      // Verify password
+      if (user.password != oldPassword) {
+        return const Left(CacheFailure(message: 'Password lama salah'));
+      }
+
+      print('✅ Old password verified');
+      return const Right(true);
+    } catch (e) {
+      print('❌ Error verifying old password: $e');
+      return Left(CacheFailure(message: 'Gagal memverifikasi password'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, User>> changePassword({
+    required String userId,
+    required String newPassword,
+    String? oldPassword,
+  }) async {
+    try {
+      print('🔄 Changing password for user: $userId');
+
+      // Get current user
+      final user = await localDataSource.getUserByPhone(userId);
+      if (user == null) {
+        return const Left(CacheFailure(message: 'User tidak ditemukan'));
+      }
+
+      // If oldPassword provided, verify it
+      if (oldPassword != null) {
+        if (user.password != oldPassword) {
+          return const Left(CacheFailure(message: 'Password lama salah'));
+        }
+      }
+
+      // Update password
+      final updatedUser = user.copyWith(
+        password: newPassword,
+        updatedAt: DateTime.now(),
+      );
+
+      await localDataSource.updateUser(updatedUser);
+
+      print('✅ Password changed successfully');
+      return Right(updatedUser);
+    } catch (e) {
+      print('❌ Error changing password: $e');
+      return Left(CacheFailure(message: 'Gagal mengubah password'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, User>> resetPasswordWithOtp({
+    required String phone,
+    required String newPassword,
+  }) async {
+    try {
+      print('🔄 Resetting password with OTP for: $phone');
+
+      // Get user by phone
+      final user = await localDataSource.getUserByPhone(phone);
+      if (user == null) {
+        return const Left(CacheFailure(message: 'User tidak ditemukan'));
+      }
+
+      // Update password (OTP already verified)
+      final updatedUser = user.copyWith(
+        password: newPassword,
+        updatedAt: DateTime.now(),
+      );
+
+      await localDataSource.updateUser(updatedUser);
+
+      print('✅ Password reset successfully');
+      return Right(updatedUser);
+    } catch (e) {
+      print('❌ Error resetting password: $e');
+      return Left(CacheFailure(message: 'Gagal mereset password'));
     }
   }
 }

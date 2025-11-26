@@ -1,6 +1,7 @@
 // lib/features/auth/presentation/pages/otp_verification_page.dart
-import 'dart:async';
+// Update existing file to accept custom headers
 
+import 'dart:async';
 import 'package:ekaplus_ekatunggal/constant.dart';
 import 'package:ekaplus_ekatunggal/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:ekaplus_ekatunggal/features/auth/presentation/bloc/auth_event.dart';
@@ -16,21 +17,29 @@ import 'package:pin_code_fields/pin_code_fields.dart';
 
 class OtpVerificationPage extends StatefulWidget {
   final String phoneNumber;
+  final String? title;           // ← TAMBAH: Custom title
+  final String? subtitle;        // ← TAMBAH: Custom subtitle
+  final String? nextRoute;       // ← TAMBAH: Custom route after success
+  final bool isPasswordReset;    // ← TAMBAH: Flag untuk reset password
 
-  const OtpVerificationPage({Key? key, required this.phoneNumber})
-    : super(key: key);
+  const OtpVerificationPage({
+    Key? key,
+    required this.phoneNumber,
+    this.title,
+    this.subtitle,
+    this.nextRoute,
+    this.isPasswordReset = false,
+  }) : super(key: key);
 
   @override
   State<OtpVerificationPage> createState() => _OtpVerificationPageState();
 }
 
 class _OtpVerificationPageState extends State<OtpVerificationPage> {
-  // Controllers
+  // ... existing code (controllers, state, etc) ...
   TextEditingController? _otpController;
   FocusNode? _pinFocusNode;
   StreamController<ErrorAnimationType>? _errorController;
-
-  // State
   bool _hasError = false;
   String _currentOtp = '';
   bool _isNavigating = false;
@@ -40,8 +49,6 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
   void initState() {
     super.initState();
     _initializeControllers();
-
-    // Auto focus setelah frame pertama
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted && !_isDisposed) {
         _pinFocusNode?.requestFocus();
@@ -57,40 +64,26 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
 
   @override
   void dispose() {
-    // 1. Set flag mati agar logic lain berhenti
     _isDisposed = true;
-
-    // 2. Close Stream (Aman karena bukan UI)
     _errorController?.close();
-
-    // 3. Dispose FocusNode
-    // HAPUS baris _pinFocusNode?.unfocus(); <--- INI PENYEBAB ERROR "Deactivated Widget"
-    // Alasannya: unfocus() memicu pencarian context saat widget sudah mati.
     try {
       _pinFocusNode?.dispose();
     } catch (e) {
       debugPrint('⚠️ FocusNode error on dispose: $e');
     }
-
-    // 4. Dispose Controller
-    // Tetap gunakan try-catch untuk menangani "used after disposed"
     try {
       _otpController?.dispose();
     } catch (e) {
       debugPrint('⚠️ OTP Controller error on dispose: $e');
     }
-
-    // 5. Nullify untuk mencegah akses liar
     _pinFocusNode = null;
     _otpController = null;
     _errorController = null;
-
     super.dispose();
   }
 
   void _verifyOtp() {
     if (_isDisposed) return;
-
     if (_currentOtp.isEmpty) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -103,10 +96,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
       return;
     }
 
-    print(
-      '🔄 Verifying OTP: $_currentOtp (${_currentOtp.length} digits) for ${widget.phoneNumber}',
-    );
-
+    print('🔄 Verifying OTP: $_currentOtp for ${widget.phoneNumber}');
     if (mounted) {
       context.read<AuthBloc>().add(
         VerifyOtpEvent(widget.phoneNumber, _currentOtp),
@@ -116,36 +106,24 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
 
   void _resendOtp() {
     if (_isDisposed) return;
-
-    // Clear error dan input
     if (mounted) {
       setState(() {
         _hasError = false;
         _currentOtp = '';
       });
       _otpController?.clear();
-
       print('🔄 Resending OTP for ${widget.phoneNumber}');
-
-      // Request OTP baru
       context.read<AuthBloc>().add(RequestOtpEvent(widget.phoneNumber));
-
-      // Start timer countdown - HANYA SAAT RESEND
       context.read<OtpTimerBloc>().add(const StartOtpTimer(duration: 60));
     }
   }
 
   void _showOtpError() {
     if (_isDisposed || !mounted) return;
-
     setState(() {
       _hasError = true;
     });
-
-    // Trigger shake animation
     _errorController?.add(ErrorAnimationType.shake);
-
-    // Clear input setelah shake animation selesai
     Future.delayed(const Duration(milliseconds: 400), () {
       if (!mounted || _isDisposed) return;
       _otpController?.clear();
@@ -157,22 +135,15 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
 
   void _handleBack() {
     if (_isDisposed || _isNavigating) return;
-
-    // Reset timer
     if (mounted) {
       context.read<OtpTimerBloc>().add(ResetOtpTimer());
-
-      // Reset auth state
       context.read<AuthBloc>().add(ResetAuthEvent());
-
-      // Navigate back
       context.pop();
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // Safety check
     if (_isDisposed ||
         _otpController == null ||
         _pinFocusNode == null ||
@@ -183,7 +154,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
     return WillPopScope(
       onWillPop: () async {
         _handleBack();
-        return false; // Prevent default back behavior
+        return false;
       },
       child: Scaffold(
         backgroundColor: AppColors.whiteColor,
@@ -210,19 +181,19 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
+                    children: [
                       Text(
-                        'Verifikasi Akun',
-                        style: TextStyle(
+                        widget.title ?? 'Verifikasi Akun', // ← CUSTOM TITLE
+                        style: const TextStyle(
                           color: AppColors.whiteColor,
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      SizedBox(height: 4),
+                      const SizedBox(height: 4),
                       Text(
-                        'Masukkan kode OTP',
-                        style: TextStyle(
+                        widget.subtitle ?? 'Masukkan kode OTP', // ← CUSTOM SUBTITLE
+                        style: const TextStyle(
                           color: AppColors.whiteColor,
                           fontWeight: FontWeight.w500,
                           fontSize: 14,
@@ -250,23 +221,36 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                 ),
               );
 
-              // Reset timer
               context.read<OtpTimerBloc>().add(ResetOtpTimer());
 
-              // Navigate ke halaman selanjutnya
               Future.delayed(const Duration(milliseconds: 500), () {
                 if (!mounted || _isDisposed) return;
                 _isNavigating = false;
 
-                // Navigate ke Register Form
-                context.push('/registerForm', extra: widget.phoneNumber);
+                // ← CUSTOM NAVIGATION
+                if (widget.nextRoute != null) {
+                  if (widget.isPasswordReset) {
+                    // Password reset flow: pass phone to new password page
+                    context.pushNamed(
+                      widget.nextRoute!,
+                      extra: {'phone': widget.phoneNumber},
+                    );
+                  } else {
+                    context.pushNamed(
+                      widget.nextRoute!,
+                      extra: widget.phoneNumber,
+                    );
+                  }
+                } else {
+                  // Default: Register Form
+                  context.pushNamed('registerForm', extra: widget.phoneNumber);
+                }
               });
             } else if (state is OtpVerificationError) {
               print('❌ OTP Verification Failed: ${state.message}');
               _showOtpError();
             } else if (state is OtpRequestSuccess) {
               print('📱 New OTP sent: ${state.otp}');
-
               if (mounted && !_isDisposed) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -286,13 +270,11 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                   child: Column(
                     children: [
                       const SizedBox(height: 24),
-
-                      // PIN CODE FIELDS
+                      // PIN CODE FIELDS (same as before)
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 50),
                         child: PinCodeTextField(
                           enabled: !_isNavigating && !_isDisposed,
-
                           appContext: context,
                           length: 6,
                           controller: _otpController!,
@@ -302,18 +284,12 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                           animationDuration: const Duration(milliseconds: 300),
                           enableActiveFill: true,
                           autoFocus: false,
-
-                          // Error animation controller
                           errorAnimationController: _errorController!,
-
-                          // Text styling
                           textStyle: const TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
                             fontFamily: AppFonts.primaryFont,
                           ),
-
-                          // Pin theme
                           pinTheme: PinTheme(
                             shape: PinCodeFieldShape.box,
                             borderRadius: BorderRadius.circular(10),
@@ -322,32 +298,20 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                             fieldOuterPadding: const EdgeInsets.symmetric(
                               horizontal: 4,
                             ),
-
-                            // Active state (currently typing)
                             activeFillColor: AppColors.whiteColor,
                             activeColor: const Color(0xFF2196F3),
                             activeBorderWidth: 2,
-
-                            // Selected state (focused but empty)
                             selectedFillColor: AppColors.whiteColor,
                             selectedColor: const Color(0xFF2196F3),
                             selectedBorderWidth: 2,
-
-                            // Inactive state (not focused)
                             inactiveFillColor: Colors.grey[100],
                             inactiveColor: AppColors.grayColor.withOpacity(0.3),
                             inactiveBorderWidth: 1.5,
-
-                            // Error state
                             errorBorderColor: AppColors.primaryColor,
                             errorBorderWidth: 2,
                           ),
-
-                          // On change callback
                           onChanged: (value) {
                             if (_isDisposed) return;
-
-                            // Clear error saat user mulai input lagi
                             if (_hasError && value.isNotEmpty && mounted) {
                               setState(() {
                                 _hasError = false;
@@ -359,24 +323,15 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                               });
                             }
                           },
-
-                          // On completed callback
                           onCompleted: (value) {
                             print('OTP completed: $value');
-                            // User tetap harus klik "Selanjutnya"
                           },
-
-                          // Paste validation
                           beforeTextPaste: (text) {
-                            print("Pasting text: $text");
                             return text?.contains(RegExp(r'^[0-9]+$')) ?? false;
                           },
                         ),
                       ),
-
                       const SizedBox(height: 16),
-
-                      // Error message dengan fade animation
                       AnimatedOpacity(
                         opacity: _hasError ? 1.0 : 0.0,
                         duration: const Duration(milliseconds: 300),
@@ -403,23 +358,17 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                           ),
                         ),
                       ),
-
                       const SizedBox(height: 8),
-
-                      // Resend Code Section
                       _buildResendSection(),
                     ],
                   ),
                 ),
               ),
-
-              // Bottom Button
               Padding(
                 padding: const EdgeInsets.all(20),
                 child: BlocBuilder<AuthBloc, AuthState>(
                   builder: (context, state) {
                     final isLoading = state is AuthLoading;
-
                     return ElevatedButton(
                       onPressed: (isLoading || _isNavigating || _isDisposed)
                           ? null
@@ -463,11 +412,9 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
 
   Widget _buildResendSection() {
     if (_isDisposed) return const SizedBox.shrink();
-
     return BlocBuilder<OtpTimerBloc, OtpTimerState>(
       builder: (context, timerState) {
         if (timerState is OtpTimerRunning) {
-          // Timer sedang berjalan
           return Align(
             alignment: Alignment.centerLeft,
             child: Padding(
@@ -493,7 +440,6 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
           );
         } else if (timerState is OtpTimerCompleted ||
             timerState is OtpTimerInitial) {
-          // Timer completed atau belum dimulai
           return Align(
             alignment: Alignment.centerLeft,
             child: Padding(
@@ -522,7 +468,6 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
             ),
           );
         }
-
         return const SizedBox.shrink();
       },
     );

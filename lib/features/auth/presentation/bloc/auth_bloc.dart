@@ -4,7 +4,7 @@ import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/login_user.dart
 import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/register_user.dart';
 import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/request_otp.dart';
 import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/verify_otp.dart';
-import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/update_profile_picture.dart'; // ADD THIS
+import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/update_profile_picture.dart';
 import 'package:ekaplus_ekatunggal/features/auth/presentation/bloc/auth_event.dart';
 import 'package:ekaplus_ekatunggal/features/auth/presentation/bloc/auth_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,6 +26,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required this.updateProfilePicture,
   }) : super(AuthInitial()) {
     on<CheckPhoneEvent>(_onCheckPhone);
+    on<CheckPhoneExistsEvent>(_onCheckPhoneExists);
     on<RequestOtpEvent>(_onRequestOtp);
     on<VerifyOtpEvent>(_onVerifyOtp);
     on<RegisterUserEvent>(_onRegisterUser);
@@ -45,6 +46,34 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     result.fold(
       (failure) => emit(PhoneCheckError(failure.message ?? 'Unknown error')),
       (exists) => emit(PhoneCheckSuccess(exists)),
+    );
+  }
+
+  // Handler khusus untuk forgot password flow
+  Future<void> _onCheckPhoneExists(
+    CheckPhoneExistsEvent event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(AuthLoading());
+
+    print('🔍 Checking if phone exists: ${event.phone}');
+
+    final result = await checkPhoneExists(event.phone);
+
+    result.fold(
+      (failure) {
+        print('❌ Phone check failed: ${failure.message}');
+        emit(AuthError(failure.message ?? 'Gagal mengecek nomor handphone'));
+      },
+      (exists) {
+        if (exists) {
+          print('✅ Phone exists: ${event.phone}');
+          emit(PhoneExistsState(true));
+        } else {
+          print('❌ Phone not found: ${event.phone}');
+          emit(const PhoneNotFoundError('Nomor handphone tidak terdaftar'));
+        }
+      },
     );
   }
 

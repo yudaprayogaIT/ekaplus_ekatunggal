@@ -131,7 +131,13 @@ class AccountLoggedInView extends StatelessWidget {
                   icon: Icons.lock_outline,
                   title: 'Ganti Password',
                   onTap: () {
-                    // TODO: Navigate to change password
+                    // Navigate to change password
+                    context.pushNamed(
+                      'change-password',
+                      extra: {
+                        'userId': user.phone, // phone is userId
+                      },
+                    );
                   },
                 ),
 
@@ -165,9 +171,7 @@ class AccountLoggedInView extends StatelessWidget {
                 shape: BoxShape.circle,
                 border: Border.all(color: Colors.grey.shade300, width: 2),
               ),
-              child: ClipOval(
-                child: _buildProfileImage(),
-              ),
+              child: ClipOval(child: _buildProfileImage()),
             ),
 
             // Camera Icon Button
@@ -324,20 +328,20 @@ class AccountLoggedInView extends StatelessWidget {
               onTap: () {
                 // Navigate based on label
                 if (label == 'Nama Lengkap') {
-                  context.pushNamed('edit-name', extra: {
-                    'userId': userId,
-                    'currentName': value,
-                  });
+                  context.pushNamed(
+                    'edit-name',
+                    extra: {'userId': userId, 'currentName': value},
+                  );
                 } else if (label == 'Nomor Handphone') {
-                  context.pushNamed('edit-phone', extra: {
-                    'userId': userId,
-                    'currentPhone': value,
-                  });
+                  context.pushNamed(
+                    'edit-phone',
+                    extra: {'userId': userId, 'currentPhone': value},
+                  );
                 } else if (label == 'Email') {
-                  context.pushNamed('edit-email', extra: {
-                    'userId': userId,
-                    'currentEmail': value,
-                  });
+                  context.pushNamed(
+                    'edit-email',
+                    extra: {'userId': userId, 'currentEmail': value},
+                  );
                 }
               },
               child: Text(

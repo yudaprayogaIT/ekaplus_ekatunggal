@@ -1,7 +1,10 @@
 // lib/injection.dart
+import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/change_password.dart';
+import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/reset_password_with_otp.dart';
 import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/update_profile_picture.dart';
 import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/update_full_name.dart'; // ← ADD
 import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/request_phone_change.dart'; // ← ADD
+import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/verify_old_password.dart';
 import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/verify_phone_change.dart'; // ← ADD
 import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/request_email_change.dart'; // ← ADD
 import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/verify_email_change.dart'; // ← ADD
@@ -168,6 +171,12 @@ Future<void> init() async {
   myinjection.registerLazySingleton(() => CheckWishlist(myinjection()));
   myinjection.registerLazySingleton(() => BulkDeleteWishlist(myinjection()));
   print('✅ Wishlist UseCases registered');
+
+  // 🔐 Password Management UseCases
+myinjection.registerLazySingleton(() => VerifyOldPassword(myinjection()));
+myinjection.registerLazySingleton(() => ChangePassword(myinjection()));
+myinjection.registerLazySingleton(() => ResetPasswordWithOtp(myinjection()));
+print('✅ Password Management UseCases registered');
 
   // ============================================
   // BLOCS (Factory - Created per widget)

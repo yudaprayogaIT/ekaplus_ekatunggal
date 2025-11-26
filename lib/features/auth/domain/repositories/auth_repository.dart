@@ -44,4 +44,20 @@ abstract class AuthRepository {
     required String newEmail,
     required String verificationCode,
   });
+
+   Future<Either<Failure, bool>> verifyOldPassword({
+    required String userId,
+    required String oldPassword,
+  });
+  
+  Future<Either<Failure, User>> changePassword({
+    required String userId,
+    required String newPassword,
+    String? oldPassword,
+  });
+  
+  Future<Either<Failure, User>> resetPasswordWithOtp({
+    required String phone,
+    required String newPassword,
+  });
 }
