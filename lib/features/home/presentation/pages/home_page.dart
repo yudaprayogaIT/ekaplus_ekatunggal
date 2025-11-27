@@ -9,24 +9,11 @@ import '../widgets/search_bar.dart';
 import '../widgets/typeCategory_list.dart';
 import '../../../banner/domain/entities/bannerslider.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> 
-    with AutomaticKeepAliveClientMixin {
-  
-  // 🔥 CRITICAL: Keep page alive to prevent reload on back navigation
-  @override
-  bool get wantKeepAlive => true;
-
-  @override
   Widget build(BuildContext context) {
-    super.build(context); // 🔥 REQUIRED for AutomaticKeepAliveClientMixin
-    
     final List<BannerSlider> banners = [
       BannerSlider(
         name: 'Banner ',
@@ -123,7 +110,7 @@ class _HomePageState extends State<HomePage>
                           color: const Color.fromARGB(255, 233, 233, 233),
                         ),
 
-                        // Products Section - ProductBloc is now Singleton
+                        // 🔥 ProductsSection uses GLOBAL ProductBloc (Singleton)
                         ProductsSection(
                           title: 'Yang Baru Dari Kami 🔥',
                           subtitle: 'Yang baru - baru, dijamin menarik !!!',

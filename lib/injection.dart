@@ -66,14 +66,14 @@ Future<void> init() async {
   print('🚀 Initializing GetIt dependencies...');
 
   // ============================================
-  // CUBITS & BLOCS - Singleton (Global State)
+  // SINGLETONS (Global State - Persists Across Navigation)
   // ============================================
-  myinjection.registerLazySingleton<AuthSessionCubit>(
-    () => AuthSessionCubit(),
-  );
+
+  // Auth Session Cubit
+  myinjection.registerLazySingleton<AuthSessionCubit>(() => AuthSessionCubit());
   print('✅ AuthSessionCubit registered as Singleton');
 
-  // 🔥 CHANGE: ProductBloc as Singleton to maintain cache across navigation
+  // 🔥 SOLUTION: ProductBloc as Singleton (same as CategoryBloc pattern)
   myinjection.registerLazySingleton<ProductBloc>(
     () => ProductBloc(
       getAllProduct: myinjection(),
@@ -82,9 +82,9 @@ Future<void> init() async {
       getHotDeals: myinjection(),
     ),
   );
-  print('✅ ProductBloc registered as Singleton (with caching)');
+  print('✅ ProductBloc registered as Singleton');
 
-  // 🔥 CHANGE: WishlistBloc as Singleton
+  // 🔥 SOLUTION: WishlistBloc as Singleton
   myinjection.registerLazySingleton<WishlistBloc>(
     () => WishlistBloc(
       getWishlist: myinjection(),
@@ -143,7 +143,8 @@ Future<void> init() async {
   );
 
   myinjection.registerLazySingleton<ProductRepository>(
-    () => ProductRepositoryImplementation(productRemoteDatasource: myinjection()),
+    () =>
+        ProductRepositoryImplementation(productRemoteDatasource: myinjection()),
   );
 
   myinjection.registerLazySingleton<WishlistRepository>(
@@ -154,7 +155,7 @@ Future<void> init() async {
   // ============================================
   // USE CASES
   // ============================================
-  
+
   // Auth UseCases
   myinjection.registerLazySingleton(() => CheckPhoneExists(myinjection()));
   myinjection.registerLazySingleton(() => RequestOtp(myinjection()));
@@ -190,13 +191,13 @@ Future<void> init() async {
   myinjection.registerLazySingleton(() => ToggleWishlist(myinjection()));
   myinjection.registerLazySingleton(() => CheckWishlist(myinjection()));
   myinjection.registerLazySingleton(() => BulkDeleteWishlist(myinjection()));
-  
+
   print('✅ All UseCases registered');
 
   // ============================================
-  // FACTORY BLOCS (Per Widget)
+  // FACTORY BLOCS (Per Widget - Short-lived)
   // ============================================
-  
+
   myinjection.registerFactory(
     () => AuthBloc(
       checkPhoneExists: myinjection(),
@@ -204,7 +205,7 @@ Future<void> init() async {
       verifyOtp: myinjection(),
       registerUser: myinjection(),
       loginUser: myinjection(),
-      updateProfilePicture: myinjection()
+      updateProfilePicture: myinjection(),
     ),
   );
 
@@ -215,7 +216,8 @@ Future<void> init() async {
   );
 
   myinjection.registerFactory(
-    () => CategoryBloc(getAllCategory: myinjection(), getCategory: myinjection()),
+    () =>
+        CategoryBloc(getAllCategory: myinjection(), getCategory: myinjection()),
   );
 
   print('✅ Factory BLoCs registered');

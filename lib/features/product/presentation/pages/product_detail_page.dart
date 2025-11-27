@@ -151,12 +151,10 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       appBar: CustomAppBar(title: 'Lihat Detail'),
       body: BlocBuilder<ProductBloc, ProductState>(
         builder: (context, state) {
-          // ✅ PERUBAHAN: ProductLoading (bukan ProductStateLoading)
           if (state is ProductLoading) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          // ✅ PERUBAHAN: ProductError (bukan ProductStateError)
           if (state is ProductError) {
             return Center(
               child: Column(
@@ -179,9 +177,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             );
           }
 
-          // ✅ PERUBAHAN: ProductDetailLoaded (bukan ProductStateLoadedProduct)
           if (state is ProductDetailLoaded) {
-            final product = state.product; // ✅ PERUBAHAN: state.product (bukan state.detailProduct)
+            final product = state.product;
 
             if (product.variants.isEmpty) {
               return const Center(child: Text('Tidak ada varian tersedia'));
@@ -236,8 +233,11 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                     return FadeTransition(
                                       opacity: animation,
                                       child: ScaleTransition(
-                                        scale: Tween<double>(begin: 0.98, end: 1.0)
-                                            .animate(
+                                        scale:
+                                            Tween<double>(
+                                              begin: 0.98,
+                                              end: 1.0,
+                                            ).animate(
                                               CurvedAnimation(
                                                 parent: animation,
                                                 curve: Curves.easeInOut,
@@ -254,10 +254,11 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                         selectedVariant.image,
                                       ),
                                       fit: BoxFit.contain,
-                                      placeholder: (context, url) => _buildShimmer(
-                                        height: 300,
-                                        radius: BorderRadius.circular(12),
-                                      ),
+                                      placeholder: (context, url) =>
+                                          _buildShimmer(
+                                            height: 300,
+                                            radius: BorderRadius.circular(12),
+                                          ),
                                       errorWidget: (context, url, error) {
                                         // fallback ke asset local (jika tersedia)
                                         final assetPath =
@@ -294,8 +295,11 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         // 🔥 Wishlist Button (Only show if logged in)
                         BlocBuilder<AuthSessionCubit, AuthSessionState>(
                           builder: (context, authState) {
-                            final isLoggedIn = authState is AuthSessionAuthenticated;
-                            final userId = isLoggedIn ? authState.user.id : null;
+                            final isLoggedIn =
+                                authState is AuthSessionAuthenticated;
+                            final userId = isLoggedIn
+                                ? authState.user.id
+                                : null;
 
                             if (!isLoggedIn || userId == null) {
                               return const SizedBox.shrink();
@@ -318,14 +322,16 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                     onTap: () {
                                       // Toggle wishlist
                                       context.read<WishlistBloc>().add(
-                                            ToggleWishlistItem(
-                                              userId: userId,
-                                              productId: product.id.toString(),
-                                            ),
-                                          );
+                                        ToggleWishlistItem(
+                                          userId: userId,
+                                          productId: product.id.toString(),
+                                        ),
+                                      );
 
                                       // Show snackbar feedback
-                                      ScaffoldMessenger.of(context).showSnackBar(
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
                                         SnackBar(
                                           content: Text(
                                             isInWishlist
@@ -348,7 +354,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                         shape: BoxShape.circle,
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.black.withOpacity(0.15),
+                                            color: Colors.black.withOpacity(
+                                              0.15,
+                                            ),
                                             blurRadius: 8,
                                             offset: const Offset(0, 2),
                                           ),

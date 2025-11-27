@@ -20,7 +20,7 @@ class ProductPage extends StatefulWidget {
   final int? categoryId;
 
   const ProductPage({Key? key, this.categoryName, this.categoryId})
-      : super(key: key);
+    : super(key: key);
 
   @override
   State<ProductPage> createState() => _ProductPageState();
@@ -366,14 +366,12 @@ class _ProductPageState extends State<ProductPage> {
           Expanded(
             child: BlocBuilder<ProductBloc, ProductState>(
               builder: (context, state) {
-                // ✅ PERUBAHAN: ProductLoading (bukan ProductStateLoading)
                 if (state is ProductLoading) {
                   return const Center(
                     child: CircularProgressIndicator(color: Color(0xFFB71C1C)),
                   );
                 }
 
-                // ✅ PERUBAHAN: ProductError (bukan ProductStateError)
                 if (state is ProductError) {
                   return Center(
                     child: Column(
@@ -406,8 +404,6 @@ class _ProductPageState extends State<ProductPage> {
                   );
                 }
 
-                // ✅ PERUBAHAN: ProductLoaded (bukan ProductStateLoadedAllProduct)
-                // ✅ PERUBAHAN: state.products (bukan state.allProduct)
                 if (state is ProductLoaded) {
                   final filteredProducts = _filterProducts(state.products);
 
@@ -461,10 +457,12 @@ class _ProductPageState extends State<ProductPage> {
                       return ProductCard(
                         product: product,
                         onTap: () {
-                          context.pushNamed(
-                            'productDetail',
-                            pathParameters: {'id': product.id.toString()},
-                          ).then((_) => _loadProducts());
+                          context
+                              .pushNamed(
+                                'productDetail',
+                                pathParameters: {'id': product.id.toString()},
+                              )
+                              .then((_) => _loadProducts());
                         },
                       );
                     },

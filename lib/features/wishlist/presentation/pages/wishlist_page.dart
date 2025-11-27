@@ -6,24 +6,11 @@ import 'package:ekaplus_ekatunggal/features/wishlist/presentation/widgets/wishli
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class WishlistPage extends StatefulWidget {
+class WishlistPage extends StatelessWidget {
   const WishlistPage({Key? key}) : super(key: key);
 
   @override
-  State<WishlistPage> createState() => _WishlistPageState();
-}
-
-class _WishlistPageState extends State<WishlistPage>
-    with AutomaticKeepAliveClientMixin {
-  
-  // 🔥 CRITICAL: Keep page alive to prevent reload on back navigation
-  @override
-  bool get wantKeepAlive => true;
-
-  @override
   Widget build(BuildContext context) {
-    super.build(context); // 🔥 REQUIRED for AutomaticKeepAliveClientMixin
-
     return Scaffold(
       backgroundColor: AppColors.whiteColor,
       appBar: AppBar(

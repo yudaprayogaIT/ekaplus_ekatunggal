@@ -35,27 +35,13 @@ class _ProductsSectionState extends State<ProductsSection> {
   @override
   void initState() {
     super.initState();
-    // 🔥 NO NEED TO LOAD: ProductBloc is Singleton and already loaded in main.dart
-    // Just check if we need to trigger load (only if state is Initial and no cache)
-    final productBloc = context.read<ProductBloc>();
-    
-    if (productBloc.state is ProductInitial && !productBloc.hasCachedData) {
-      _loadProducts();
-    } else if (productBloc.state is ProductInitial && productBloc.hasCachedData) {
-      // Trigger cached data emission
-      productBloc.add(const ProductEventGetAllProducts());
-    }
-  }
-
-  void _loadProducts() {
-    if (widget.hotDealsOnly) {
-      context.read<ProductBloc>().add(const ProductEventGetHotDeals());
-    } else {
-      context.read<ProductBloc>().add(const ProductEventGetAllProducts());
-    }
+    // 🔥 NO NEED TO LOAD: Products already loaded in main.dart
+    // ProductBloc is Singleton, so state persists!
   }
 
   void _buildCategoryList(List products) {
+    if (_categories.isNotEmpty) return; // Already built
+    
     final Map<int, String> map = {};
     for (var p in products) {
       final cat = p.itemCategory;
@@ -105,9 +91,10 @@ class _ProductsSectionState extends State<ProductsSection> {
       builder: (context, authState) {
         final isLoggedIn = authState is AuthSessionAuthenticated;
 
+        // 🔥 USE GLOBAL PRODUCTBLOC (Singleton)
         return BlocBuilder<ProductBloc, ProductState>(
           builder: (context, productState) {
-            // Loading state
+            // ✅ FIXED: ProductLoading (bukan ProductStateLoading)
             if (productState is ProductLoading) {
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -120,7 +107,7 @@ class _ProductsSectionState extends State<ProductsSection> {
               );
             }
 
-            // Error state
+            // ✅ FIXED: ProductError (bukan ProductStateError)
             if (productState is ProductError) {
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -136,9 +123,8 @@ class _ProductsSectionState extends State<ProductsSection> {
                     const SizedBox(height: 12),
                     ElevatedButton(
                       onPressed: () {
-                        // Force refresh (bypass cache)
                         context.read<ProductBloc>().add(
-                          const ProductEventRefreshProducts(),
+                          const ProductEventGetAllProducts(1),
                         );
                       },
                       child: const Text('Coba Lagi'),
@@ -148,14 +134,13 @@ class _ProductsSectionState extends State<ProductsSection> {
               );
             }
 
-            // Loaded state
+            // ✅ FIXED: ProductLoaded (bukan ProductStateLoadedAllProduct)
+            // ✅ FIXED: products (bukan allProduct)
             if (productState is ProductLoaded) {
               final allProducts = productState.products;
 
-              // Build category list (hanya sekali)
-              if (_categories.isEmpty && allProducts.isNotEmpty) {
-                _buildCategoryList(allProducts);
-              }
+              // Build category list (only once)
+              _buildCategoryList(allProducts);
 
               // Filter products
               final filteredProducts = _filterProducts(allProducts);
