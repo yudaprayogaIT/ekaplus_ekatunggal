@@ -4,11 +4,11 @@ import 'package:ekaplus_ekatunggal/features/account/presentation/cubit/profile_u
 import 'package:ekaplus_ekatunggal/features/account/presentation/pages/about_page.dart';
 import 'package:ekaplus_ekatunggal/features/account/presentation/pages/account_page.dart';
 import 'package:ekaplus_ekatunggal/features/account/presentation/pages/change_password_page.dart';
-import 'package:ekaplus_ekatunggal/features/account/presentation/pages/edit_contact_page.dart'; // ✨ NEW
+import 'package:ekaplus_ekatunggal/features/account/presentation/pages/edit_contact_page.dart';
 import 'package:ekaplus_ekatunggal/features/account/presentation/pages/edit_full_name_page.dart';
 import 'package:ekaplus_ekatunggal/features/account/presentation/pages/new_password_page.dart';
 import 'package:ekaplus_ekatunggal/features/account/presentation/pages/select_avatar_page.dart';
-import 'package:ekaplus_ekatunggal/features/account/presentation/pages/verify_contact_complete_page.dart'; // ✨ NEW
+import 'package:ekaplus_ekatunggal/features/account/presentation/pages/verify_contact_complete_page.dart';
 import 'package:ekaplus_ekatunggal/features/account/presentation/pages/verify_password_page.dart';
 import 'package:ekaplus_ekatunggal/features/auth/domain/entities/user.dart';
 import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/change_password.dart';
@@ -50,9 +50,9 @@ final getIt = GetIt.instance;
 
 class MyRouter {
   GoRouter get router => GoRouter(
-    // initialLocation: "/",
+    initialLocation: "/",
     // initialLocation: "/login",
-    initialLocation: "/account",
+    // initialLocation: "/account",
     routes: [
       ShellRoute(
         builder: (context, state, child) {
@@ -259,122 +259,122 @@ class MyRouter {
       // ============================================
 
       // 1. Edit Name (No password needed)
-GoRoute(
-  path: '/account/edit-name',
-  name: 'edit-name',
-  builder: (context, state) {
-    final extra = state.extra as Map<String, dynamic>;
-    return BlocProvider(
-      create: (context) => ProfileUpdateCubit(
-        updateFullName: getIt<UpdateFullName>(),
-        requestPhoneChange: getIt<RequestPhoneChange>(),
-        verifyPhoneChange: getIt<VerifyPhoneChange>(),
-        requestEmailChange: getIt<RequestEmailChange>(),
-        verifyEmailChange: getIt<VerifyEmailChange>(),
+      GoRoute(
+        path: '/account/edit-name',
+        name: 'edit-name',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          return BlocProvider(
+            create: (context) => ProfileUpdateCubit(
+              updateFullName: getIt<UpdateFullName>(),
+              requestPhoneChange: getIt<RequestPhoneChange>(),
+              verifyPhoneChange: getIt<VerifyPhoneChange>(),
+              requestEmailChange: getIt<RequestEmailChange>(),
+              verifyEmailChange: getIt<VerifyEmailChange>(),
+            ),
+            child: EditFullNamePage(
+              userId: extra['userId'] as String,
+              currentName: extra['currentName'] as String,
+            ),
+          );
+        },
       ),
-      child: EditFullNamePage(
-        userId: extra['userId'] as String,
-        currentName: extra['currentName'] as String,
-      ),
-    );
-  },
-),
 
-// 2. Verify Password Page (Reusable)
-GoRoute(
-  path: '/account/verify-password',
-  name: 'verify-password',
-  builder: (context, state) {
-    final extra = state.extra as Map<String, dynamic>;
-    return VerifyPasswordPage(
-      userId: extra['userId'] as String,
-      title: extra['title'] as String,
-      subtitle: extra['subtitle'] as String,
-      nextRoute: extra['nextRoute'] as String,
-      nextRouteExtra: extra['nextRouteExtra'] as Map<String, dynamic>?,
-    );
-  },
-),
-
-// 3. Edit Contact (Unified for Phone & Email)
-GoRoute(
-  path: '/account/edit-contact',
-  name: 'edit-contact',
-  builder: (context, state) {
-    final extra = state.extra as Map<String, dynamic>;
-    final type = extra['type'] as String;
-    
-    return BlocProvider(
-      create: (context) => ProfileUpdateCubit(
-        updateFullName: getIt<UpdateFullName>(),
-        requestPhoneChange: getIt<RequestPhoneChange>(),
-        verifyPhoneChange: getIt<VerifyPhoneChange>(),
-        requestEmailChange: getIt<RequestEmailChange>(),
-        verifyEmailChange: getIt<VerifyEmailChange>(),
+      // 2. Verify Password Page (Reusable)
+      GoRoute(
+        path: '/account/verify-password',
+        name: 'verify-password',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          return VerifyPasswordPage(
+            userId: extra['userId'] as String,
+            title: extra['title'] as String,
+            subtitle: extra['subtitle'] as String,
+            nextRoute: extra['nextRoute'] as String,
+            nextRouteExtra: extra['nextRouteExtra'] as Map<String, dynamic>?,
+          );
+        },
       ),
-      child: EditContactPage(
-        userId: extra['userId'] as String,
-        currentValue: type == 'phone' 
-            ? extra['currentPhone'] as String
-            : extra['currentEmail'] as String,
-        verifiedPassword: extra['password'] as String,
-        type: type == 'phone' ? ContactType.phone : ContactType.email,
-      ),
-    );
-  },
-),
 
-// 4. OTP Verification (Reusable)
-GoRoute(
-  path: '/account/otp-verification',
-  name: 'otp-verification',
-  builder: (context, state) {
-    final extra = state.extra as Map<String, dynamic>;
-    final cubit = extra['cubit'] as ProfileUpdateCubit?;
-    
-    if (cubit != null) {
-      return BlocProvider<ProfileUpdateCubit>.value(
-        value: cubit,
-        child: OtpVerificationPage(
-          phoneNumber: extra['phoneNumber'] as String,
-          title: extra['title'] as String?,
-          subtitle: extra['subtitle'] as String?,
-          nextRoute: extra['nextRoute'] as String?,
-          isPasswordReset: extra['isPasswordReset'] as bool? ?? false,
-          cubit: cubit,
-          userId: extra['userId'] as String?,
-          contactType: extra['contactType'] as ContactType?,
-        ),
-      );
-    }
-    
-    // Fallback
-    return const Scaffold(
-      body: Center(child: Text('Error: Missing cubit')),
-    );
-  },
-),
+      // 3. Edit Contact (Unified for Phone & Email)
+      GoRoute(
+        path: '/account/edit-contact',
+        name: 'edit-contact',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          final type = extra['type'] as String;
 
-// 5. Verify Contact Complete (Final verification)
-GoRoute(
-  path: '/account/verify-contact-complete',
-  name: 'verify-contact-complete',
-  builder: (context, state) {
-    final extra = state.extra as Map<String, dynamic>;
-    final cubit = extra['cubit'] as ProfileUpdateCubit;
-    
-    return BlocProvider<ProfileUpdateCubit>.value(
-      value: cubit,
-      child: VerifyContactCompletePage(
-        userId: extra['userId'] as String,
-        newValue: extra['newValue'] as String,
-        verificationCode: extra['verificationCode'] as String,
-        type: extra['type'] as ContactType,
-        cubit: cubit,
+          return BlocProvider(
+            create: (context) => ProfileUpdateCubit(
+              updateFullName: getIt<UpdateFullName>(),
+              requestPhoneChange: getIt<RequestPhoneChange>(),
+              verifyPhoneChange: getIt<VerifyPhoneChange>(),
+              requestEmailChange: getIt<RequestEmailChange>(),
+              verifyEmailChange: getIt<VerifyEmailChange>(),
+            ),
+            child: EditContactPage(
+              userId: extra['userId'] as String,
+              currentValue: type == 'phone'
+                  ? extra['currentPhone'] as String
+                  : extra['currentEmail'] as String,
+              verifiedPassword: extra['password'] as String,
+              type: type == 'phone' ? ContactType.phone : ContactType.email,
+            ),
+          );
+        },
       ),
-    );
-  },
-),
+
+      // 4. OTP Verification (Reusable)
+      GoRoute(
+        path: '/account/otp-verification',
+        name: 'otp-verification',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          final cubit = extra['cubit'] as ProfileUpdateCubit?;
+
+          if (cubit != null) {
+            return BlocProvider<ProfileUpdateCubit>.value(
+              value: cubit,
+              child: OtpVerificationPage(
+                phoneNumber: extra['phoneNumber'] as String,
+                title: extra['title'] as String?,
+                subtitle: extra['subtitle'] as String?,
+                nextRoute: extra['nextRoute'] as String?,
+                isPasswordReset: extra['isPasswordReset'] as bool? ?? false,
+                cubit: cubit,
+                userId: extra['userId'] as String?,
+                contactType: extra['contactType'] as ContactType?,
+              ),
+            );
+          }
+
+          // Fallback
+          return const Scaffold(
+            body: Center(child: Text('Error: Missing cubit')),
+          );
+        },
+      ),
+
+      // 5. Verify Contact Complete (Final verification)
+      GoRoute(
+        path: '/account/verify-contact-complete',
+        name: 'verify-contact-complete',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          final cubit = extra['cubit'] as ProfileUpdateCubit;
+
+          return BlocProvider<ProfileUpdateCubit>.value(
+            value: cubit,
+            child: VerifyContactCompletePage(
+              userId: extra['userId'] as String,
+              newValue: extra['newValue'] as String,
+              verificationCode: extra['verificationCode'] as String,
+              type: extra['type'] as ContactType,
+              cubit: cubit,
+            ),
+          );
+        },
+      ),
 
       // ============================================
       // -------- PASSWORD MANAGEMENT ROUTES --------

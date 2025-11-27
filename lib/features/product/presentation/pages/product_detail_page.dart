@@ -3,6 +3,11 @@
 import 'dart:async';
 import 'package:ekaplus_ekatunggal/constant.dart';
 import 'package:ekaplus_ekatunggal/core/shared_widgets/app_bar.dart';
+import 'package:ekaplus_ekatunggal/features/auth/presentation/cubit/auth_session_cubit.dart';
+import 'package:ekaplus_ekatunggal/features/auth/presentation/cubit/auth_session_state.dart';
+import 'package:ekaplus_ekatunggal/features/wishlist/presentation/bloc/wishlist_bloc.dart';
+import 'package:ekaplus_ekatunggal/features/wishlist/presentation/bloc/wishlist_event.dart';
+import 'package:ekaplus_ekatunggal/features/wishlist/presentation/bloc/wishlist_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -196,92 +201,176 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Gambar Utama dengan AnimatedSwitcher
+                  // 🔥 Gambar Utama dengan Wishlist Button Overlay
                   Padding(
                     padding: const EdgeInsets.all(20.0),
-                    child: Container(
-                      width: double.infinity,
-                      height: 300,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[100],
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Color.fromRGBO(50, 50, 93, 0.25),
-                            blurRadius: 5,
-                            spreadRadius: -1,
-                            offset: Offset(0, 2),
+                    child: Stack(
+                      children: [
+                        Container(
+                          width: double.infinity,
+                          height: 300,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[100],
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Color.fromRGBO(50, 50, 93, 0.25),
+                                blurRadius: 5,
+                                spreadRadius: -1,
+                                offset: Offset(0, 2),
+                              ),
+                              BoxShadow(
+                                color: Color.fromRGBO(0, 0, 0, 0.3),
+                                blurRadius: 3,
+                                spreadRadius: -1,
+                                offset: Offset(0, 1),
+                              ),
+                            ],
                           ),
-                          BoxShadow(
-                            color: Color.fromRGBO(0, 0, 0, 0.3),
-                            blurRadius: 3,
-                            spreadRadius: -1,
-                            offset: Offset(0, 1),
-                          ),
-                        ],
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 150),
-                          transitionBuilder:
-                              (Widget child, Animation<double> animation) {
-                                return FadeTransition(
-                                  opacity: animation,
-                                  child: ScaleTransition(
-                                    scale: Tween<double>(begin: 0.98, end: 1.0)
-                                        .animate(
-                                          CurvedAnimation(
-                                            parent: animation,
-                                            curve: Curves.easeInOut,
-                                          ),
-                                        ),
-                                    child: child,
-                                  ),
-                                );
-                              },
-                          child: selectedVariant.image.isNotEmpty
-                              ? CachedNetworkImage(
-                                  key: ValueKey<int>(selectedVariant.id),
-                                  imageUrl: _buildImageUrl(
-                                    selectedVariant.image,
-                                  ),
-                                  fit: BoxFit.contain,
-                                  placeholder: (context, url) => _buildShimmer(
-                                    height: 300,
-                                    radius: BorderRadius.circular(12),
-                                  ),
-                                  errorWidget: (context, url, error) {
-                                    // fallback ke asset local (jika tersedia)
-                                    final assetPath =
-                                        'assets${selectedVariant.image}';
-                                    return Image.asset(
-                                      assetPath,
-                                      fit: BoxFit.contain,
-                                      errorBuilder: (ctx, err, stack) {
-                                        return const Center(
-                                          child: Icon(
-                                            Icons.image_not_supported,
-                                            size: 80,
-                                            color: Colors.grey,
-                                          ),
-                                        );
-                                      },
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: AnimatedSwitcher(
+                              duration: const Duration(milliseconds: 150),
+                              transitionBuilder:
+                                  (Widget child, Animation<double> animation) {
+                                    return FadeTransition(
+                                      opacity: animation,
+                                      child: ScaleTransition(
+                                        scale: Tween<double>(begin: 0.98, end: 1.0)
+                                            .animate(
+                                              CurvedAnimation(
+                                                parent: animation,
+                                                curve: Curves.easeInOut,
+                                              ),
+                                            ),
+                                        child: child,
+                                      ),
                                     );
                                   },
-                                )
-                              : Container(
-                                  key: ValueKey<int>(selectedVariant.id),
-                                  child: const Center(
-                                    child: Icon(
-                                      Icons.image_not_supported,
-                                      size: 80,
-                                      color: Colors.grey,
+                              child: selectedVariant.image.isNotEmpty
+                                  ? CachedNetworkImage(
+                                      key: ValueKey<int>(selectedVariant.id),
+                                      imageUrl: _buildImageUrl(
+                                        selectedVariant.image,
+                                      ),
+                                      fit: BoxFit.contain,
+                                      placeholder: (context, url) => _buildShimmer(
+                                        height: 300,
+                                        radius: BorderRadius.circular(12),
+                                      ),
+                                      errorWidget: (context, url, error) {
+                                        // fallback ke asset local (jika tersedia)
+                                        final assetPath =
+                                            'assets${selectedVariant.image}';
+                                        return Image.asset(
+                                          assetPath,
+                                          fit: BoxFit.contain,
+                                          errorBuilder: (ctx, err, stack) {
+                                            return const Center(
+                                              child: Icon(
+                                                Icons.image_not_supported,
+                                                size: 80,
+                                                color: Colors.grey,
+                                              ),
+                                            );
+                                          },
+                                        );
+                                      },
+                                    )
+                                  : Container(
+                                      key: ValueKey<int>(selectedVariant.id),
+                                      child: const Center(
+                                        child: Icon(
+                                          Icons.image_not_supported,
+                                          size: 80,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                ),
+                            ),
+                          ),
                         ),
-                      ),
+
+                        // 🔥 Wishlist Button (Only show if logged in)
+                        BlocBuilder<AuthSessionCubit, AuthSessionState>(
+                          builder: (context, authState) {
+                            final isLoggedIn = authState is AuthSessionAuthenticated;
+                            final userId = isLoggedIn ? authState.user.id : null;
+
+                            if (!isLoggedIn || userId == null) {
+                              return const SizedBox.shrink();
+                            }
+
+                            return Positioned(
+                              top: 12,
+                              right: 12,
+                              child: BlocBuilder<WishlistBloc, WishlistState>(
+                                builder: (context, wishlistState) {
+                                  bool isInWishlist = false;
+
+                                  if (wishlistState is WishlistLoaded) {
+                                    isInWishlist = wishlistState.isInWishlist(
+                                      product.id.toString(),
+                                    );
+                                  }
+
+                                  return GestureDetector(
+                                    onTap: () {
+                                      // Toggle wishlist
+                                      context.read<WishlistBloc>().add(
+                                            ToggleWishlistItem(
+                                              userId: userId,
+                                              productId: product.id.toString(),
+                                            ),
+                                          );
+
+                                      // Show snackbar feedback
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            isInWishlist
+                                                ? '❤️ Dihapus dari wishlist'
+                                                : '💚 Ditambahkan ke wishlist',
+                                          ),
+                                          duration: const Duration(
+                                            milliseconds: 800,
+                                          ),
+                                          backgroundColor: isInWishlist
+                                              ? Colors.grey[700]
+                                              : Colors.green,
+                                        ),
+                                      );
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.95),
+                                        shape: BoxShape.circle,
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black.withOpacity(0.15),
+                                            blurRadius: 8,
+                                            offset: const Offset(0, 2),
+                                          ),
+                                        ],
+                                      ),
+                                      child: Icon(
+                                        isInWishlist
+                                            ? Icons.favorite
+                                            : Icons.favorite_border,
+                                        size: 24,
+                                        color: isInWishlist
+                                            ? Colors.red
+                                            : Colors.grey[600],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                        ),
+                      ],
                     ),
                   ),
 

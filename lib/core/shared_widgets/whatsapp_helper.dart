@@ -1,4 +1,4 @@
-// lib/features/wishlist/presentation/widgets/whatsapp_helper.dart
+// lib/core/shared_widgets/whatsapp_helper.dart
 import 'package:ekaplus_ekatunggal/constant.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
