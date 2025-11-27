@@ -8,14 +8,24 @@ abstract class ProductEvent extends Equatable {
   List<Object> get props => [];
 }
 
-// Get All Products
+// Get All Products (with caching)
 class ProductEventGetAllProducts extends ProductEvent {
   final int page;
 
-  const ProductEventGetAllProducts([this.page = 1]); // 🔥 Default value = 1
+  const ProductEventGetAllProducts([this.page = 1]);
 
   @override
   List<Object> get props => [page];
+}
+
+// 🔥 NEW: Force refresh (bypass cache)
+class ProductEventRefreshProducts extends ProductEvent {
+  const ProductEventRefreshProducts();
+}
+
+// 🔥 NEW: Clear cache
+class ProductEventClearCache extends ProductEvent {
+  const ProductEventClearCache();
 }
 
 // Get Product Detail

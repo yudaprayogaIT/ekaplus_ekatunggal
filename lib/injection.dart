@@ -2,12 +2,12 @@
 import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/change_password.dart';
 import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/reset_password_with_otp.dart';
 import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/update_profile_picture.dart';
-import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/update_full_name.dart'; // ← ADD
-import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/request_phone_change.dart'; // ← ADD
+import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/update_full_name.dart';
+import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/request_phone_change.dart';
 import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/verify_old_password.dart';
-import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/verify_phone_change.dart'; // ← ADD
-import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/request_email_change.dart'; // ← ADD
-import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/verify_email_change.dart'; // ← ADD
+import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/verify_phone_change.dart';
+import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/request_email_change.dart';
+import 'package:ekaplus_ekatunggal/features/auth/domain/usecases/verify_email_change.dart';
 import 'package:ekaplus_ekatunggal/features/wishlist/domain/usecases/bulk_delete_wishlist.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
@@ -66,12 +66,34 @@ Future<void> init() async {
   print('🚀 Initializing GetIt dependencies...');
 
   // ============================================
-  // CUBIT - Singleton (Global State)
+  // CUBITS & BLOCS - Singleton (Global State)
   // ============================================
   myinjection.registerLazySingleton<AuthSessionCubit>(
     () => AuthSessionCubit(),
   );
-  print('✅ AuthSessionCubit registered');
+  print('✅ AuthSessionCubit registered as Singleton');
+
+  // 🔥 CHANGE: ProductBloc as Singleton to maintain cache across navigation
+  myinjection.registerLazySingleton<ProductBloc>(
+    () => ProductBloc(
+      getAllProduct: myinjection(),
+      getProduct: myinjection(),
+      getVariant: myinjection(),
+      getHotDeals: myinjection(),
+    ),
+  );
+  print('✅ ProductBloc registered as Singleton (with caching)');
+
+  // 🔥 CHANGE: WishlistBloc as Singleton
+  myinjection.registerLazySingleton<WishlistBloc>(
+    () => WishlistBloc(
+      getWishlist: myinjection(),
+      toggleWishlist: myinjection(),
+      checkWishlist: myinjection(),
+      bulkDeleteWishlist: myinjection(),
+    ),
+  );
+  print('✅ WishlistBloc registered as Singleton');
 
   // ============================================
   // GENERAL DEPENDENCIES
@@ -98,11 +120,10 @@ Future<void> init() async {
     () => ProductRemoteDatasourceImplementation(client: myinjection()),
   );
 
-  // 🔥 WISHLIST DataSource
   myinjection.registerLazySingleton<WishlistLocalDataSource>(
     () => WishlistLocalDataSourceImpl(),
   );
-  print('✅ WishlistLocalDataSource registered');
+  print('✅ All DataSources registered');
 
   // ============================================
   // REPOSITORIES
@@ -125,11 +146,10 @@ Future<void> init() async {
     () => ProductRepositoryImplementation(productRemoteDatasource: myinjection()),
   );
 
-  // 🔥 WISHLIST Repository
   myinjection.registerLazySingleton<WishlistRepository>(
     () => WishlistRepositoryImpl(localDataSource: myinjection()),
   );
-  print('✅ WishlistRepository registered');
+  print('✅ All Repositories registered');
 
   // ============================================
   // USE CASES
@@ -142,14 +162,14 @@ Future<void> init() async {
   myinjection.registerLazySingleton(() => RegisterUser(myinjection()));
   myinjection.registerLazySingleton(() => LoginUser(myinjection()));
   myinjection.registerLazySingleton(() => UpdateProfilePicture(myinjection()));
-  
-  // 🔥 Profile Update UseCases
   myinjection.registerLazySingleton(() => UpdateFullName(myinjection()));
   myinjection.registerLazySingleton(() => RequestPhoneChange(myinjection()));
   myinjection.registerLazySingleton(() => VerifyPhoneChange(myinjection()));
   myinjection.registerLazySingleton(() => RequestEmailChange(myinjection()));
   myinjection.registerLazySingleton(() => VerifyEmailChange(myinjection()));
-  print('✅ Profile Update UseCases registered');
+  myinjection.registerLazySingleton(() => VerifyOldPassword(myinjection()));
+  myinjection.registerLazySingleton(() => ChangePassword(myinjection()));
+  myinjection.registerLazySingleton(() => ResetPasswordWithOtp(myinjection()));
 
   // Type UseCases
   myinjection.registerLazySingleton(() => GetAllType(myinjection()));
@@ -165,21 +185,16 @@ Future<void> init() async {
   myinjection.registerLazySingleton(() => GetVariant(myinjection()));
   myinjection.registerLazySingleton(() => GetHotDeals(myinjection()));
 
-  // 🔥 WISHLIST UseCases
+  // Wishlist UseCases
   myinjection.registerLazySingleton(() => GetWishlist(myinjection()));
   myinjection.registerLazySingleton(() => ToggleWishlist(myinjection()));
   myinjection.registerLazySingleton(() => CheckWishlist(myinjection()));
   myinjection.registerLazySingleton(() => BulkDeleteWishlist(myinjection()));
-  print('✅ Wishlist UseCases registered');
-
-  // 🔐 Password Management UseCases
-myinjection.registerLazySingleton(() => VerifyOldPassword(myinjection()));
-myinjection.registerLazySingleton(() => ChangePassword(myinjection()));
-myinjection.registerLazySingleton(() => ResetPasswordWithOtp(myinjection()));
-print('✅ Password Management UseCases registered');
+  
+  print('✅ All UseCases registered');
 
   // ============================================
-  // BLOCS (Factory - Created per widget)
+  // FACTORY BLOCS (Per Widget)
   // ============================================
   
   myinjection.registerFactory(
@@ -203,24 +218,6 @@ print('✅ Password Management UseCases registered');
     () => CategoryBloc(getAllCategory: myinjection(), getCategory: myinjection()),
   );
 
-  myinjection.registerFactory(
-    () => ProductBloc(
-      getAllProduct: myinjection(),
-      getProduct: myinjection(),
-      getVariant: myinjection(),
-      getHotDeals: myinjection(),
-    ),
-  );
-
-  myinjection.registerFactory(
-    () => WishlistBloc(
-      getWishlist: myinjection(),
-      toggleWishlist: myinjection(),
-      checkWishlist: myinjection(),
-      bulkDeleteWishlist: myinjection(),
-    ),
-  );
-  print('✅ WishlistBloc registered');
-
+  print('✅ Factory BLoCs registered');
   print('🎉 All dependencies registered successfully!');
 }

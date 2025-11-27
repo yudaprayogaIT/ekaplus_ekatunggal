@@ -40,22 +40,25 @@ class EkaplusApp extends StatelessWidget {
         ),
 
         // ============================================
-        // 🔥 AUTH SESSION CUBIT (Singleton - Global State)
+        // 🔥 GLOBAL SINGLETONS (Persisted across navigation)
         // ============================================
+        
+        // Auth Session
         BlocProvider(
           create: (context) => myinjection<AuthSessionCubit>()..checkSession(),
         ),
 
-        // ============================================
-        // FEATURE BLOCS
-        // ============================================
-        BlocProvider(create: (context) => myinjection<TypeBloc>()),
-        BlocProvider(create: (context) => myinjection<CategoryBloc>()),
-        BlocProvider(create: (context) => myinjection<ProductBloc>()),
-        BlocProvider(create: (context) => myinjection<AuthBloc>()),
-        BlocProvider(create: (context) => myinjection<OtpTimerBloc>()),
+        // 🔥 Product Bloc (Singleton with caching)
+        BlocProvider(
+          create: (context) {
+            final productBloc = myinjection<ProductBloc>();
+            // Load products once at app start
+            productBloc.add(const ProductEventGetAllProducts());
+            return productBloc;
+          },
+        ),
 
-        // 🔥 NEW: WISHLIST BLOC (Auto-load when user logged in)
+        // 🔥 Wishlist Bloc (Singleton - auto-load when user logged in)
         BlocProvider(
           create: (context) {
             final wishlistBloc = myinjection<WishlistBloc>();
@@ -71,6 +74,14 @@ class EkaplusApp extends StatelessWidget {
             return wishlistBloc;
           },
         ),
+
+        // ============================================
+        // FACTORY BLOCS (Created per feature/widget)
+        // ============================================
+        BlocProvider(create: (context) => myinjection<TypeBloc>()),
+        BlocProvider(create: (context) => myinjection<CategoryBloc>()),
+        BlocProvider(create: (context) => myinjection<AuthBloc>()),
+        BlocProvider(create: (context) => myinjection<OtpTimerBloc>()),
       ],
       child: MultiBlocListener(
         listeners: [
@@ -81,7 +92,7 @@ class EkaplusApp extends StatelessWidget {
             },
           ),
 
-          // 🔥 NEW: Auth Session Listener - Load wishlist when login
+          // 🔥 Auth Session Listener - Load wishlist when login/logout
           BlocListener<AuthSessionCubit, AuthSessionState>(
             listener: (context, state) {
               if (state is AuthSessionAuthenticated) {

@@ -1,4 +1,3 @@
-// lib/features/home/presentation/pages/home_page.dart
 import 'package:ekaplus_ekatunggal/features/auth/presentation/cubit/auth_session_cubit.dart';
 import 'package:ekaplus_ekatunggal/features/auth/presentation/cubit/auth_session_state.dart';
 import 'package:ekaplus_ekatunggal/features/home/presentation/widgets/home_slider_widget.dart';
@@ -7,15 +6,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/shared_widgets/profile_header.dart';
 import '../widgets/search_bar.dart';
-import '../widgets/location_card.dart';
 import '../widgets/typeCategory_list.dart';
 import '../../../banner/domain/entities/bannerslider.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> 
+    with AutomaticKeepAliveClientMixin {
+  
+  // 🔥 CRITICAL: Keep page alive to prevent reload on back navigation
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context); // 🔥 REQUIRED for AutomaticKeepAliveClientMixin
+    
     final List<BannerSlider> banners = [
       BannerSlider(
         name: 'Banner ',
@@ -56,9 +67,9 @@ class HomePage extends StatelessWidget {
       body: SafeArea(
         child: BlocBuilder<AuthSessionCubit, AuthSessionState>(
           builder: (context, authState) {
-            // Determine if user is logged in
             final bool isLoggedIn = authState is AuthSessionAuthenticated;
-            final bool isMember = authState is AuthSessionAuthenticated &&
+            final bool isMember =
+                authState is AuthSessionAuthenticated &&
                 authState.status == UserStatus.member;
 
             return Column(
@@ -85,18 +96,16 @@ class HomePage extends StatelessWidget {
                               Positioned.fill(
                                 child: HomeSliderWidget(
                                   banners: banners,
-                                  enableTap: isLoggedIn, // Enable tap jika sudah login
+                                  enableTap: isLoggedIn,
                                 ),
                               ),
                               Positioned(
                                 left: 16,
                                 right: 16,
-                                bottom: -78,
+                                bottom: -2,
                                 child: Column(
                                   children: const [
                                     HomeSearchBar(),
-                                    SizedBox(height: 8),
-                                    LocationCard(),
                                   ],
                                 ),
                               ),
@@ -104,25 +113,25 @@ class HomePage extends StatelessWidget {
                           ),
                         ),
 
-                        const SizedBox(height: 85),
+                        const SizedBox(height: 8),
 
                         // Type Categories
                         TypeCategoryList(),
-                        
+
                         Container(
                           height: 10,
                           color: const Color.fromARGB(255, 233, 233, 233),
                         ),
 
-                        // Products Section - Pass isLoggedIn
+                        // Products Section - ProductBloc is now Singleton
                         ProductsSection(
                           title: 'Yang Baru Dari Kami 🔥',
                           subtitle: 'Yang baru - baru, dijamin menarik !!!',
                           hotDealsOnly: false,
                           showCount: 6,
-                          isLoggedIn: isLoggedIn, // 🔥 NEW
+                          isLoggedIn: isLoggedIn,
                         ),
-                        
+
                         Container(
                           height: 10,
                           color: const Color.fromARGB(255, 233, 233, 233),
@@ -133,7 +142,7 @@ class HomePage extends StatelessWidget {
                           subtitle: 'Siapa cepat, dia dapat, sikaaat ...',
                           hotDealsOnly: true,
                           showCount: 6,
-                          isLoggedIn: isLoggedIn, // 🔥 NEW
+                          isLoggedIn: isLoggedIn,
                         ),
                       ],
                     ),

@@ -2,7 +2,6 @@
 import 'package:ekaplus_ekatunggal/features/product/presentation/pages/product_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart'; // ✅ TAMBAHKAN
 import 'package:ekaplus_ekatunggal/constant.dart';
 import 'package:ekaplus_ekatunggal/features/category/domain/entities/category.dart';
 import 'package:ekaplus_ekatunggal/features/category/presentation/bloc/category_bloc.dart';
@@ -55,9 +54,9 @@ class _CategoryPageState extends State<CategoryPage>
     );
   }
 
-  void _onCategoryTap(Category category) {
-    _openProductPage(category);
-  }
+  // void _onCategoryTap(Category category) {
+  //   _openProductPage(category);
+  // }
 
   @override
   Widget build(BuildContext context) {

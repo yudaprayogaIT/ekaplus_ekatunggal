@@ -1,4 +1,4 @@
-// lib/features/product/presentation/widgets/product_section.dart
+// lib/features/product/presentation/widgets/products_section.dart
 import 'package:ekaplus_ekatunggal/constant.dart';
 import 'package:ekaplus_ekatunggal/features/auth/presentation/cubit/auth_session_cubit.dart';
 import 'package:ekaplus_ekatunggal/features/auth/presentation/cubit/auth_session_state.dart';
@@ -35,8 +35,16 @@ class _ProductsSectionState extends State<ProductsSection> {
   @override
   void initState() {
     super.initState();
-    // Load products via BLoC
-    _loadProducts();
+    // 🔥 NO NEED TO LOAD: ProductBloc is Singleton and already loaded in main.dart
+    // Just check if we need to trigger load (only if state is Initial and no cache)
+    final productBloc = context.read<ProductBloc>();
+    
+    if (productBloc.state is ProductInitial && !productBloc.hasCachedData) {
+      _loadProducts();
+    } else if (productBloc.state is ProductInitial && productBloc.hasCachedData) {
+      // Trigger cached data emission
+      productBloc.add(const ProductEventGetAllProducts());
+    }
   }
 
   void _loadProducts() {
@@ -127,7 +135,12 @@ class _ProductsSectionState extends State<ProductsSection> {
                     ),
                     const SizedBox(height: 12),
                     ElevatedButton(
-                      onPressed: _loadProducts,
+                      onPressed: () {
+                        // Force refresh (bypass cache)
+                        context.read<ProductBloc>().add(
+                          const ProductEventRefreshProducts(),
+                        );
+                      },
                       child: const Text('Coba Lagi'),
                     ),
                   ],
@@ -221,7 +234,7 @@ class _ProductsSectionState extends State<ProductsSection> {
                           return ProductCard(
                             product: product,
                             width: 176,
-                            showWishlistButton: isLoggedIn, // 🔥 Pass login status
+                            showWishlistButton: isLoggedIn,
                             onTap: () {
                               context.pushNamed(
                                 'productDetail',
@@ -245,7 +258,6 @@ class _ProductsSectionState extends State<ProductsSection> {
     );
   }
 
-  // Header with title and "Lihat Semua"
   Widget _buildHeader(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -287,7 +299,6 @@ class _ProductsSectionState extends State<ProductsSection> {
     );
   }
 
-  // Category filter chips
   Widget _buildCategoryChips() {
     if (_categories.isEmpty) return const SizedBox.shrink();
 
@@ -323,14 +334,12 @@ class _ProductsSectionState extends State<ProductsSection> {
   }
 }
 
-// Category item model
 class _CategoryItem {
   final int id;
   final String name;
   _CategoryItem({required this.id, required this.name});
 }
 
-// Category chip widget
 class _CategoryChip extends StatelessWidget {
   final String label;
   final bool selected;

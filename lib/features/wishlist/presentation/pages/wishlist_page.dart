@@ -1,13 +1,6 @@
-// lib/features/wishlist/presentation/pages/wishlist_page.dart
-
-// import 'package:ekaplus_ekatunggal/constant.dart';
 import 'package:ekaplus_ekatunggal/constant.dart';
 import 'package:ekaplus_ekatunggal/features/auth/presentation/cubit/auth_session_cubit.dart';
 import 'package:ekaplus_ekatunggal/features/auth/presentation/cubit/auth_session_state.dart';
-import 'package:ekaplus_ekatunggal/features/product/presentation/bloc/product_bloc.dart';
-// import 'package:ekaplus_ekatunggal/features/wishlist/presentation/bloc/wishlist_bloc.dart';
-// import 'package:ekaplus_ekatunggal/features/wishlist/presentation/bloc/wishlist_event.dart';
-// import 'package:ekaplus_ekatunggal/features/wishlist/presentation/widgets/wishlist_header.dart';
 import 'package:ekaplus_ekatunggal/features/wishlist/presentation/widgets/wishlist_locked_state.dart';
 import 'package:ekaplus_ekatunggal/features/wishlist/presentation/widgets/wishlist_content.dart';
 import 'package:flutter/material.dart';
@@ -20,15 +13,17 @@ class WishlistPage extends StatefulWidget {
   State<WishlistPage> createState() => _WishlistPageState();
 }
 
-class _WishlistPageState extends State<WishlistPage> {
+class _WishlistPageState extends State<WishlistPage>
+    with AutomaticKeepAliveClientMixin {
+  
+  // 🔥 CRITICAL: Keep page alive to prevent reload on back navigation
   @override
-  void initState() {
-    super.initState();
-    context.read<ProductBloc>().add(const ProductEventGetAllProducts(1));
-  }
+  bool get wantKeepAlive => true;
 
   @override
   Widget build(BuildContext context) {
+    super.build(context); // 🔥 REQUIRED for AutomaticKeepAliveClientMixin
+
     return Scaffold(
       backgroundColor: AppColors.whiteColor,
       appBar: AppBar(
@@ -54,7 +49,6 @@ class _WishlistPageState extends State<WishlistPage> {
 
           return Column(
             children: [
-              // const WishlistHeader(),
               Expanded(
                 child: isLoggedIn
                     ? WishlistContent(userId: userId!)
